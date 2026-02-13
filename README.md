@@ -43,8 +43,7 @@ List the ready features here:
 
 
 ## Screenshots
-![Example screenshot](./img/screenshot.png)
- If you have screenshots you'd like to share, include them here. 
+<img src="Assets/SmilingFriendsTeam.png" alt="Dashboard" width="700">
 
 
 ## Setup
