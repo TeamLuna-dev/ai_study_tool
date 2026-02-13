@@ -1,29 +1,95 @@
-# README #
+# Project Name
+> Outline a brief description of your project.
+> This repo contains the front and backend code of an AI-Study tool.
+> Live demo [_here_](https://www.example.com). <!-- If you have the project hosted somewhere, include the link here. -->
 
-This README would normally document whatever steps are necessary to get your application up and running.
+## Table of Contents
+* [General Info](#general-information)
+* [Technologies Used](#technologies-used)
+* [Features](#features)
+* [Screenshots](#screenshots)
+* [Setup](#setup)
+* [Usage](#usage)
+* [Project Status](#project-status)
+* [Room for Improvement](#room-for-improvement)
+* [Acknowledgements](#acknowledgements)
+* [Contact](#contact)
+<!-- * [License](#license) -->
 
-### What is this repository for? ###
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+## General Information
+- Provide general information about your project here.
+- What problem does it (intend to) solve?
+- What is the purpose of your project?
+- Why did you undertake it?
+-  This AI-Study tool is a webapp that is meant to assist students to study, practice and enhance their overall college-experience.
 
-### How do I get set up? ###
+<!-- You don't have to answer all the questions - just the ones relevant to your project. -->
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
 
-### Contribution guidelines ###
+## Technologies Used
+- React (UI)
+- Open AI
+- Firebase (User login)
+- Python for API calls
+- Vector Database (Qdrant)
 
-* Writing tests
-* Code review
-* Other guidelines
 
-### Who do I talk to? ###
+## Features
+List the ready features here:
+- User login
+- PDF Scanner (Picture upload)
+- Calculator
+- Quiz generation
+- Notes generation
+- Navbar to separate features
+- Google Vision API OCR (Notes -> PDF)
 
-* Repo owner or admin
-* Other community or team contact
+
+## Screenshots
+![Example screenshot](./img/screenshot.png)
+ If you have screenshots you'd like to share, include them here. 
+
+
+## Setup
+Install the requirements.txt (To be determined)
+
+
+## Usage
+To be determined
+
+`write-your-code-here`
+
+
+## Project Status
+Project is: _in progress_ /
+
+<!-- _complete_ / _no longer being worked on_. If you are no longer working on it, provide reasons why.-->
+
+
+## Room for Improvement
+To be determined
+
+Room for improvement:
+- Improvement to be done 1
+- Improvement to be done 2
+
+To do:
+- Feature to be added 1
+- Feature to be added 2
+
+
+## Acknowledgements
+Give credit here.
+- This project was inspired by [Assignment 3: Building your own AI Assistant](https://bitbucket.org/txstatecs3398all/assignment-build-your-own-ai-assistant-main/src/main/).
+
+
+## Contact
+Created by [@flynerdpl](https://www.flynerd.pl/) - feel free to contact me!
+
+
+<!-- Optional -->
+<!-- ## License -->
+<!-- This project is open source and available under the [... License](). -->
+
+<!-- You don't have to include all sections - just the one's relevant to your project -->
