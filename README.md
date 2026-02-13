@@ -18,11 +18,7 @@
 
 
 ## General Information
-- Provide general information about your project here.
-- What problem does it (intend to) solve?
-- What is the purpose of your project?
-- Why did you undertake it?
--  This AI-Study tool is a webapp that is meant to assist students to study, practice and enhance their overall college-experience.
+-  This AI-powered study tool is a web application designed to help students study more effectively, practice key concepts, and enhance their overall college learning experience through personalized and interactive support.
 
 <!-- You don't have to answer all the questions - just the ones relevant to your project. -->
 
@@ -62,9 +58,9 @@ To be determined
 
 
 ## Project Status
-Project is: _in progress_ /
+Project is: _in progress_ 
 
-<!-- _complete_ / _no longer being worked on_. If you are no longer working on it, provide reasons why.-->
+<!-- /_complete_ / _no longer being worked on_. If you are no longer working on it, provide reasons why.-->
 
 
 ## Room for Improvement
@@ -85,11 +81,3 @@ Give credit here.
 
 
 ## Contact
-Created by [@flynerdpl](https://www.flynerd.pl/) - feel free to contact me!
-
-
-<!-- Optional -->
-<!-- ## License -->
-<!-- This project is open source and available under the [... License](). -->
-
-<!-- You don't have to include all sections - just the one's relevant to your project -->
