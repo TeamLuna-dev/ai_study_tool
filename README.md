@@ -18,10 +18,9 @@
 
 
 ## General Information
--  This AI-powered study tool is a web application designed to help students study more effectively, practice key concepts, and enhance their overall college learning experience through personalized and interactive support.
-
-<!-- You don't have to answer all the questions - just the ones relevant to your project. -->
-
+- Team Luna: Sumit Sah, Samuel Gonzales Pineda, Angel Ramirez, Lane Westerman, Christian Molina.
+-  This is a AI-powered web app study tool designed to help students effectively study, practice key concepts, and enhance their overall learning experience through personalized and interactive tutoring.
+- The change we're hoping to make with this project is provide an AI model that outputs relevant information. A "smart" AI tutor that doesn't output generalized notes off the internet, but notes seen within lectures, handwritten notes, or relevant documents. 
 
 ## Technologies Used
 - React (UI)
@@ -32,14 +31,17 @@
 
 
 ## Features
-List the ready features here:
+Features to be implemented:
 - User login
 - PDF Scanner (Picture upload)
 - Calculator
-- Quiz generation
 - Notes generation
 - Navbar to separate features
 - Google Vision API OCR (Notes -> PDF)
+- Adaptive Quiz Generation from Notes
+- Study Session Summaries with Knowledge Gaps
+- Collaborative Study Room
+
 
 
 ## Screenshots
