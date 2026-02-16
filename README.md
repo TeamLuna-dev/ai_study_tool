@@ -47,6 +47,10 @@ Features to be implemented:
 
 - As a student, I would like quizzes generated from my notes so that I can test my understanding.
 
+-As a student, I would like a navigation bar so that I can easily switch between features.
+
+-As a student, I would like AI-generated summarized notes so that I can quickly review important concepts.
+
 
 
 ## Screenshots
