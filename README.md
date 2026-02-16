@@ -43,9 +43,9 @@ Features to be implemented:
 
 - Collaborative Study Room: As a student in a study group, I want to create a shared room where my teammates can upload their own notes and we all interact with the same Al tutor, so that we can pool our materials and quiz each other on a combined knowledge base.
 
-- As a student, I would like a summary of my knowledge gaps so that I know what to focus on while studying. 
+- Quiz layout: As a student, I would like a screen to effectively see the quiz layout so that I can clearly read questions, select answers, and track my progress.
 
-- As a student, I would like quizzes generated from my notes so that I can test my understanding.
+- Quiz generator: As a student, I would like quizzes generated from my notes so that I can test my understanding.
 
 -As a student, I would like a navigation bar so that I can easily switch between features.
 
