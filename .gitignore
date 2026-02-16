@@ -12,6 +12,8 @@ dist/
 .env.local
 .env.*.local
 
+/quiz-gen/.env
+/quiz-gen/.venv
 # Compiled Java class files
 *.class
 
