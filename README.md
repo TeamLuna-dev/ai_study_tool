@@ -1,5 +1,4 @@
-# Project Name
-> Outline a brief description of your project.
+# Study-AI 
 > This repo contains the front and backend code of an AI-Study tool.
 > Live demo [_here_](https://www.example.com). <!-- If you have the project hosted somewhere, include the link here. -->
 
@@ -44,6 +43,10 @@ Features to be implemented:
 
 - Collaborative Study Room: As a student in a study group, I want to create a shared room where my teammates can upload their own notes and we all interact with the same Al tutor, so that we can pool our materials and quiz each other on a combined knowledge base.
 
+- As a student, I would like a summary of my knowledge gaps so that I know what to focus on while studying. 
+
+- As a student, I would like quizzes generated from my notes so that I can test my understanding.
+
 
 
 ## Screenshots
@@ -67,6 +70,9 @@ Project is: _in progress_
 
 
 ## Room for Improvement
+
+To be added 
+<!-- 
 To be determined
 
 Room for improvement:
@@ -76,7 +82,7 @@ Room for improvement:
 To do:
 - Feature to be added 1
 - Feature to be added 2
-
+-->
 
 ## Acknowledgements
 Give credit here.
