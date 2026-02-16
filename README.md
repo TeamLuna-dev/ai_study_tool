@@ -39,8 +39,10 @@ Features to be implemented:
 - Navbar to separate features
 - Google Vision API OCR (Notes -> PDF)
 - Adaptive Quiz Generation from Notes
-- Study Session Summaries with Knowledge Gaps
-- Collaborative Study Room
+
+- Study Session Summaries with Knowledge Gaps: As a student, I want to receive a summary after each study session that highlights what I've mastered and what I still struggle with, so that I can prioritize my remaining study time efficiently.
+
+- Collaborative Study Room: As a student in a study group, I want to create a shared room where my teammates can upload their own notes and we all interact with the same Al tutor, so that we can pool our materials and quiz each other on a combined knowledge base.
 
 
 
