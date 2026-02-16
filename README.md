@@ -47,10 +47,13 @@ Features to be implemented:
 
 - Quiz generator: As a student, I would like quizzes generated from my notes so that I can test my understanding.
 
--As a student, I would like a navigation bar so that I can easily switch between features.
+- As a student, I would like a navigation bar so that I can easily switch between features.
 
--As a student, I would like AI-generated summarized notes so that I can quickly review important concepts.
+- As a student, I would like AI-generated summarized notes so that I can quickly review important concepts.
 
+- AI knowledge Gap Analysis: As a student, I would like the system to analyze my quiz performance and study activity so that I can identify my weak topics and improve efficiently.
+
+- Personalized Study Plan Generator: As a student, I would like the system to generate a personalized study schedule based on my upcoming exams and weak topics so that I can manage my time effectively.
 
 
 ## Screenshots
