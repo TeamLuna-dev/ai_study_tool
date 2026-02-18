@@ -3,6 +3,7 @@
 import os
 from dotenv import load_dotenv
 from openai import OpenAI
+import argparse
 
 def extract_output_text(response) -> str:
     """
@@ -18,7 +19,25 @@ def extract_output_text(response) -> str:
                     chunks.append(getattr(c, "text", "")) # if it's an output_text chunk, we want to extract the text and add it to our list of chunks
     return "\n".join(chunks).strip()
 
+def load_notes(notes_path: str | None) -> str:
+    """
+    Load notes from the root as it would normally do
+    """
+    default_path = os.path.join("notes", "default_notes.txt")
+    path = notes_path or default_path
+
+    if not os.path.exists(path):
+        raise FileNotFoundError(f"Notes file not found: {path}")
+
+    with open(path, "r", encoding="utf-8") as f:
+        return f.read().strip()
+
 def main():
+
+    notes = load_notes(None)  # None: uses default file
+    print("LOADED NOTES:")
+    print(notes)
+
     load_dotenv()
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
