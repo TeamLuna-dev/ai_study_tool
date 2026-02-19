@@ -6,6 +6,9 @@
 
 import React from "react";
 
+// Shown when isAuthenticated is false and no custom signInPrompt is provided.
+// Intentionally styled to match the DropZone dimensions so the layout
+// doesn't shift when auth state resolves.
 const defaultSignInPrompt = (
   <div style={styles.prompt}>
     <span style={styles.icon}>🔒</span>
@@ -18,12 +21,14 @@ const defaultSignInPrompt = (
 
 /**
  * @param {{
- *   isAuthenticated: boolean;
- *   children: React.ReactNode;
- *   signInPrompt?: React.ReactNode;
+ *   isAuthenticated: boolean;    - true if the user is signed in
+ *   children: React.ReactNode;   - the upload UI to show when authenticated
+ *   signInPrompt?: React.ReactNode;    - optional custom unauthenticated UI
  * }} props
  */
 export function AuthGate({ isAuthenticated, children, signInPrompt = defaultSignInPrompt }) {
+  // Render children (the upload UI) when signed in,
+  // otherwise render the sign-in prompt.
   return (
     <div>
       {isAuthenticated ? children : signInPrompt}
@@ -31,6 +36,7 @@ export function AuthGate({ isAuthenticated, children, signInPrompt = defaultSign
   );
 }
 
+// Inline styles. Will replace with Tailwind classes when connecting into the dashboard
 const styles = {
   prompt: {
     border: "2px dashed #cbd5e1",
