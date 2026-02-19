@@ -1,5 +1,4 @@
 ### script to test OpenAI API connection and response parsing for quiz generation task
-
 import os
 from dotenv import load_dotenv
 from openai import OpenAI
