@@ -33,8 +33,15 @@ def load_notes(notes_path: str | None) -> str:
         return f.read().strip()
 
 def main():
+    
+    # added argparse to allow for optional notes file input. For both testing purposes and
+    # future flexibility when we want to run the script with different notes files without changing the code.
 
-    notes = load_notes(None)  # None: uses default file
+    parser = argparse.ArgumentParser(description="Summarize notes using OpenAI.")
+    parser.add_argument("--notes", help="Path to notes .txt file (optional)", default=None)
+    args = parser.parse_args()
+
+    notes = load_notes(args.notes)
     print("LOADED NOTES:")
     print("-------------")
     print(notes)
