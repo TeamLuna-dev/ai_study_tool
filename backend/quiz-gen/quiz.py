@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 from openai import OpenAI
 import argparse
+import json
 
 def extract_output_text(response) -> str:
     """
@@ -82,11 +83,29 @@ Rules:
 - Exactly 4 answer choices.
 - Exactly one correct answer.
 - Do not use outside facts, you are constrained to only use the information in the notes.
-- Output in JSON format matching this schema:
-{simple_schema}
 
     NOTES:
     {notes}""".strip() # now we change the prompt to specifically ask for a multiple choice question (MCQ) format.
+
+    # Enforce strict JSON output at the API level
+    response = client.responses.create(
+        model="gpt-4.1",
+        input=prompt,
+        text={
+            "format": {
+                "type": "json_schema",
+                "name": simple_schema["name"],
+                "schema": simple_schema["schema"],
+                "strict": True
+            }
+        }
+    )
+
+    json_text = extract_output_text(response)
+    quiz_obj = json.loads(json_text)
+
+    print("MCQ JSON OUTPUT:\n")
+    print(json.dumps(quiz_obj, indent=2))
 
     response = client.responses.create(
         model="gpt-4.1",
