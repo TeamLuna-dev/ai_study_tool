@@ -40,6 +40,8 @@ def main():
 
     parser = argparse.ArgumentParser(description="Summarize notes using OpenAI.")
     parser.add_argument("--notes", help="Path to notes .txt file (optional)", default=None)
+    # to avoid duplicated API calls, this allows a second call by typing --raw in CLI
+    parser.add_argument("--raw", action="store_true", help="Also run a second non-JSON call for comparison") 
     args = parser.parse_args()
 
     notes = load_notes(args.notes)
@@ -107,14 +109,16 @@ Rules:
     print("MCQ JSON OUTPUT:\n")
     print(json.dumps(quiz_obj, indent=2))
 
-    response = client.responses.create(
-        model="gpt-4.1",
-        input=prompt
-    )
+    if args.raw: # If --raw new API call is created
 
-    text = extract_output_text(response)
-    print("MODEL OUTPUT:\n")
-    print(text if text else response)
+        response = client.responses.create(
+            model="gpt-4.1",
+            input=prompt
+        )
+
+        text = extract_output_text(response)
+        print("MODEL OUTPUT:\n")
+        print(text if text else response)
 
 if __name__ == "__main__":
     main()

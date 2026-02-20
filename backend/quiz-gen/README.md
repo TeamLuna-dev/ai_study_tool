@@ -6,7 +6,7 @@
 
 ## Setup
 ```bash
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env  
@@ -14,7 +14,8 @@ cp .env.example .env
 ## How to run
 
 ```bash
-python quiz.py // runs default notes
-python3 quiz.py --notes mynotes.txt (route to specific notes file)
+python3 quiz.py # runs default notes
+python3 quiz.py --notes mynotes.txt # runs to specific notes file
+python3 python3 quiz.py --notes other_notes.txt --raw # makes double API call to verify content
 ```
 
