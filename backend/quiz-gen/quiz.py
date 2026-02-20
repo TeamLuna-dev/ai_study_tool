@@ -57,24 +57,36 @@ def main():
 
     client = OpenAI(api_key=api_key)
 
-    simple_schema = { # this is a simple JSON schema, now we expect the AI to output a JSON object that matches this format
-    "name": "single_mcq",
+    fiveMCQ_schema = { # now this MCQ schema is designed to enforce the specific format that we want, with now 5 questions
+    "name": "mcq_quiz_5",
     "schema": {
         "type": "object",
         "additionalProperties": False,
         "properties": {
-            "question": {"type": "string"},
-            "choices": {
+            "questions": {
                 "type": "array",
-                "minItems": 4,
-                "maxItems": 4,
-                "items": {"type": "string"}
-            },
-            "correct_index": {"type": "integer", "minimum": 0, "maximum": 3}
+                "minItems": 5,
+                "maxItems": 5,
+                "items": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "properties": {
+                        "question": {"type": "string"},
+                        "choices": {
+                            "type": "array",
+                            "minItems": 4,
+                            "maxItems": 4,
+                            "items": {"type": "string"}
+                        },
+                        "correct_index": {"type": "integer", "minimum": 0, "maximum": 3}
+                    },
+                    "required": ["question", "choices", "correct_index"]
+                }
+            }
         },
-        "required": ["question", "choices", "correct_index"]
+        "required": ["questions"]
     }
-    }
+}
 
     prompt = f"""
     You are helping a student study.
@@ -96,8 +108,8 @@ Rules:
         text={
             "format": {
                 "type": "json_schema",
-                "name": simple_schema["name"],
-                "schema": simple_schema["schema"],
+                "name": fiveMCQ_schema["name"],
+                "schema": fiveMCQ_schema["schema"],
                 "strict": True
             }
         }
