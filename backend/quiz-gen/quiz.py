@@ -54,16 +54,37 @@ def main():
 
     client = OpenAI(api_key=api_key)
 
+    simple_schema = { # this is a simple JSON schema, now we expect the AI to output a JSON object that matches this format
+    "name": "single_mcq",
+    "schema": {
+        "type": "object",
+        "additionalProperties": False,
+        "properties": {
+            "question": {"type": "string"},
+            "choices": {
+                "type": "array",
+                "minItems": 4,
+                "maxItems": 4,
+                "items": {"type": "string"}
+            },
+            "correct_index": {"type": "integer", "minimum": 0, "maximum": 3}
+        },
+        "required": ["question", "choices", "correct_index"]
+    }
+    }
+
     prompt = f"""
     You are helping a student study.
-    Task:
-    Create a MCQ for a quiz based on the following notes. The question should be clear and concise, and the answer choices should be plausible but only one should be correct. Format the output as follows:
-Question: [the question here]
-A) [answer choice A]
-B) [answer choice B]
-C) [answer choice C]
-D) [answer choice D]
-Correct Answer: [the correct answer here, e.g. A, B, C, or D]
+
+Create ONE multiple-choice question based ONLY on the notes below.
+
+Rules:
+- Exactly 4 answer choices.
+- Exactly one correct answer.
+- Do not use outside facts, you are constrained to only use the information in the notes.
+- Output in JSON format matching this schema:
+{simple_schema}
+
     NOTES:
     {notes}""".strip() # now we change the prompt to specifically ask for a multiple choice question (MCQ) format.
 
