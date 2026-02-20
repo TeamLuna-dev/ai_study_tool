@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 from openai import OpenAI
 import argparse
+import json
 
 def extract_output_text(response) -> str:
     """
@@ -33,8 +34,17 @@ def load_notes(notes_path: str | None) -> str:
         return f.read().strip()
 
 def main():
+    
+    # added argparse to allow for optional notes file input. For both testing purposes and
+    # future flexibility when we want to run the script with different notes files without changing the code.
 
-    notes = load_notes(None)  # None: uses default file
+    parser = argparse.ArgumentParser(description="Summarize notes using OpenAI.")
+    parser.add_argument("--notes", help="Path to notes .txt file (optional)", default=None)
+    # to avoid duplicated API calls, this allows a second call by typing --raw in CLI
+    parser.add_argument("--raw", action="store_true", help="Also run a second non-JSON call for comparison") 
+    args = parser.parse_args()
+
+    notes = load_notes(args.notes)
     print("LOADED NOTES:")
     print("-------------")
     print(notes)
@@ -47,21 +57,80 @@ def main():
 
     client = OpenAI(api_key=api_key)
 
+    fiveMCQ_schema = { # now this MCQ schema is designed to enforce the specific format that we want, with now 5 questions
+    "name": "mcq_quiz_5",
+    "schema": {
+        "type": "object",
+        "additionalProperties": False,
+        "properties": {
+            "questions": {
+                "type": "array",
+                "minItems": 5,
+                "maxItems": 5,
+                "items": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "properties": {
+                        "question": {"type": "string"},
+                        "choices": {
+                            "type": "array",
+                            "minItems": 4,
+                            "maxItems": 4,
+                            "items": {"type": "string"}
+                        },
+                        "correct_index": {"type": "integer", "minimum": 0, "maximum": 3}
+                    },
+                    "required": ["question", "choices", "correct_index"]
+                }
+            }
+        },
+        "required": ["questions"]
+    }
+}
+
     prompt = f"""
     You are helping a student study.
-    Task:
-    Summarize the notes below into exactly 5 bullet points that capture the most important information.
-    NOTES:
-    {notes}""".strip() # this is a simple prompt to test the API connection and response
 
+Create ONE multiple-choice question based ONLY on the notes below.
+
+Rules:
+- Exactly 4 answer choices.
+- Exactly one correct answer.
+- Do not use outside facts, you are constrained to only use the information in the notes.
+
+    NOTES:
+    {notes}""".strip() # now we change the prompt to specifically ask for a multiple choice question (MCQ) format.
+
+    # Enforce strict JSON output at the API level
     response = client.responses.create(
         model="gpt-4.1",
-        input=prompt
+        input=prompt,
+        text={
+            "format": {
+                "type": "json_schema",
+                "name": fiveMCQ_schema["name"],
+                "schema": fiveMCQ_schema["schema"],
+                "strict": True
+            }
+        }
     )
 
-    text = extract_output_text(response)
-    print("MODEL OUTPUT:\n")
-    print(text if text else response)
+    json_text = extract_output_text(response)
+    quiz_obj = json.loads(json_text)
+
+    print("MCQ JSON OUTPUT:\n")
+    print(json.dumps(quiz_obj, indent=2))
+
+    if args.raw: # If --raw new API call is created
+
+        response = client.responses.create(
+            model="gpt-4.1",
+            input=prompt
+        )
+
+        text = extract_output_text(response)
+        print("MODEL OUTPUT:\n")
+        print(text if text else response)
 
 if __name__ == "__main__":
     main()
