@@ -57,9 +57,15 @@ def main():
     prompt = f"""
     You are helping a student study.
     Task:
-    Summarize the notes below into exactly 5 bullet points that capture the most important information.
+    Create a MCQ for a quiz based on the following notes. The question should be clear and concise, and the answer choices should be plausible but only one should be correct. Format the output as follows:
+Question: [the question here]
+A) [answer choice A]
+B) [answer choice B]
+C) [answer choice C]
+D) [answer choice D]
+Correct Answer: [the correct answer here, e.g. A, B, C, or D]
     NOTES:
-    {notes}""".strip() # this is a simple prompt to test the API connection and response
+    {notes}""".strip() # now we change the prompt to specifically ask for a multiple choice question (MCQ) format.
 
     response = client.responses.create(
         model="gpt-4.1",
