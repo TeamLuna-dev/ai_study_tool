@@ -1,2 +1,0 @@
-openai>=1.0.0 # OpenAI Python library for interacting with the OpenAI API
-python-dotenv>=1.0.0 # For loading environment variables from a .env file

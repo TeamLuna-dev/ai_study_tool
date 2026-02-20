@@ -1,7 +1,9 @@
 ### script to test OpenAI API connection and response parsing for quiz generation task
+
 import os
 from dotenv import load_dotenv
 from openai import OpenAI
+import argparse
 
 def extract_output_text(response) -> str:
     """
@@ -17,7 +19,27 @@ def extract_output_text(response) -> str:
                     chunks.append(getattr(c, "text", "")) # if it's an output_text chunk, we want to extract the text and add it to our list of chunks
     return "\n".join(chunks).strip()
 
+def load_notes(notes_path: str | None) -> str:
+    """
+    Load notes from the root as it would normally do
+    """
+    default_path = os.path.join("notes", "default_notes.txt")
+    path = notes_path or default_path
+
+    if not os.path.exists(path):
+        raise FileNotFoundError(f"Notes file not found: {path}")
+
+    with open(path, "r", encoding="utf-8") as f:
+        return f.read().strip()
+
 def main():
+
+    notes = load_notes(None)  # None: uses default file
+    print("LOADED NOTES:")
+    print("-------------")
+    print(notes)
+    print("-------------\n") # to separate the loaded notes from the model output for easier reading
+
     load_dotenv()
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
@@ -25,13 +47,20 @@ def main():
 
     client = OpenAI(api_key=api_key)
 
+    prompt = f"""
+    You are helping a student study.
+    Task:
+    Summarize the notes below into exactly 5 bullet points that capture the most important information.
+    NOTES:
+    {notes}""".strip() # this is a simple prompt to test the API connection and response
+
     response = client.responses.create(
         model="gpt-4.1",
-        input="Say 'API connected' and then talk me about the cosmological argument in one paragraph."
-    )     # this is a test input to check if the API connection works and if we can extract the output text correctly
+        input=prompt
+    )
 
     text = extract_output_text(response)
-
+    print("MODEL OUTPUT:\n")
     print(text if text else response)
 
 if __name__ == "__main__":
