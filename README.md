@@ -29,8 +29,9 @@
 - Open AI
 - Firebase (User login)
 - Python for API calls
-- Vector Database (Qdrant)
+- Vector database (Qdrant)
 - Google Vision API
+- Flask backend
 - *Coming soon...*
 
 
@@ -78,7 +79,11 @@ Features to be implemented:<br>
 
 
 ## Setup
-Install the requirements.txt (To be determined)
+1) Install Node.js (verify install: 'node -v'): https://nodejs.org/en/download
+2) Install Node.js dependencies (package.json): 'npm install'
+3) Install Python dependencies (requirements.txt): 'install -r requirements.txt'
+4) Start React app locally using Vite: 'npm run dev'
+
 
 
 ## Usage
