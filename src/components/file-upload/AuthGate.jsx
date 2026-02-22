@@ -6,6 +6,32 @@
 
 import React from "react";
 
+// Inline styles. Will replace with Tailwind classes when connecting into the dashboard
+const styles = {
+  prompt: {
+    border: "2px dashed #cbd5e1",
+    borderRadius: "12px",
+    padding: "40px 24px",
+    textAlign: "center",
+    background: "#f8fafc",
+    userSelect: "none",
+  },
+  icon: {
+    fontSize: "1.8rem",
+  },
+  heading: {
+    margin: "12px 0 4px",
+    fontSize: "1rem",
+    fontWeight: 600,
+    color: "#334155",
+  },
+  subtext: {
+    margin: 0,
+    fontSize: "0.85rem",
+    color: "#94a3b8",
+  },
+};
+
 // Shown when isAuthenticated is false and no custom signInPrompt is provided.
 // Intentionally styled to match the DropZone dimensions so the layout
 // doesn't shift when auth state resolves.
@@ -36,28 +62,3 @@ export function AuthGate({ isAuthenticated, children, signInPrompt = defaultSign
   );
 }
 
-// Inline styles. Will replace with Tailwind classes when connecting into the dashboard
-const styles = {
-  prompt: {
-    border: "2px dashed #cbd5e1",
-    borderRadius: "12px",
-    padding: "40px 24px",
-    textAlign: "center",
-    background: "#f8fafc",
-    userSelect: "none",
-  },
-  icon: {
-    fontSize: "1.8rem",
-  },
-  heading: {
-    margin: "12px 0 4px",
-    fontSize: "1rem",
-    fontWeight: 600,
-    color: "#334155",
-  },
-  subtext: {
-    margin: 0,
-    fontSize: "0.85rem",
-    color: "#94a3b8",
-  },
-};

@@ -15,7 +15,7 @@
  */
 
 import { useState, useRef, useCallback } from "react";
-import { validateFile } from "../utils/fileValidation";
+import { validateFile } from "../util/fileValidation";
 import { uploadFile } from "../services/uploadService";
 
 /**
