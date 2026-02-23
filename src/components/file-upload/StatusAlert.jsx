@@ -7,23 +7,30 @@
 import React from "react";
 import { UPLOAD_STATUS } from "../../hooks/useFileUpload";
 
+/**
+ * ALERT_CONFIG maps each upload status to its visual style and ARIA role.
+ *
+ * role "alert"  — announces immediately to screen readers (used for errors)
+ * role "status" — announces politely when the user is idle (used for success)
+ */
+
 const ALERT_CONFIG = {
   [UPLOAD_STATUS.SUCCESS]: {
-    background: "#f0fdf4",
+    background: "#f0fdf4",    // green tint
     border: "#86efac",
     color: "#166534",
     icon: "✓",
     role: "status",
   },
   [UPLOAD_STATUS.ERROR]: {
-    background: "#fef2f2",
+    background: "#fef2f2",    // red tint
     border: "#fca5a5",
     color: "#991b1b",
     icon: "✕",
-    role: "alert",
+    role: "alert",   // interrupts screen renders immediately
   },
   [UPLOAD_STATUS.IDLE]: {
-    background: "#eff6ff",
+    background: "#eff6ff",    // blue tint (used for info messages e.g. "cancelled")
     border: "#93c5fd",
     color: "#1e40af",
     icon: "ℹ",
@@ -36,6 +43,8 @@ const ALERT_CONFIG = {
  */
 export function StatusAlert({ status, message }) {
   const config = ALERT_CONFIG[status];
+
+  // Render nothing if there's no matching config or no message to show
   if (!config || !message) return null;
 
   return (
