@@ -11,7 +11,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env  
 ```
-## How to run
+## How to run the quiz generator
 
 ```bash
 python3 quiz.py # runs default notes
@@ -19,4 +19,7 @@ python3 quiz.py --notes mynotes.txt # runs to specific notes file
 python3 quiz.py --notes other_notes.txt --raw # makes double API call to verify content
 python3 quiz.py --out out/quiz.json # dumps a .json based on the prompt
 ```
-
+## How to run the quiz scorer
+```bash
+python3 score_quiz.py --quiz out/quiz.json # runs the quiz script
+```
