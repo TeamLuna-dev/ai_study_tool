@@ -31,6 +31,47 @@ def validate_quiz(quiz_obj: dict) -> list[dict]:
 
     return questions
 
+def normalize_answer(user_input: str) -> int | None:
+    s = user_input.strip().lower()
+    if s in ("a", "b", "c", "d"):
+        return ord(s) - ord("a")
+    if s in ("1", "2", "3", "4"):
+        return int(s) - 1
+    return None
+
+def run_quiz(questions: list[dict]) -> None:
+    score = 0
+    user_answers: list[int] = []
+
+    print("\n--- QUIZ START ---")
+    for i, q in enumerate(questions, start=1):
+        print(f"\nQ{i}. {q['question']}")
+        for idx, choice in enumerate(q["choices"]):
+            letter = chr(ord("A") + idx)
+            print(f"  {letter}) {choice}")
+
+        while True:
+            ans = input("Your answer (A-D or 1-4): ")
+            idx = normalize_answer(ans)
+            if idx is not None:
+                user_answers.append(idx)
+                break
+            print("Invalid input. Please enter A, B, C, D or 1, 2, 3, 4.")
+
+        if idx == q["correct_index"]:
+            score += 1
+
+    print("\nRESULTS")
+    print(f"Score: {score}/{len(questions)}")
+
+    for i, q in enumerate(questions, start=1):
+        correct = q["correct_index"]
+        user = user_answers[i - 1]
+        if user != correct:
+            print(f"\nQ{i} incorrect.")
+            print(f"  Your answer: {chr(ord('A') + user)}")
+            print(f"  Correct:     {chr(ord('A') + correct)}")
+            print(f"  Correct choice: {q['choices'][correct]}")
 
 def main():
     parser = argparse.ArgumentParser(description="Score a quiz from JSON.")
@@ -39,7 +80,7 @@ def main():
 
     quiz_obj = load_quiz(args.quiz)
     questions = validate_quiz(quiz_obj)
-    print(f"Quiz valid. Questions: {len(questions)}")
+    run_quiz(questions)
 
 
 if __name__ == "__main__":
