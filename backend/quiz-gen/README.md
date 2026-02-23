@@ -16,6 +16,7 @@ cp .env.example .env
 ```bash
 python3 quiz.py # runs default notes
 python3 quiz.py --notes mynotes.txt # runs to specific notes file
-python3 python3 quiz.py --notes other_notes.txt --raw # makes double API call to verify content
+python3 quiz.py --notes other_notes.txt --raw # makes double API call to verify content
+python3 quiz.py --out out/quiz.json # dumps a .json based on the prompt
 ```
 
