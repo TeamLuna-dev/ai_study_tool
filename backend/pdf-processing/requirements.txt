@@ -1,0 +1,2 @@
+unstructured[pdf]==0.13.0   # structural chunking — partition_pdf + chunk_by_title
+reportlab==4.1.0            # used by tests to generate a real sample PDF
