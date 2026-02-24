@@ -21,7 +21,7 @@ def summarize_text(text):
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
-            {"role": "system", "content": "Summarize the following text clearly and concisely."},
+            {"role": "system", "content": "Summarize the following text as clean study notes using short bullet points"},
             {"role": "user", "content": text}
         ]
     )
