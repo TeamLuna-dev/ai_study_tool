@@ -38,11 +38,13 @@ def main():
     # added argparse to allow for optional notes file input. For both testing purposes and
     # future flexibility when we want to run the script with different notes files without changing the code.
 
-    parser = argparse.ArgumentParser(description="Summarize notes using OpenAI.")
+    parser = argparse.ArgumentParser(description="Generate a quiz based on notes using OpenAI API")
     parser.add_argument("--notes", help="Path to notes .txt file (optional)", default=None)
     # to avoid duplicated API calls, this allows a second call by typing --raw in CLI
     parser.add_argument("--raw", action="store_true", help="Also run a second non-JSON call for comparison") 
+    parser.add_argument("--out", help="Write generated quiz JSON to this file", default=None)
     args = parser.parse_args()
+
 
     notes = load_notes(args.notes)
     print("LOADED NOTES:")
@@ -91,7 +93,7 @@ def main():
     prompt = f"""
     You are helping a student study.
 
-Create ONE multiple-choice question based ONLY on the notes below.
+Create exactly 5 multiple-choice question based ONLY on the notes below.
 
 Rules:
 - Exactly 4 answer choices.
@@ -131,6 +133,11 @@ Rules:
         text = extract_output_text(response)
         print("MODEL OUTPUT:\n")
         print(text if text else response)
+
+    if args.out:
+        with open(args.out, "w", encoding="utf-8") as f:
+            json.dump(quiz_obj, f, indent=2)
+        print(f"\nSaved quiz JSON to: {args.out}")
 
 if __name__ == "__main__":
     main()
