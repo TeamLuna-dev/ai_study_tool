@@ -2,43 +2,65 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>AI Text Summarizer</title>
+  <title>AI Study Notes Summarizer</title>
+
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 40px;
-      max-width: 700px;
+      max-width: 800px;
     }
+
     textarea {
       width: 100%;
-      height: 150px;
+      height: 160px;
       padding: 10px;
       font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
     }
+
     button {
-      margin-top: 10px;
+      margin-top: 15px;
       padding: 10px 20px;
       font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      background-color: #4f46e5;
+      color: white;
       cursor: pointer;
     }
-    #summary {
-      margin-top: 20px;
-      background: #f3f3f3;
-      padding: 15px;
-      border-radius: 5px;
-      min-height: 50px;
+
+    button:hover {
+      background-color: #4338ca;
+    }
+
+    .notes-box {
+      margin-top: 30px;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border-left: 6px solid #4f46e5;
+      line-height: 1.6;
+    }
+
+    .notes-box ul {
+      padding-left: 20px;
     }
   </style>
 </head>
+
 <body>
-  <h1>AI Text Summarizer</h1>
 
-  <textarea id="inputText" placeholder="Paste your text here..."></textarea>
+  <h1>📘 AI Study Notes Generator</h1>
+
+  <textarea id="inputText" placeholder="Paste your lecture notes or paragraph here..."></textarea>
   <br>
-  <button onclick="getSummary()">Summarize</button>
+  <button onclick="getSummary()">Generate Notes</button>
 
-  <h2>Summary:</h2>
-  <div id="summary">Your summary will appear here.</div>
+  <h2>Summary Notes:</h2>
+  <div id="summary" class="notes-box"></div>
 
   <script>
     async function getSummary() {
@@ -46,11 +68,11 @@
       const summaryDiv = document.getElementById('summary');
 
       if (!text) {
-        summaryDiv.textContent = "Please enter text to summarize.";
+        summaryDiv.innerHTML = "<p>Please enter text to summarize.</p>";
         return;
       }
 
-      summaryDiv.textContent = "Generating summary...";
+      summaryDiv.innerHTML = "<p>Generating notes...</p>";
 
       try {
         const response = await fetch('http://localhost:5001/api/summarize', {
@@ -62,15 +84,26 @@
         const data = await response.json();
 
         if (data.error) {
-          summaryDiv.textContent = "Error: " + data.error;
+          summaryDiv.innerHTML = `<p>Error: ${data.error}</p>`;
         } else {
-          summaryDiv.textContent = data.summary;
+          const lines = data.summary.split("\n");
+          let formatted = "<ul>";
+
+          lines.forEach(line => {
+            if (line.trim() !== "") {
+              formatted += `<li>${line.replace(/^[-•]\s*/, "")}</li>`;
+            }
+          });
+
+          formatted += "</ul>";
+          summaryDiv.innerHTML = formatted;
         }
 
       } catch (err) {
-        summaryDiv.textContent = "Error: " + err.message;
+        summaryDiv.innerHTML = `<p>Error: ${err.message}</p>`;
       }
     }
   </script>
+
 </body>
 </html>
