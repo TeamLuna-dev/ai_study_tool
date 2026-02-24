@@ -3,17 +3,79 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // This rule allows anyone with your Firestore database reference to view, edit,
-    // and delete all data in your Firestore database. It is useful for getting
-    // started, but it is configured to expire after 30 days because it
-    // leaves your app open to attackers. At that time, all client
-    // requests to your Firestore database will be denied.
-    //
-    // Make sure to write security rules for your app before that time, or else
-    // all client requests to your Firestore database will be denied until you Update
-    // your rules
-    match /{document=**} {
-      allow read, write: if request.time < timestamp.date(2026, 3, 26);
+    // ── Helper functions ────────────────────────────────────────────────────
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // True if the current user has a member document in the room
+    function isRoomMember(roomId) {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/rooms/$(roomId)/members/$(request.auth.uid));
+    }
+
+    // True if the current user's member document has role == "owner"
+    function isRoomOwner(roomId) {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/rooms/$(roomId)/members/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/rooms/$(roomId)/members/$(request.auth.uid)).data.role == 'owner';
+    }
+
+    // ── users ───────────────────────────────────────────────────────────────
+    // A user can only read and write their own profile document.
+    match /users/{uid} {
+      allow read, write: if isSignedIn() && request.auth.uid == uid;
+    }
+
+    // ── documents ───────────────────────────────────────────────────────────
+    // Owners can read/write/delete their own documents.
+    // If a document is room-scoped (roomId != null), room members can also read it.
+    match /documents/{docId} {
+      allow read: if isSignedIn() && (
+        resource.data.ownerId == request.auth.uid ||
+        (resource.data.roomId != null && isRoomMember(resource.data.roomId))
+      );
+      allow create: if isSignedIn() && request.resource.data.ownerId == request.auth.uid;
+      allow update:  if isSignedIn() && resource.data.ownerId == request.auth.uid;
+      allow delete:  if isSignedIn() && resource.data.ownerId == request.auth.uid;
+    }
+
+    // ── rooms ────────────────────────────────────────────────────────────────
+    // Any authenticated user can create a room.
+    // Only room members can read room data.
+    // Only the room owner can update or delete the room.
+    match /rooms/{roomId} {
+      allow create: if isSignedIn();
+      allow read:   if isRoomMember(roomId);
+      allow update, delete: if isRoomOwner(roomId);
+
+      // members sub-collection
+      // Room members can read the member list.
+      // Any authenticated user can add themselves (joining via invite code).
+      // Only the room owner can update or remove member documents.
+      match /members/{userId} {
+        allow read:   if isRoomMember(roomId);
+        allow create: if isSignedIn() && request.auth.uid == userId;
+        allow update, delete: if isRoomOwner(roomId);
+      }
+
+      // shared-documents sub-collection
+      // Room members can read and add shared documents.
+      // Only the room owner can update or delete shared documents.
+      match /shared-documents/{docId} {
+        allow read:   if isRoomMember(roomId);
+        allow create: if isRoomMember(roomId);
+        allow update: if isRoomOwner(roomId);
+        allow delete: if isRoomOwner(roomId);
+      }
+    }
+
+    // ── sessions ─────────────────────────────────────────────────────────────
+    // A user can only read and write their own session documents.
+    match /sessions/{sessionId} {
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow read, update, delete: if isSignedIn() && resource.data.userId == request.auth.uid;
     }
   }
 }
