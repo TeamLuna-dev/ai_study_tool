@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { DashboardPage } from './components/dashboard/DashboardPage';
 import { RoomPage } from './components/rooms/RoomPage';
+import { QuizPage } from './components/quiz/QuizPage';
 
 function App() {
   return (
