@@ -35,18 +35,44 @@ export function QuizPage() {
 
   const q = questions[current];
   const isLast = current === questions.length - 1;
+  const [score, setScore] = useState(0); // Implementas scoring logic based on correct_index
+  const [finished, setFinished] = useState(false); // this state conditionally render a "Quiz Completed" at the end of the quiz
 
   function handleNext() {
   if (selected === null) return;
+
+  if (selected === q.correct_index) {
+    setScore((s) => s + 1);
+  }
 
   if (!isLast) {
     setCurrent((c) => c + 1);
     setSelected(null);
   } else {
-    alert("You finished woohoo! (No scoring implemented yet)");
+    setFinished(true);
   }
-}
+  }
 
+if (finished) {
+  return (
+    <div style={{ padding: 24 }}>
+      <h2>Quiz Completed</h2>
+      <p>Score: {score} / {questions.length}</p>
+
+      <button
+        onClick={() => {
+          setCurrent(0);
+          setSelected(null);
+          setScore(0);
+          setFinished(false);
+        }}
+        style={{ marginTop: 16 }}
+      >
+        Restart Quiz
+      </button>
+    </div>
+  );
+}
   return (
     <div style={{ padding: 24, maxWidth: 700 }}>
       <h2>
@@ -90,4 +116,4 @@ export function QuizPage() {
 
     </div>
   );
-}
+};
