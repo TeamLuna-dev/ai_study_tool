@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from models import db, QuizAttempt
-from services import calculate_percentage, analyze_performance
+from services import calculate_percentage, analyze_performance, get_total_study_time, get_study_summary
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///quiz.db"
@@ -41,6 +41,53 @@ def weak_topics(user_id):
     result = analyze_performance(attempts)
     return jsonify(result)
 
+# ======================================
+# SCRUM-18: Session Tracking
+# ======================================
+
+@app.route("/log-session", methods=["POST"])
+def log_session():
+    data = request.json
+
+    session = StudySession(
+        user_id=data["user_id"],
+        topic=data["topic"],
+        duration_minutes=data["duration_minutes"]
+    )
+
+    db.session.add(session)
+    db.session.commit()
+
+    return jsonify({"message": "Session logged successfully"}), 201
+
+
+@app.route("/sessions/<user_id>", methods=["GET"])
+def get_sessions(user_id):
+    sessions = StudySession.query.filter_by(user_id=user_id).all()
+
+    result = [
+        {
+            "topic": s.topic,
+            "duration_minutes": s.duration_minutes,
+            "timestamp": s.timestamp
+        }
+        for s in sessions
+    ]
+
+    return jsonify(result)
+
+
+@app.route("/session-summary/<user_id>", methods=["GET"])
+def session_summary(user_id):
+    sessions = StudySession.query.filter_by(user_id=user_id).all()
+
+    total_time = get_total_study_time(sessions)
+    topic_breakdown = get_study_summary(sessions)
+
+    return jsonify({
+        "total_minutes": total_time,
+        "topic_breakdown": topic_breakdown
+    })
 
 if __name__ == "__main__":
     app.run(debug=True)
