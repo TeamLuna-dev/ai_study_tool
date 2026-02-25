@@ -34,6 +34,18 @@ export function QuizPage() {
   const [selected, setSelected] = useState(null);
 
   const q = questions[current];
+  const isLast = current === questions.length - 1;
+
+  function handleNext() {
+  if (selected === null) return;
+
+  if (!isLast) {
+    setCurrent((c) => c + 1);
+    setSelected(null);
+  } else {
+    alert("You finished woohoo! (No scoring implemented yet)");
+  }
+}
 
   return (
     <div style={{ padding: 24, maxWidth: 700 }}>
@@ -67,6 +79,14 @@ export function QuizPage() {
         Selected:{" "}
         {selected === null ? "None" : `${String.fromCharCode(65 + selected)}`}
       </div>
+
+            <button
+  onClick={handleNext}
+  disabled={selected === null}
+  style={{ marginTop: 16 }}
+>
+  {isLast ? "Finish" : "Next"}
+</button>
 
     </div>
   );
