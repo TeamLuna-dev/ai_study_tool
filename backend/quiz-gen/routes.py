@@ -12,10 +12,13 @@ def quiz_health():
 @quiz_bp.post("/api/quiz/generate")
 def generate_quiz():
     data = request.get_json(silent=True) or {}
-    notes = data.get("notes")
+    notes = (data.get("notes") or "").strip()
 
     try:
         quiz_obj = generate_quiz_from_notes(notes)
+         
+        validate_quiz(quiz_obj) # ensure the generated quiz is valid before returning
+
         return jsonify({"quiz": quiz_obj}), 200
 
     except ValueError as e:
