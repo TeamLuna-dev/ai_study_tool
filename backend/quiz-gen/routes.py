@@ -1,4 +1,5 @@
 # Defines the routes for the quiz-gen service.
+from service import generate_quiz_from_notes
 from flask import Blueprint, jsonify, request
 from validators import validate_quiz, validate_answers
 
@@ -7,6 +8,20 @@ quiz_bp = Blueprint("quiz_bp", __name__)
 @quiz_bp.get("/api/quiz/health")
 def quiz_health():
     return jsonify({"quiz_gen": "ok"}), 200
+
+@quiz_bp.post("/api/quiz/generate")
+def generate_quiz():
+    data = request.get_json(silent=True) or {}
+    notes = data.get("notes")
+
+    try:
+        quiz_obj = generate_quiz_from_notes(notes)
+        return jsonify({"quiz": quiz_obj}), 200
+
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+    except Exception:
+        return jsonify({"error": "Internal server error"}), 500
 
 @quiz_bp.post("/api/quiz/score")
 def score_quiz():
