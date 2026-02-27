@@ -201,14 +201,21 @@ export function QuizPage() {
       </div>
 
       {error && <p style={{ color: "red", marginTop: 12 }}>{error}</p>}
+      <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
+        <button
+          onClick={handlePrevious}
+          disabled={isFirst || loadingScore}
+        >
+          Previous
+        </button>
 
-      <button
-        onClick={handleNext}
-        disabled={selected === null || loadingScore}
-        style={{ marginTop: 16 }}
-      >
-        {loadingScore ? "Scoring..." : isLast ? "Finish" : "Next"}
-      </button>
+        <button
+          onClick={handleNext}
+          disabled={selected === null || loadingScore}
+        >
+          {loadingScore ? "Scoring..." : isLast ? "Finish" : "Next"}
+        </button>
+      </div>
     </div>
   );
 }
