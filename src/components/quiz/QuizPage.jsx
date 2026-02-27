@@ -21,6 +21,7 @@ export function QuizPage() {
   const questions = quiz?.questions || [];
   const q = questions[current];
   const isLast = current === questions.length - 1;
+  const isFirst = current === 0;
 
   async function handleGenerate() {
     if (!notes.trim()) return;
@@ -42,24 +43,40 @@ export function QuizPage() {
       setLoadingGen(false);
     }
   }
-
+    // function to persist the current selected answer into the answers array before moving next or finishing
+    function persistCurrentSelection() {
+      setAnswers((prev) => {
+        const copy = [...prev];
+        copy[current] = selected;
+        return copy;
+      });
+    }
   function handleNext() {
     if (selected === null) return;
 
-    // save answer for this question
-    setAnswers((prev) => {
-      const copy = [...prev];
-      copy[current] = selected;
-      return copy;
-    });
+    persistCurrentSelection();
 
     if (!isLast) {
-      setCurrent((c) => c + 1);
-      setSelected(null);
+      const nextIndex = current + 1; // move to next question
+      setCurrent(nextIndex);
+      setSelected(answers[nextIndex] ?? null); // load previous answer if exists
+
     } else {
       // finish locally; scoring happens via backend
       handleFinish();
     }
+  }
+
+    function handlePrevious() {
+    if (isFirst) return;
+
+    persistCurrentSelection();
+
+    const prevIndex = current - 1;
+    setCurrent(prevIndex);
+
+    // preload saved answer if it exists
+    setSelected(answers[prevIndex] ?? null);
   }
 
   async function handleFinish() {
