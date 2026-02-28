@@ -4,6 +4,18 @@ import { generateQuiz, scoreQuiz } from "../../services/quizService";
 // Kept same UI structure as before for simplicity... to be improved later. 
 // Note: Design is wacky now, will apply OCP later on
 // Connects to the backend ans wanted!
+
+// center the quiz container vertically and horizontally, with some padding on smaller screens
+const layoutStyle = {
+  minHeight: "100vh",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  padding: 24,            
+  backgroundColor: "#f9fafb",
+};
+
+
 export function QuizPage() {
   const [notes, setNotes] = useState("");
   const [quiz, setQuiz] = useState(null);
@@ -113,8 +125,9 @@ export function QuizPage() {
   // --- UI states ---
   if (!quiz) {
     return (
-      <div style={{ padding: 24, maxWidth: 800 }}>
-        <h2>Generate a Quiz</h2>
+      <div style={layoutStyle}>
+        <div style={{ padding: 28, maxWidth: 800, width: "100%" }}>
+        <h2>Generate Quiz from Notes</h2>
 
         <textarea
           value={notes}
@@ -134,12 +147,15 @@ export function QuizPage() {
 
         {error && <p style={{ color: "red", marginTop: 12 }}>{error}</p>}
       </div>
+      </div>
     );
   }
 
+
   if (result) {
     return (
-      <div style={{ padding: 24 }}>
+      <div style={layoutStyle}>
+        <div style={{ padding: 24, width: "100%", maxWidth: 800 }}>
         <h2>Quiz Completed</h2>
         <p>
           Score: {result.score} / {result.total} ({result.percentage}%)
@@ -164,12 +180,14 @@ export function QuizPage() {
           Start New Quiz
         </button>
       </div>
+  </div>
     );
   }
 
   // quiz in progress...
   return (
-    <div style={{ padding: 24, maxWidth: 700 }}>
+    <div style={layoutStyle}>
+      <div style={{ padding: 24, maxWidth: 700, width: "100%" }}>
       <h2>
         Question {current + 1} / {questions.length}
       </h2>
@@ -217,5 +235,6 @@ export function QuizPage() {
         </button>
       </div>
     </div>
+  </div>
   );
 }
