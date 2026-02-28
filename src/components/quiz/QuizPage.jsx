@@ -6,6 +6,9 @@ import { generateQuiz, scoreQuiz } from "../../services/quizService";
 // Connects to the backend ans wanted!
 
 // center the quiz container vertically and horizontally, with some padding on smaller screens
+
+const BRAND_BLUE = "#2563eb"; // consistent brand color for primary actions 
+
 const layoutStyle = {
   minHeight: "100vh",
   display: "flex",
@@ -13,6 +16,34 @@ const layoutStyle = {
   alignItems: "center",
   padding: 24,            
   backgroundColor: "#f9fafb",
+};
+
+// base button style to be reused and extended for different button types
+
+const baseButtonStyle = {
+  padding: "10px 16px",
+  borderRadius: 8,
+  border: "1px solid #d1d5db",
+  cursor: "pointer",
+  fontWeight: 500,
+};
+
+const primaryButtonStyle = {
+  ...baseButtonStyle,
+  backgroundColor: BRAND_BLUE,
+  color: "white",
+  border: `1px solid ${BRAND_BLUE}`,
+};
+
+const secondaryButtonStyle = {
+  ...baseButtonStyle,
+  backgroundColor: "white",
+  color: "#111827",
+};
+
+const disabledButtonStyle = {
+  opacity: 0.6,
+  cursor: "not-allowed",
 };
 
 
@@ -140,9 +171,10 @@ export function QuizPage() {
         <button
           onClick={handleGenerate}
           disabled={loadingGen || !notes.trim()}
-          style={{ marginTop: 12 }}
+          style={{...primaryButtonStyle, marginTop: 12, ...(loadingGen || !notes.trim() ? disabledButtonStyle : {}),
+}}
         >
-          {loadingGen ? "Generating..." : "Generate Quiz"}
+          {loadingGen ? "Generating..." : "Generate"}
         </button>
 
         {error && <p style={{ color: "red", marginTop: 12 }}>{error}</p>}
@@ -176,7 +208,7 @@ export function QuizPage() {
 
         {error && <p style={{ color: "red", marginTop: 12 }}>{error}</p>}
 
-        <button onClick={handleRestart} style={{ marginTop: 16 }}>
+        <button onClick={handleRestart} style={{...primaryButtonStyle, marginTop: 16,}}>
           Start New Quiz
         </button>
       </div>
@@ -204,7 +236,7 @@ export function QuizPage() {
               borderRadius: 8,
               border: "1px solid #ddd",
               textAlign: "left",
-              backgroundColor: selected === idx ? "#4f46e5" : "#f3f4f6",
+              backgroundColor: selected === idx ? BRAND_BLUE : "#f3f4f6",
               color: selected === idx ? "white" : "black",
               cursor: "pointer",
             }}
@@ -223,6 +255,7 @@ export function QuizPage() {
         <button
           onClick={handlePrevious}
           disabled={isFirst || loadingScore}
+          style={{...secondaryButtonStyle, ...(isFirst || loadingScore ? disabledButtonStyle : {}),}}
         >
           Previous
         </button>
@@ -230,6 +263,7 @@ export function QuizPage() {
         <button
           onClick={handleNext}
           disabled={selected === null || loadingScore}
+          style={{...primaryButtonStyle, ...(selected === null || loadingScore ? disabledButtonStyle : {}),}}
         >
           {loadingScore ? "Scoring..." : isLast ? "Finish" : "Next"}
         </button>
