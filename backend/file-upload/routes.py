@@ -2,16 +2,17 @@
 routes.py
 HTTP concerns only — validates, associates with user, stores temporarily.
 
-  - Receive file via POST
-  - Validate MIME type and size
-  - Associate with Firebase UID
-  - Temporarily store for processing
+This file only handles HTTP request/response concerns.
+All Firebase operations are delegated to firebase_storage.py
+
+  - In DEV_MODE: still uses temp/ folder (no Firebase needed)
+  - In production: uploads to Firebase Storage + creates Firestore document
 """
 
 import os
 import uuid
 from flask import Blueprint, jsonify, request
-from auth import verify_firebase_token       # flat import — no subfolder
+from auth import verify_firebase_token
 
 upload_bp = Blueprint("upload", __name__)
 
@@ -28,6 +29,9 @@ ALLOWED_MIME_TYPES = {
 MAX_FILE_SIZE_MB    = 20
 MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
 
+# Dev mode flag — same source as auth.py
+DEV_MODE = os.getenv("DEV_MODE", "true").lower() == "true"
+
 # temp/ sits alongside this file in file-upload/
 TEMP_DIR = os.path.join(os.path.dirname(__file__), "temp")
 os.makedirs(TEMP_DIR, exist_ok=True)
@@ -36,8 +40,10 @@ os.makedirs(TEMP_DIR, exist_ok=True)
 @upload_bp.route("/", methods=["POST"])
 def upload_file():
     """
-    Receives an uploaded file, validates it, associates it with the
-    authenticated user, and temporarily stores it for downstream processing.
+    Authenticated file upload endpoint.
+
+    DEV_MODE=true  → stores file in temp/, skips Firebase entirely
+    DEV_MODE=false → uploads to Firebase Storage, creates Firestore document
 
     Expects:
         - Authorization: Bearer <token> header (skipped in DEV_MODE)
@@ -78,23 +84,48 @@ def upload_file():
             "error": f"File exceeds the {MAX_FILE_SIZE_MB}MB size limit."
         }), 413
 
-    # 5. Temporarily store the file for processing in Tasks 3 + 4.
-    # Filename format: <uid>_<uuid>_<originalname>
-    # The UID prefix associates the file with the authenticated user.
-    # The UUID prevents collisions if the same file is uploaded twice.
-    safe_filename = f"{uid}_{uuid.uuid4().hex}_{file.filename}"
-    temp_path = os.path.join(TEMP_DIR, safe_filename)
+    # 5. Store the file
+    if DEV_MODE:
+        # ── Dev path: write to local temp/ folder ─────────────────────────
+        # Firebase is not needed — allows full testing without credentials
+        safe_filename = f"{uid}_{uuid.uuid4().hex}_{file.filename}"
+        temp_path = os.path.join(TEMP_DIR, safe_filename)
 
-    with open(temp_path, "wb") as f:
-        f.write(file_bytes)
+        with open(temp_path, "wb") as f:
+            f.write(file_bytes)
 
-    print(f"[UPLOAD] Stored temp file for UID {uid}: {safe_filename}")
+        print(f"[UPLOAD] Stored temp file for UID {uid}: {safe_filename}")
 
-    return jsonify({
-        "message": "File received and stored for processing.",
-        "filename": file.filename,
-        "mimetype": file.mimetype,
-        "size_bytes": len(file_bytes),
-        "user_uid": uid,
-        "temp_path": temp_path,
-    }), 201
+        return jsonify({
+            "message": "File received and stored for processing.",
+            "filename": file.filename,
+            "mimetype": file.mimetype,
+            "size_bytes": len(file_bytes),
+            "user_uid": uid,
+            "temp_path": temp_path,
+            "doc_id": None,  # no Firestore doc in dev mode
+        }), 201
+    else:
+        # ── Production path: delegate to firebase_storage.py ───────────────
+        from firebase_storage import upload_file_to_storage, FirebaseStorageError
+
+        try:
+            result = upload_file_to_storage(
+                file_bytes=file_bytes,
+                uid=uid,
+                original_filename=file.filename,
+                mimetype=file.mimetype,
+            )
+        except FirebaseStorageError as exc:
+            return jsonify({"error": str(exc)}), 500
+        
+        return jsonify({
+            "message": "File uploaded to Firebase and Firestore document created.",
+            "filename": file.filename,
+            "mimetype": file.mimetype,
+            "size_bytes": len(file_bytes),
+            "user_uid": uid,
+            "doc_id": result["doc_id"],
+            "storage_url": result["storage_url"],
+            "storage_path": result["storage_path"],
+        }), 201
