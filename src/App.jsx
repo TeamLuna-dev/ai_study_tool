@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { DashboardPage } from './components/dashboard/DashboardPage';
 import { RoomPage } from './components/rooms/RoomPage';
 import Navbar from "./components/Navbar";
+import { QuizPage } from './components/quiz/QuizPage';
 
 function Home() {
   return <div className="p-6">Welcome to AI Study Notes</div>;
@@ -35,6 +36,7 @@ function App() {
          <Route path="/study-plan-generator" element={<StudyPlanGenerator />} />
         <Route path="/" element={<DashboardPage />} />
         <Route path="/rooms" element={<RoomPage />} />
+        <Route path="/quiz" element={<QuizPage />} />
       </Routes>
     </BrowserRouter>
   );
