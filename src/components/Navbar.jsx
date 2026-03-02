@@ -50,7 +50,7 @@ export default function Navbar() {
           </Link>
 
           <Link
-            to="/Study Room"
+            to="/rooms"
             className="px-3 py-1 rounded hover:bg-blue-500 hover:text-white transition duration-300"
           >
             Study Room
