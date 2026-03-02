@@ -12,9 +12,6 @@ function AInotesGenerator() {
   return <div className="p-6">AI notes Generator</div>;
 }
 
-function QuizGenerator() {
-  return <div className="p-6">Quiz Generator Page</div>;
-}
 
 function NotesUploader() {
   return <div className="p-6">Notes Uploader Page</div>;
@@ -31,7 +28,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/AI notes Generator" element={<AInotesGenerator />} />
-        <Route path="/quiz-generator" element={<QuizGenerator />} />
+        <Route path="/quiz-generator" element={<QuizPage />} />
          <Route path="/notes-uploader" element={<NotesUploader />} />
          <Route path="/study-plan-generator" element={<StudyPlanGenerator />} />
         <Route path="/" element={<DashboardPage />} />
