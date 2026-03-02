@@ -4,6 +4,20 @@ import { RoomPage } from './components/rooms/RoomPage';
 import Navbar from "./components/Navbar";
 import { QuizPage } from './components/quiz/QuizPage';
 
+import { FileUpload, DropZone, ProgressBar, StatusAlert } from "./components/file-upload";
+
+function NotesUploaderPage() {
+  return (
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">Notes Uploader</h1>
+      <DropZone />
+      <FileUpload />
+      <ProgressBar />
+      <StatusAlert />
+    </div>
+  );
+}
+
 function Home() {
   return <div className="p-6">Welcome to AI Study Notes</div>;
 }
@@ -13,9 +27,6 @@ function AInotesGenerator() {
 }
 
 
-function NotesUploader() {
-  return <div className="p-6">Notes Uploader Page</div>;
-}
 
 function StudyPlanGenerator() {
   return <div className="p-6">Study Plan Generator Page</div>;
@@ -29,7 +40,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/AI notes Generator" element={<AInotesGenerator />} />
         <Route path="/quiz-generator" element={<QuizPage />} />
-         <Route path="/notes-uploader" element={<NotesUploader />} />
+         <Route path="/notes-uploader" element={<NotesUploaderPage />} />
          <Route path="/study-plan-generator" element={<StudyPlanGenerator />} />
         <Route path="/" element={<DashboardPage />} />
         <Route path="/rooms" element={<RoomPage />} />
