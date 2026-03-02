@@ -22,7 +22,7 @@ export default function Navbar() {
           </Link>
 
           <Link
-            to="/AI notes Generator"
+            to="/ai-notes-generator"
             className="px-3 py-1 rounded hover:bg-blue-500 hover:text-white transition duration-300"
           >
             AI notes Generator
