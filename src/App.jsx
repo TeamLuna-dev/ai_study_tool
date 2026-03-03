@@ -13,6 +13,16 @@ const DashboardPage = lazy(() =>
     default: m.DashboardPage,
   }))
 );
+const QuizPage = lazy(() =>
+  import("./components/quiz/QuizPage").then((m) => ({
+    default: m.QuizPage,
+  }))
+);
+const RoomPage = lazy(() =>
+  import("./components/rooms/RoomPage").then((m) => ({
+    default: m.RoomPage,
+  }))
+);
 const ToolPlaceholderPage = lazy(() => import("./pages/ToolPlaceholderPage"));
 
 /**
@@ -62,7 +72,7 @@ function App() {
               path="/quiz"
               element={
                 <ProtectedRoute>
-                  <ToolPlaceholderPage title="Quiz Generator" />
+                  <QuizPage />
                 </ProtectedRoute>
               }
             />
@@ -78,7 +88,7 @@ function App() {
               path="/rooms"
               element={
                 <ProtectedRoute>
-                  <ToolPlaceholderPage title="Study Rooms" />
+                  <RoomPage />
                 </ProtectedRoute>
               }
             />
