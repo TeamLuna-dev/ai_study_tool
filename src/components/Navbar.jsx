@@ -15,21 +15,21 @@ export default function Navbar() {
         {/* Navigation Links */}
         <div className="space-x-4">
           <Link
-            to="/"
+            to="/dashboard"
             className="px-3 py-1 rounded hover:bg-blue-500 hover:text-white transition duration-300"
           >
             Home
           </Link>
 
           <Link
-            to="/AI notes Generator"
+            to="/summaries"
             className="px-3 py-1 rounded hover:bg-blue-500 hover:text-white transition duration-300"
           >
-            AI notes Generator
+            AI Notes Summary
           </Link>
 
           <Link
-            to="/Quiz Generator"
+            to="/quiz"
             className="px-3 py-1 rounded hover:bg-blue-500 hover:text-white transition duration-300"
           >
             Quiz Generator
@@ -50,7 +50,7 @@ export default function Navbar() {
           </Link>
 
           <Link
-            to="/Study Room"
+            to="/rooms"
             className="px-3 py-1 rounded hover:bg-blue-500 hover:text-white transition duration-300"
           >
             Study Room

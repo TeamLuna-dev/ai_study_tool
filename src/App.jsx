@@ -5,7 +5,9 @@ import { useAuth } from "./hooks/useAuth";
 import LoginPage from "./components/auth/LoginPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import LoadingSpinner from "./components/common/LoadingSpinner";
-import NavBar from "./components/NavBar";
+import NavBar from "./components/Navbar";
+import FileUploadPage from "./components/file-upload/FileUploadPage";
+
 
 // Protected route components are lazy-loaded so the login bundle stays small.
 // DashboardPage is a named export — unwrap it from the module object.
@@ -22,6 +24,11 @@ const QuizPage = lazy(() =>
 const RoomPage = lazy(() =>
   import("./components/rooms/RoomPage").then((m) => ({
     default: m.RoomPage,
+  }))
+);
+const UploadPage = lazy(() =>
+  import("./components/file-upload/FileUploadPage").then((m) => ({
+    default: m.default,
   }))
 );
 const ToolPlaceholderPage = lazy(() => import("./pages/ToolPlaceholderPage"));
@@ -63,6 +70,14 @@ function App() {
               }
             />
             <Route
+              path="/file-upload"
+              element={
+                <ProtectedRoute>
+                  <ToolPlaceholderPage title="File Upload" />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/qa"
               element={
                 <ProtectedRoute>
@@ -90,7 +105,7 @@ function App() {
               path="/rooms"
               element={
                 <ProtectedRoute>
-                  <RoomPage />
+                  <RoomPage title="Study Rooms" />
                 </ProtectedRoute>
               }
             />

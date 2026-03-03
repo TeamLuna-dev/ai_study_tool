@@ -33,21 +33,6 @@ export function DashboardPage() {
       {/* Main Content Area */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
-        {/* File Upload Section */}
-        <section className="mb-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
-        Upload Study Materials
-          </h2>
-
-          {/* AuthGate shows the upload UI when authenticated, or a sign-in prompt otherwise. */}
-          <AuthGate isAuthenticated={isAuthenticated}>
-            <FileUpload
-              getAuthToken={getAuthToken}
-              onUploadSuccess={(msg) => console.log("Success:", msg)}
-              onUploadError={(msg) => console.error("Error:", msg)}
-            />
-          </AuthGate>
-        </section>
         
         {/* Team members: Add your components here */}
 
