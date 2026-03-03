@@ -6,8 +6,6 @@ import LoginPage from "./components/auth/LoginPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import LoadingSpinner from "./components/common/LoadingSpinner";
 import NavBar from "./components/Navbar";
-import FileUploadPage from "./components/file-upload/FileUploadPage";
-
 
 // Protected route components are lazy-loaded so the login bundle stays small.
 // DashboardPage is a named export — unwrap it from the module object.
@@ -73,7 +71,7 @@ function App() {
               path="/file-upload"
               element={
                 <ProtectedRoute>
-                  <ToolPlaceholderPage title="File Upload" />
+                  <UploadPage />
                 </ProtectedRoute>
               }
             />
