@@ -59,15 +59,15 @@ def log_session():
 
 @app.route("/sessions/<user_id>", methods=["GET"])
 def get_sessions(user_id):
-    sessions = StudySession.query.filter_by(user_id=user_id).all()
+    sessions = db.collection("study_sessions").where("user_id", "==", user_id).stream()
 
     result = [
         {
-            "topic": s.topic,
-            "duration_minutes": s.duration_minutes,
-            "timestamp": s.timestamp
+            "topic": doc.get("topic"),
+            "duration_minutes": doc.get("duration_minutes"),
+            "timestamp": doc.get("timestamp")
         }
-        for s in sessions
+        for doc in sessions
     ]
 
     return jsonify(result)
@@ -75,10 +75,11 @@ def get_sessions(user_id):
 
 @app.route("/session-summary/<user_id>", methods=["GET"])
 def session_summary(user_id):
-    sessions = StudySession.query.filter_by(user_id=user_id).all()
+    sessions = db.collection("study_sessions").where("user_id", "==", user_id).stream()
+    sessions_list = [doc.to_dict() for doc in sessions]
 
-    total_time = get_total_study_time(sessions)
-    topic_breakdown = get_study_summary(sessions)
+    total_time = get_total_study_time(sessions_list)
+    topic_breakdown = get_study_summary(sessions_list)
 
     return jsonify({
         "total_minutes": total_time,
