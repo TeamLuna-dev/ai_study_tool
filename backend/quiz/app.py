@@ -45,14 +45,14 @@ def weak_topics(user_id):
 def log_session():
     data = request.json
 
-    session = StudySession(
-        user_id=data["user_id"],
-        topic=data["topic"],
-        duration_minutes=data["duration_minutes"]
-    )
+    session = {
+        "user_id": data["user_id"],
+        "topic": data["topic"],
+        "duration_minutes": data["duration_minutes"],
+        "timestamp": firestore.SERVER_TIMESTAMP
+    }
 
-    db.session.add(session)
-    db.session.commit()
+    db.collection("study_sessions").add(session)
 
     return jsonify({"message": "Session logged successfully"}), 201
 
