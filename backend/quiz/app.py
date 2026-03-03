@@ -32,8 +32,9 @@ def submit_quiz():
 
 @app.route("/weak-topics/<user_id>", methods=["GET"])
 def weak_topics(user_id):
-    attempts = QuizAttempt.query.filter_by(user_id=user_id).all()
-    result = analyze_performance(attempts)
+    attempts = db.collection("quiz_attempts").where("user_id", "==", user_id).stream()
+    attempts_list = [doc.to_dict() for doc in attempts]
+    result = analyze_performance(attempts_list)
     return jsonify(result)
 
 # ======================================
