@@ -5,13 +5,12 @@
 
 // Import the two components needed from the FileUpload feature folder.
 import { AuthGate, FileUpload } from "../file-upload";
+import { useAuth } from "../../hooks/useAuth";
 
 export function DashboardPage() {
-  // TODO: Replace with real Firebase auth when Task 2 is complete.
-  // e.g. const { currentUser } = useAuth();
-  //      const isAuthenticated = !!currentUser;
-  //      const getAuthToken = () => currentUser.getIdToken();
-  const isAuthenticated = false; // Hardcoded for now. To see login prompt change to 'false'
+  const { user } = useAuth();
+  const isAuthenticated = !!user;
+  const getAuthToken = user ? () => user.getIdToken() : null;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -40,17 +39,10 @@ export function DashboardPage() {
         Upload Study Materials
           </h2>
 
-          {/*
-            AuthGate checks auth state and either shows the upload component
-            or a "Sign in to upload" prompt in its place.
-
-            When Firebase is ready, replace isAuthenticated with real auth state
-            and pass getAuthToken so the upload request includes the user's token.
-          */}
+          {/* AuthGate shows the upload UI when authenticated, or a sign-in prompt otherwise. */}
           <AuthGate isAuthenticated={isAuthenticated}>
             <FileUpload
-              // TODO: uncomment when Firebase is wired up
-              // getAuthToken={getAuthToken}
+              getAuthToken={getAuthToken}
               onUploadSuccess={(msg) => console.log("Success:", msg)}
               onUploadError={(msg) => console.error("Error:", msg)}
             />
