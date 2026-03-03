@@ -1,15 +1,10 @@
 from flask import Flask, request, jsonify
-from models import db, QuizAttempt
+from datetime import datetime
+from firebase_admin import firestore
+from firebase_admin_config import db
 from services import calculate_percentage, analyze_performance, get_total_study_time, get_study_summary
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///quiz.db"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
-db.init_app(app)
-
-with app.app_context():
-    db.create_all()
 
 
 @app.route("/submit-quiz", methods=["POST"])
@@ -21,16 +16,16 @@ def submit_quiz():
         data["total_questions"]
     )
 
-    attempt = QuizAttempt(
-        user_id=data["user_id"],
-        topic=data["topic"],
-        score=data["score"],
-        total_questions=data["total_questions"],
-        percentage=percentage
-    )
+    attempt = {
+        "user_id": data["user_id"],
+        "topic": data["topic"],
+        "score": data["score"],
+        "total_questions": data["total_questions"],
+        "percentage": percentage,
+        "timestamp": firestore.SERVER_TIMESTAMP
+    }
 
-    db.session.add(attempt)
-    db.session.commit()
+    db.collection("quiz_attempts").add(attempt)
 
     return jsonify({"message": "Quiz saved successfully"}), 201
 
