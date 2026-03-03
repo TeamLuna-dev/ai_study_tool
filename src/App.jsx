@@ -1,44 +1,91 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { DashboardPage } from './components/dashboard/DashboardPage';
-import { RoomPage } from './components/rooms/RoomPage';
-import Navbar from "./components/Navbar";
-import { QuizPage } from './components/quiz/QuizPage';
+import { lazy, Suspense } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import { useAuth } from "./hooks/useAuth";
+import LoginPage from "./components/auth/LoginPage";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
+import LoadingSpinner from "./components/common/LoadingSpinner";
 
-function Home() {
-  return <div className="p-6">Welcome to AI Study Notes</div>;
-}
+// Protected route components are lazy-loaded so the login bundle stays small.
+// DashboardPage is a named export — unwrap it from the module object.
+const DashboardPage = lazy(() =>
+  import("./components/dashboard/DashboardPage").then((m) => ({
+    default: m.DashboardPage,
+  }))
+);
+const ToolPlaceholderPage = lazy(() => import("./pages/ToolPlaceholderPage"));
 
-function AInotesGenerator() {
-  return <div className="p-6">AI notes Generator</div>;
-}
-
-function QuizGenerator() {
-  return <div className="p-6">Quiz Generator Page</div>;
-}
-
-function NotesUploader() {
-  return <div className="p-6">Notes Uploader Page</div>;
-}
-
-function StudyPlanGenerator() {
-  return <div className="p-6">Study Plan Generator Page</div>;
+/**
+ * Redirects / based on auth state:
+ *   authenticated   → /dashboard
+ *   unauthenticated → /login
+ * Renders a spinner while Firebase resolves the persisted session so there
+ * is never a premature redirect before auth state is known.
+ */
+function RootRedirect() {
+  const { user, loading } = useAuth();
+  if (loading) return <LoadingSpinner />;
+  return <Navigate to={user ? "/dashboard" : "/login"} replace />;
 }
 
 function App() {
   return (
-    <BrowserRouter>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/AI notes Generator" element={<AInotesGenerator />} />
-        <Route path="/quiz-generator" element={<QuizGenerator />} />
-         <Route path="/notes-uploader" element={<NotesUploader />} />
-         <Route path="/study-plan-generator" element={<StudyPlanGenerator />} />
-        <Route path="/" element={<DashboardPage />} />
-        <Route path="/rooms" element={<RoomPage />} />
-        <Route path="/quiz" element={<QuizPage />} />
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        {/* Suspense catches the lazy-load suspend of protected route components. */}
+        <Suspense fallback={<LoadingSpinner />}>
+          <Routes>
+            {/* Root — redirect based on auth state */}
+            <Route path="/" element={<RootRedirect />} />
+
+            {/* Public */}
+            <Route path="/login" element={<LoginPage />} />
+
+            {/* Protected routes */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <DashboardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/qa"
+              element={
+                <ProtectedRoute>
+                  <ToolPlaceholderPage title="Q&A" />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/quiz"
+              element={
+                <ProtectedRoute>
+                  <ToolPlaceholderPage title="Quiz Generator" />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/summaries"
+              element={
+                <ProtectedRoute>
+                  <ToolPlaceholderPage title="Summaries" />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/rooms"
+              element={
+                <ProtectedRoute>
+                  <ToolPlaceholderPage title="Study Rooms" />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </Suspense>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 
