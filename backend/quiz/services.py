@@ -10,12 +10,12 @@ def analyze_performance(attempts):
     topic_scores = {}
 
     for attempt in attempts:
-        topic = attempt.topic
+        topic = attempt["topic"]
 
         if topic not in topic_scores:
             topic_scores[topic] = []
 
-        topic_scores[topic].append(attempt.percentage)
+        topic_scores[topic].append(attempt["percentage"])
 
     results = []
 
@@ -35,16 +35,16 @@ def analyze_performance(attempts):
 # ------------------------
 
 def get_total_study_time(sessions):
-    return sum(session.duration_minutes for session in sessions)
+    return sum(session["duration_minutes"] for session in sessions)
 
 
 def get_study_summary(sessions):
     topic_time = {}
 
     for session in sessions:
-        if session.topic not in topic_time:
-            topic_time[session.topic] = 0
+        if session["topic"] not in topic_time:
+            topic_time[session["topic"]] = 0
 
-        topic_time[session.topic] += session.duration_minutes
+        topic_time[session["topic"]] += session["duration_minutes"]
 
     return topic_time

@@ -130,6 +130,32 @@ def init_sessions() -> None:
     }, f"sessions/{SAMPLE_SESSION_ID}")
 
 
+def init_quiz_attempts() -> None:
+    """quiz_attempts/{attemptId}"""
+    print("\n[Collection] quiz_attempts")
+    ref = db.collection("quiz_attempts").document("sample-attempt-001")
+    _create_if_absent(ref, {
+        "user_id":         SAMPLE_USER_ID,
+        "topic":           "Biology",
+        "score":           8,
+        "total_questions": 10,
+        "percentage":      80.0,
+        "timestamp":       SERVER_TIMESTAMP,
+    }, "quiz_attempts/sample-attempt-001")
+
+
+def init_study_sessions() -> None:
+    """study_sessions/{sessionId}"""
+    print("\n[Collection] study_sessions")
+    ref = db.collection("study_sessions").document("sample-session-study-001")
+    _create_if_absent(ref, {
+        "user_id":          SAMPLE_USER_ID,
+        "topic":            "Biology",
+        "duration_minutes": 45,
+        "timestamp":        SERVER_TIMESTAMP,
+    }, "study_sessions/sample-session-study-001")
+
+
 # ── entry point ───────────────────────────────────────────────────────────────
 
 def main() -> None:
@@ -140,6 +166,8 @@ def main() -> None:
     init_documents()
     init_rooms()
     init_sessions()
+    init_quiz_attempts()
+    init_study_sessions()
 
     print("\nSchema initialization complete.")
 
