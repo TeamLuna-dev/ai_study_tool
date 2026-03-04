@@ -55,13 +55,13 @@ Features to be implemented:<br>
 
 ### Contributions
 
-**Summit:** "Placeholder"
+**Sumit:** "Quiz Performance Tracking & Session Management"
 
-- Jira Task: Summit - [task description]
-  - [Scrum-XX](JIRA_LINK), [Bitbucket](BITBUCKET_LINK)
+- Jira Task: Sumit - [Firebase Quiz Performance]
+  - [Scrum-60](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-60), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-60)
 
-- Jira Task: Summit - [task description]
-  - [Scrum-XX](JIRA_LINK), [Bitbucket](BITBUCKET_LINK)
+- Jira Task: Sumit - [Session Performance Tracking]
+  - [Scrum-18](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-18), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-18)
 
 
 **Lane:** "File Upload & PDF Processing"
@@ -140,9 +140,10 @@ Features to be implemented:<br>
 
 **Summit:**
 
-- Write your next steps here...
-- 
-- 
+- Optimize Firestore queries for large datasets and add proper indexing
+- Implement real-time performance dashboard for weak topic analysis
+- Add quiz attempt history and trend analysis features
+- Connect quiz performance tracking to the frontend dashboard 
 
 **Lane:**
 
