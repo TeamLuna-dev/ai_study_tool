@@ -82,13 +82,28 @@ Features to be implemented:<br>
   - [Scrum-XX](JIRA_LINK), [Bitbucket](BITBUCKET_LINK)
 
 
-**Chris:** "Placeholder"
+**Chris:** "Implemented initial dashboard, firebase storage & auth, study rooms management"
 
-- Jira Task: Chris - [task description]
-  - [Scrum-XX](JIRA_LINK), [Bitbucket](BITBUCKET_LINK)
+- Jira Task: Chris - [Implement Room Management Backend]
+  - [Scrum-20](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-20), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-20-room-management-backend)
 
-- Jira Task: Chris - [task description]
-  - [Scrum-XX](JIRA_LINK), [Bitbucket](BITBUCKET_LINK)
+- Jira Task: Chris - [Prompt User Login]
+  - [Scrum-56](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-56), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-56-create-user-login-ui)
+
+  - Jira Task: Chris - [Firestore Schema Design & Initialization]
+  - [Scrum-53](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-53), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-53-firestore-schema-design-initial)
+
+  - Jira Task: Chris - [Security Rules & End-to-End Connection Verification]
+  - [Scrum-54](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-54), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-54-security-rules-and-connection-verif)
+
+  - Jira Task: Chris - [Firebase Project Setup & Team Configuration]
+  - [Scrum-51](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-51), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-51-implement-webapp-database)
+
+  - Jira Task: Chris - [Design the Collaborative Study Room Interface]
+  - [Scrum-19](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-19), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-19-design-collaborative-board-interface)
+
+  - Jira Task: Chris - [Design the Dashboard Layout]
+  - [Scrum-22](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-22), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-22-design-the-dashboard-layout)
 
 
 **Sam:** "Implemented the Quiz Generation service"
@@ -130,10 +145,10 @@ Features to be implemented:<br>
 - 
 
 **Chris:**
-
-- Write your next steps here...
-- 
-- 
+- Study rooms feature:
+- Wire the study room UI to real Firestore data
+- Integrate Lane's file upload pipeline into the room context
+- Build the invite code join flow end-to-end
 
 **Sam:**
 
