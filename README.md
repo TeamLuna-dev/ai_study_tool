@@ -73,13 +73,19 @@ Features to be implemented:<br>
   - [Scrum-XX](JIRA_LINK), [Bitbucket](BITBUCKET_LINK)
 
 
-**Angel:** "Placeholder"
+**Angel:** "AI notes Generator and NAVBAR feature"
 
-- Jira Task: Angel - [task description]
-  - [Scrum-XX](JIRA_LINK), [Bitbucket](BITBUCKET_LINK)
+- Jira Task: Angel - [Build Text Input & API Integration]
+  - [Scrum-28](https://cs3398-luna-s26.atlassian.net/browse/SCRUM-28), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/src/SCRUM-28-build-text-input-api-integratio/)
 
-- Jira Task: Angel - [task description]
-  - [Scrum-XX](JIRA_LINK), [Bitbucket](BITBUCKET_LINK)
+- Jira Task: Angel - [Display & Format Generated Notes]
+  - [Scrum-29](https://cs3398-luna-s26.atlassian.net/browse/SCRUM-29), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/src/SCRUM-29-display-format-generated-notes/)
+
+  - Jira Task: Angel - [Design and Implement Navigation Bar Component]
+  - [Scrum-26](https://cs3398-luna-s26.atlassian.net/browse/SCRUM-26), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/src/SCRUM-26-design-and-implement-navigation/)
+
+  - Jira Task: Angel - [Implementation of features on navbar for demo (not final results)]
+  - [Scrum-57](https://cs3398-luna-s26.atlassian.net/browse/SCRUM-57), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/src/SCRUM-57-implementation-of-features-on-n/)
 
 
 **Chris:** "Placeholder"
@@ -125,9 +131,9 @@ Features to be implemented:<br>
 
 **Angel:**
 
-- Write your next steps here...
-- 
-- 
+- I will focus on creating one unified backend that integrates all the existing features into a single, cohesive system. This will improve overall functionality and make the application easier to manage and scale.
+- Work on the frontend to ensure that all features are properly connected through the navigation bar and that the user experience feels smooth and intuitive.
+- I will improve the Notes Generator feature to produce better-formatted, well-structured, and clearly displayed notes so that users can easily read and understand the generated content.
 
 **Chris:**
 
