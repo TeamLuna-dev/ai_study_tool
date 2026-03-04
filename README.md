@@ -146,9 +146,9 @@ Features to be implemented:<br>
 
 **Lane:**
 
-- Write your next steps here...
-- 
-- 
+- I will completely integrate the file upload system with the front end and firebase database.
+- I will be working with Sam to connect the file uploading system to the quiz generator so that the user will be able to directly create quizes from past notes uploads.
+- The user will also be able to have handwritten notes uploaded and processed into organized notes, similar to the pdf processing
 
 **Angel:**
 
