@@ -64,16 +64,22 @@ Features to be implemented:<br>
   - [Scrum-XX](JIRA_LINK), [Bitbucket](BITBUCKET_LINK)
 
 
-**Lane:** "Placeholder"
+**Lane:** "File Upload & PDF Processing"
 
-- Jira Task: Lane - [task description]
-  - [Scrum-XX](JIRA_LINK), [Bitbucket](BITBUCKET_LINK)
+- Jira Task: Lane - [React File Upload Interface]
+  - [Scrum-34](https://cs3398-luna-s26.atlassian.net/browse/SCRUM-34), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-34-react-file-upload-interface)
 
-- Jira Task: Lane - [task description]
-  - [Scrum-XX](JIRA_LINK), [Bitbucket](BITBUCKET_LINK)
+- Jira Task: Lane - [Backend File Upload API]
+  - [Scrum-35](https://cs3398-luna-s26.atlassian.net/browse/SCRUM-35), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-35-backend-file-upload-api)
+
+- Jira Task: Lane - [PDF Text Extraction & Chunking]
+  - [Scrum-38](https://cs3398-luna-s26.atlassian.net/browse/SCRUM-38), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-38-pdf-text-extraction-chunking)
+
+- Jira Task: Lane - [Firebase Storage Integration]
+  - [Scrum-55](https://cs3398-luna-s26.atlassian.net/browse/SCRUM-55), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-55-firebase-storage-integration)
 
 
-**Angel:** "AI notes Generator and NAVBAR feature"
+**Angel:** "AI notes Generator and Navbar feature"
 
 - Jira Task: Angel - [Build Text Input & API Integration]
   - [Scrum-28](https://cs3398-luna-s26.atlassian.net/browse/SCRUM-28), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/src/SCRUM-28-build-text-input-api-integratio/)
@@ -81,10 +87,10 @@ Features to be implemented:<br>
 - Jira Task: Angel - [Display & Format Generated Notes]
   - [Scrum-29](https://cs3398-luna-s26.atlassian.net/browse/SCRUM-29), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/src/SCRUM-29-display-format-generated-notes/)
 
-  - Jira Task: Angel - [Design and Implement Navigation Bar Component]
+- Jira Task: Angel - [Design and Implement Navigation Bar Component]
   - [Scrum-26](https://cs3398-luna-s26.atlassian.net/browse/SCRUM-26), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/src/SCRUM-26-design-and-implement-navigation/)
 
-  - Jira Task: Angel - [Implementation of features on navbar for demo (not final results)]
+- Jira Task: Angel - [Implementation of features on navbar for demo (not final results)]
   - [Scrum-57](https://cs3398-luna-s26.atlassian.net/browse/SCRUM-57), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/src/SCRUM-57-implementation-of-features-on-n/)
 
 
@@ -96,19 +102,19 @@ Features to be implemented:<br>
 - Jira Task: Chris - [Prompt User Login]
   - [Scrum-56](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-56), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-56-create-user-login-ui)
 
-  - Jira Task: Chris - [Firestore Schema Design & Initialization]
+- Jira Task: Chris - [Firestore Schema Design & Initialization]
   - [Scrum-53](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-53), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-53-firestore-schema-design-initial)
 
-  - Jira Task: Chris - [Security Rules & End-to-End Connection Verification]
+- Jira Task: Chris - [Security Rules & End-to-End Connection Verification]
   - [Scrum-54](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-54), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-54-security-rules-and-connection-verif)
 
-  - Jira Task: Chris - [Firebase Project Setup & Team Configuration]
+- Jira Task: Chris - [Firebase Project Setup & Team Configuration]
   - [Scrum-51](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-51), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-51-implement-webapp-database)
 
-  - Jira Task: Chris - [Design the Collaborative Study Room Interface]
+- Jira Task: Chris - [Design the Collaborative Study Room Interface]
   - [Scrum-19](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-19), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-19-design-collaborative-board-interface)
 
-  - Jira Task: Chris - [Design the Dashboard Layout]
+- Jira Task: Chris - [Design the Dashboard Layout]
   - [Scrum-22](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-22), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-22-design-the-dashboard-layout)
 
 
