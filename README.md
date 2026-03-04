@@ -98,6 +98,33 @@ Project is: _in progress_
 <!-- /_complete_ / _no longer being worked on_. If you are no longer working on it, provide reasons why.-->
 
 
+## Sprint 1 Contributions
+
+### Sumit Sah
+
+**Tasks Completed:**
+- [SCRUM-60: Firebase Quiz Performance](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-60) - [Commits](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-60)
+- [SCRUM-18: Session Performance Tracking](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-18) - [Commits](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-18)
+
+**Work Summary:**
+- Implemented Firestore integration for quiz performance tracking and study session logging
+- Created Flask API endpoints for quiz submission, weak topic analysis, and session management
+- Developed performance analysis service with weak topic detection (70% threshold)
+- Created comprehensive documentation for quiz module with API endpoint specifications and database schema
+
+**Related Files:**
+- [backend/quiz/app.py](backend/quiz/app.py) - Flask API routes
+- [backend/quiz/services.py](backend/quiz/services.py) - Business logic and utilities
+- [backend/quiz/README.md](backend/quiz/README.md) - Module documentation
+
+**Next Sprint:**
+- Optimize Firestore queries for large datasets and add indexing
+- Implement real-time performance dashboard
+- Add quiz attempt history and trend analysis
+
+---
+
+
 ## Room for Improvement
 
 To be added 
