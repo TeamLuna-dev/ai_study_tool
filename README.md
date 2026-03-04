@@ -51,6 +51,122 @@ Features to be implemented:<br>
 **l**) Personalized study plan generator<br>
 **m**) Multi-User shared knowledge base<br>
 
+## Sprint 1
+
+### Contributions
+
+**Summit:** "Placeholder"
+
+- Jira Task: Summit - [task description]
+  - [Scrum-XX](JIRA_LINK), [Bitbucket](BITBUCKET_LINK)
+
+- Jira Task: Summit - [task description]
+  - [Scrum-XX](JIRA_LINK), [Bitbucket](BITBUCKET_LINK)
+
+
+**Lane:** "File Upload & PDF Processing"
+
+- Jira Task: Lane - [React File Upload Interface]
+  - [Scrum-34](https://cs3398-luna-s26.atlassian.net/browse/SCRUM-34), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-34-react-file-upload-interface)
+
+- Jira Task: Lane - [Backend File Upload API]
+  - [Scrum-35](https://cs3398-luna-s26.atlassian.net/browse/SCRUM-35), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-35-backend-file-upload-api)
+
+- Jira Task: Lane - [PDF Text Extraction & Chunking]
+  - [Scrum-38](https://cs3398-luna-s26.atlassian.net/browse/SCRUM-38), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-38-pdf-text-extraction-chunking)
+
+- Jira Task: Lane - [Firebase Storage Integration]
+  - [Scrum-55](https://cs3398-luna-s26.atlassian.net/browse/SCRUM-55), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-55-firebase-storage-integration)
+
+
+**Angel:** "AI notes Generator and Navbar feature"
+
+- Jira Task: Angel - [Build Text Input & API Integration]
+  - [Scrum-28](https://cs3398-luna-s26.atlassian.net/browse/SCRUM-28), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/src/SCRUM-28-build-text-input-api-integratio/)
+
+- Jira Task: Angel - [Display & Format Generated Notes]
+  - [Scrum-29](https://cs3398-luna-s26.atlassian.net/browse/SCRUM-29), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/src/SCRUM-29-display-format-generated-notes/)
+
+- Jira Task: Angel - [Design and Implement Navigation Bar Component]
+  - [Scrum-26](https://cs3398-luna-s26.atlassian.net/browse/SCRUM-26), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/src/SCRUM-26-design-and-implement-navigation/)
+
+- Jira Task: Angel - [Implementation of features on navbar for demo (not final results)]
+  - [Scrum-57](https://cs3398-luna-s26.atlassian.net/browse/SCRUM-57), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/src/SCRUM-57-implementation-of-features-on-n/)
+
+
+**Chris:** "Implemented initial dashboard, firebase storage & auth, study rooms management"
+
+- Jira Task: Chris - [Implement Room Management Backend]
+  - [Scrum-20](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-20), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-20-room-management-backend)
+
+- Jira Task: Chris - [Prompt User Login]
+  - [Scrum-56](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-56), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-56-create-user-login-ui)
+
+- Jira Task: Chris - [Firestore Schema Design & Initialization]
+  - [Scrum-53](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-53), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-53-firestore-schema-design-initial)
+
+- Jira Task: Chris - [Security Rules & End-to-End Connection Verification]
+  - [Scrum-54](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-54), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-54-security-rules-and-connection-verif)
+
+- Jira Task: Chris - [Firebase Project Setup & Team Configuration]
+  - [Scrum-51](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-51), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-51-implement-webapp-database)
+
+- Jira Task: Chris - [Design the Collaborative Study Room Interface]
+  - [Scrum-19](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-19), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-19-design-collaborative-board-interface)
+
+- Jira Task: Chris - [Design the Dashboard Layout]
+  - [Scrum-22](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-22), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-22-design-the-dashboard-layout)
+
+
+**Sam:** "Implemented the Quiz Generation service"
+
+- Jira Task: Sam - [Generate context based on notes]
+  - [Scrum-12](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-12), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/branch/SCRUM-12-generate-score-quiz-openai-pyth)
+
+- Jira Task: Sam - [Generate Quiz options (JSON)]
+  - [Scrum-44](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-44), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/branch/SCRUM-44-generate-quiz-options-json)
+
+- Jira Task: Sam - [Quiz logic / prep for React Integration]
+  - [Scrum-45](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-45), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/branch/SCRUM-45-quiz-logic-react-integration)
+
+- Jira Task: Sam - [Desing Quiz Screen (React)]
+  - [Scrum-11](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-11), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/branch/SCRUM-11-design-quiz-screen-react)
+
+## Reports
+
+<img src="Assets/SP1-REPORT.png" alt="Dashboard" width="700">
+
+## Next Steps
+
+**Summit:**
+
+- Write your next steps here...
+- 
+- 
+
+**Lane:**
+
+- Write your next steps here...
+- 
+- 
+
+**Angel:**
+
+- I will focus on creating one unified backend that integrates all the existing features into a single, cohesive system. This will improve overall functionality and make the application easier to manage and scale.
+- Work on the frontend to ensure that all features are properly connected through the navigation bar and that the user experience feels smooth and intuitive.
+- I will improve the Notes Generator feature to produce better-formatted, well-structured, and clearly displayed notes so that users can easily read and understand the generated content.
+
+**Chris:**
+- Study rooms feature:
+- Wire the study room UI to real Firestore data
+- Integrate Lane's file upload pipeline into the room context
+- Build the invite code join flow end-to-end
+
+**Sam:**
+
+- Improve Quiz Generation by ensuring the AI is giving an appropiate response from the user's input.
+- Connect with the pdf-uploader feature implementation
+- Add the quiz performance tracker.
 
 ## User Stories
 - **AI Knowledge Gap Analysis:** As a student, I would like the system to analyze my quiz performance and study activity so that I can identify my weak topics and improve efficiently. *(i, j)*
