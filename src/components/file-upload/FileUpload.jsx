@@ -9,15 +9,6 @@
  * changing this component.
  */
 
-/**
- * To connect to the dashboard:
- *   <FileUpload
- *     getAuthToken={() => currentUser.getIdToken()}
- *     onUploadSuccess={(msg) => toast.success(msg)}
- *     onUploadError={(msg) => toast.error(msg)}
- *   />
- */
-
 import React from "react";
 import { DropZone } from "./DropZone";
 import { ProgressBar } from "./ProgressBar";
@@ -63,6 +54,7 @@ export function FileUpload({ onUploadSuccess, onUploadError, uploadFn, getAuthTo
         maxWidth: "480px",
         fontFamily: "system-ui, sans-serif",
         color: "#1e293b",
+        margin: "0 auto",
       }}
     >
       {/* File picker — disabled while an upload is in progress */}

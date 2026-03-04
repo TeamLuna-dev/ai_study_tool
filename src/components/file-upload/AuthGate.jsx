@@ -6,7 +6,6 @@
 
 import React from "react";
 
-// Inline styles. Will replace with Tailwind classes when connecting into the dashboard
 const styles = {
   prompt: {
     border: "2px dashed #cbd5e1",
