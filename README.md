@@ -109,6 +109,37 @@ Features to be implemented:<br>
 
 <img src="Assets/SP1-REPORT.png" alt="Dashboard" width="700">
 
+## Next Steps
+
+**Summit:**
+
+- Write your next steps here...
+- 
+- 
+
+**Lane:**
+
+- Write your next steps here...
+- 
+- 
+
+**Angel:**
+
+- Write your next steps here...
+- 
+- 
+
+**Chris:**
+
+- Write your next steps here...
+- 
+- 
+
+**Sam:**
+
+- Improve Quiz Generation by ensuring the AI is giving an appropiate response from the user's input.
+- Connect with the pdf-uploader feature implementation
+- Add the quiz performance tracker.
 
 ## User Stories
 - **AI Knowledge Gap Analysis:** As a student, I would like the system to analyze my quiz performance and study activity so that I can identify my weak topics and improve efficiently. *(i, j)*
