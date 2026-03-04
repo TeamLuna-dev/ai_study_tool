@@ -123,7 +123,7 @@ Features to be implemented:<br>
 - Jira Task: Sam - [Quiz logic / prep for React Integration]
   - [Scrum-45](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-45), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/branch/SCRUM-45-quiz-logic-react-integration)
 
-- Jira Task: Sam - [Quiz logic / prep for React Integration]
+- Jira Task: Sam - [Desing Quiz Screen (React)]
   - [Scrum-11](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-11), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/branch/SCRUM-11-design-quiz-screen-react)
 
 ## Reports
