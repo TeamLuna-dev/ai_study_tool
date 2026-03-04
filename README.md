@@ -51,6 +51,60 @@ Features to be implemented:<br>
 **l**) Personalized study plan generator<br>
 **m**) Multi-User shared knowledge base<br>
 
+## Sprint 1
+
+### Contributions
+
+**Summit:** "Placeholder"
+
+- Jira Task: Summit - [task description]
+  - [Scrum-XX](JIRA_LINK), [Bitbucket](BITBUCKET_LINK)
+
+- Jira Task: Summit - [task description]
+  - [Scrum-XX](JIRA_LINK), [Bitbucket](BITBUCKET_LINK)
+
+
+**Lane:** "Placeholder"
+
+- Jira Task: Lane - [task description]
+  - [Scrum-XX](JIRA_LINK), [Bitbucket](BITBUCKET_LINK)
+
+- Jira Task: Lane - [task description]
+  - [Scrum-XX](JIRA_LINK), [Bitbucket](BITBUCKET_LINK)
+
+
+**Angel:** "Placeholder"
+
+- Jira Task: Angel - [task description]
+  - [Scrum-XX](JIRA_LINK), [Bitbucket](BITBUCKET_LINK)
+
+- Jira Task: Angel - [task description]
+  - [Scrum-XX](JIRA_LINK), [Bitbucket](BITBUCKET_LINK)
+
+
+**Chris:** "Placeholder"
+
+- Jira Task: Chris - [task description]
+  - [Scrum-XX](JIRA_LINK), [Bitbucket](BITBUCKET_LINK)
+
+- Jira Task: Chris - [task description]
+  - [Scrum-XX](JIRA_LINK), [Bitbucket](BITBUCKET_LINK)
+
+
+**Sam:** "Implemented the Quiz Generation service"
+
+- Jira Task: Sam - [Generate context based on notes]
+  - [Scrum-12](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-12), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/branch/SCRUM-12-generate-score-quiz-openai-pyth)
+
+- Jira Task: Sam - [Generate Quiz options (JSON)]
+  - [Scrum-44](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-44), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/branch/SCRUM-44-generate-quiz-options-json)
+
+- Jira Task: Sam - [Quiz logic / prep for React Integration]
+  - [Scrum-45](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-45), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/branch/SCRUM-45-quiz-logic-react-integration)
+
+- Jira Task: Sam - [Quiz logic / prep for React Integration]
+  - [Scrum-11](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-11), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/branch/SCRUM-11-design-quiz-screen-react)
+
 
 ## User Stories
 - **AI Knowledge Gap Analysis:** As a student, I would like the system to analyze my quiz performance and study activity so that I can identify my weak topics and improve efficiently. *(i, j)*
