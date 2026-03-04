@@ -105,6 +105,10 @@ Features to be implemented:<br>
 - Jira Task: Sam - [Quiz logic / prep for React Integration]
   - [Scrum-11](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-11), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/branch/SCRUM-11-design-quiz-screen-react)
 
+## Reports
+
+<img src="Assets/SP1-REPORT.png" alt="Dashboard" width="700">
+
 
 ## User Stories
 - **AI Knowledge Gap Analysis:** As a student, I would like the system to analyze my quiz performance and study activity so that I can identify my weak topics and improve efficiently. *(i, j)*
