@@ -37,7 +37,7 @@ TEMP_DIR = os.path.join(os.path.dirname(__file__), "temp")
 os.makedirs(TEMP_DIR, exist_ok=True)
 
 
-@upload_bp.route("/", methods=["POST"])
+@upload_bp.route("", methods=["POST"])
 def upload_file():
     """
     Authenticated file upload endpoint.

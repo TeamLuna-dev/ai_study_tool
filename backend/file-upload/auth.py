@@ -21,12 +21,15 @@ from firebase_admin import auth
 DEV_MODE = os.getenv("DEV_MODE", "true").lower() == "true"
 DEV_UID  = os.getenv("DEV_UID", "test-user-123")
 
-# Only initialise Firebase when not in dev mode
+# Only initialise Firebase when not in dev mode.
+# Delegate to firebase_admin_config so the storage bucket is also configured.
 if not DEV_MODE:
-    try:
-        firebase_admin.get_app()
-    except ValueError:
-        firebase_admin.initialize_app()
+    import sys as _sys
+    import os as _os
+    _backend_dir = _os.path.abspath(_os.path.join(_os.path.dirname(__file__), ".."))
+    if _backend_dir not in _sys.path:
+        _sys.path.insert(0, _backend_dir)
+    import firebase_admin_config  # noqa: F401 — initialises firebase_admin with storage bucket
 
 
 def verify_firebase_token(request):
