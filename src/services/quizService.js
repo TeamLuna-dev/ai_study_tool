@@ -12,11 +12,11 @@ export async function generateQuiz(notes) {
   return data.quiz;
 }
 
-export async function scoreQuiz(quiz, answers) {
+export async function scoreQuiz(quiz, answers, topic) {
   const res = await fetch(`${API_BASE}/api/quiz/score`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ quiz, answers }),
+    body: JSON.stringify({ quiz, answers, topic }),
   });
 
   const data = await res.json().catch(() => ({}));

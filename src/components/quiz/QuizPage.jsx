@@ -148,7 +148,7 @@ export function QuizPage() {
       // backend expects ints 0..3; if any null remain, send -1 to force 400
       const normalized = finalizedAnswers.map((a) => (a === null ? -1 : a));
 
-      const scored = await scoreQuiz(quiz, normalized);
+      const scored = await scoreQuiz(quiz, normalized, topic);
       setResult(scored);
     } catch (e) {
       setError(e.message);

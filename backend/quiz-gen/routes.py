@@ -1,7 +1,7 @@
 # Defines the routes for the quiz-gen service.
 from service import generate_quiz_from_notes
 from flask import Blueprint, jsonify, request
-from validators import validate_quiz, validate_answers
+from validators import validate_quiz, validate_answers, validate_topic
 
 quiz_bp = Blueprint("quiz_bp", __name__)
 
@@ -33,6 +33,7 @@ def score_quiz():
     answers = data.get("answers")
 
     try:
+        topic = validate_topic(data.get("topic"))
         questions = validate_quiz(quiz_obj)
         answers = validate_answers(answers, total_questions=len(questions))
 
@@ -61,7 +62,8 @@ def score_quiz():
             "score": score,
             "total": total,
             "percentage": percentage,
-            "incorrect": incorrect
+            "incorrect": incorrect,
+            "topic": topic
         }), 200
 
     except ValueError as e:
