@@ -46,10 +46,24 @@ const disabledButtonStyle = {
   cursor: "not-allowed",
 };
 
+  const TOPIC_OPTIONS = [
+  "Calculus",
+  "Biology",
+  "Chemistry",
+  "Physics",
+  "History",
+  "Computer Science",
+  "Psychology",
+  "English",
+  "Economics",
+  "Other",
+]; // predefined topics for user to select from, can be extended as needed
+
 
 export function QuizPage() {
   const [notes, setNotes] = useState("");
   const [quiz, setQuiz] = useState(null);
+  const [topic, setTopic] = useState(""); // for topic-based quiz generation, needed for two user storie
 
   const [current, setCurrent] = useState(0);
   const [selected, setSelected] = useState(null);
@@ -67,7 +81,7 @@ export function QuizPage() {
   const isFirst = current === 0;
 
   async function handleGenerate() {
-    if (!notes.trim()) return;
+    if (!notes.trim() || !topic) return;
     setError("");
     setResult(null);
     setLoadingGen(true);
@@ -151,14 +165,38 @@ export function QuizPage() {
     setAnswers([]);
     setResult(null);
     setError("");
+    setTopic(""); // reset topic selection as well
   }
 
   // --- UI states ---
   if (!quiz) {
+
     return (
+      
       <div style={layoutStyle}>
         <div style={{ padding: 28, maxWidth: 800, width: "100%" }}>
         <h2>Generate Quiz from Notes</h2>
+
+          <select
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+              style={{
+                width: "100%",
+                padding: 12,
+                borderRadius: 8,
+                border: "1px solid #d1d5db",
+                marginTop: 12,
+                marginBottom: 12,
+                backgroundColor: "white",
+              }}
+            >
+              <option value="">Select a topic</option>
+              {TOPIC_OPTIONS.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
 
         <textarea
           value={notes}
@@ -170,8 +208,8 @@ export function QuizPage() {
 
         <button
           onClick={handleGenerate}
-          disabled={loadingGen || !notes.trim()}
-          style={{...primaryButtonStyle, marginTop: 12, ...(loadingGen || !notes.trim() ? disabledButtonStyle : {}),
+          disabled={loadingGen || !notes.trim() || !topic}
+          style={{...primaryButtonStyle, marginTop: 12, ...(loadingGen || !notes.trim() || !topic ? disabledButtonStyle : {}),
 }}
         >
           {loadingGen ? "Generating..." : "Generate"}
