@@ -1,5 +1,28 @@
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:5001";
 
+export async function getWeakTopics(userId) {
+  const res = await fetch(`http://127.0.0.1:5000/weak-topics/${userId}`);
+  const data = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    throw new Error(data.error || `Failed to fetch weak topics (${res.status})`);
+  }
+
+  return data;
+
+}
+
+export async function getSessionSummary(userId) {
+  const res = await fetch(`http://127.0.0.1:5000/session-summary/${userId}`);
+  const data = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    throw new Error(data.error || `Failed to fetch session summary (${res.status})`);
+  }
+
+  return data;
+}
+
 export async function generateQuiz(notes) {
   const res = await fetch(`${API_BASE}/api/quiz/generate`, {
     method: "POST",

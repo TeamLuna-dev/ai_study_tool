@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from firebase_admin import firestore
+from flask_cors import CORS
 from firebase_admin_config import db
 from services import (
     save_quiz_attempt,
@@ -10,6 +11,7 @@ from services import (
 
 
 app = Flask(__name__)
+CORS(app)
 @app.route("/quiz-history/<user_id>", methods=["GET"])
 def quiz_history(user_id):
     attempts = db.collection("quiz_attempts").where("user_id", "==", user_id).stream()
@@ -22,8 +24,6 @@ def quiz_history(user_id):
         for doc in attempts
     ]
     return jsonify(history)
-
-
 
 @app.route("/submit-quiz", methods=["POST"])
 def submit_quiz():

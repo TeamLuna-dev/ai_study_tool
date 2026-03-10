@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { generateQuiz, scoreQuiz } from "../../services/quizService";
+import { generateQuiz, scoreQuiz, getWeakTopics } from "../../services/quizService";
 
 // Kept same UI structure as before for simplicity... to be improved later. 
 // Note: Design is wacky now, will apply OCP later on
@@ -17,6 +17,8 @@ const layoutStyle = {
   padding: 24,            
   backgroundColor: "#f9fafb",
 };
+
+
 
 // base button style to be reused and extended for different button types
 
@@ -59,6 +61,7 @@ const disabledButtonStyle = {
   "Other",
 ]; // predefined topics for user to select from, can be extended as needed
 
+const DEV_USER_ID = "test-user-123";
 
 export function QuizPage() {
   const [notes, setNotes] = useState("");
@@ -74,6 +77,8 @@ export function QuizPage() {
   const [loadingGen, setLoadingGen] = useState(false);
   const [loadingScore, setLoadingScore] = useState(false);
   const [error, setError] = useState("");
+  const [weakTopics, setWeakTopics] = useState([]); // new states for personalized quiz-generation. (wll use in future tasks)
+  const [loadingAnalysis, setLoadingAnalysis] = useState(false); // state to track loading 
 
   const questions = quiz?.questions || [];
   const q = questions[current];
@@ -139,7 +144,7 @@ export function QuizPage() {
   async function handleFinish() {
     setError("");
     setLoadingScore(true);
-
+    setLoadingAnalysis(true);
     try {
       const finalizedAnswers = answers.map((a, idx) =>
         idx === current ? selected : a
@@ -150,10 +155,19 @@ export function QuizPage() {
 
       const scored = await scoreQuiz(quiz, normalized, topic);
       setResult(scored);
-    } catch (e) {
-      setError(e.message);
-    } finally {
-      setLoadingScore(false);
+
+        try {
+          const weak = await getWeakTopics(DEV_USER_ID);
+          console.log("Weak topics fetched:", weak); // debug log to verify whehter weak topics are being fetched
+          setWeakTopics(weak);
+        } catch (e) {
+          console.error("Failed to fetch weak topics:", e);
+        }
+      } catch (e) {
+        setError(e.message);
+      } finally {
+        setLoadingScore(false);
+        setLoadingAnalysis(false);
     }
   }
 
@@ -166,6 +180,8 @@ export function QuizPage() {
     setResult(null);
     setError("");
     setTopic(""); // reset topic selection as well
+    setWeakTopics([]);
+    setLoadingAnalysis(false);
   }
 
   // --- UI states ---
@@ -238,6 +254,21 @@ export function QuizPage() {
               {result.incorrect.map((x) => (
                 <li key={x.question_index}>
                   Q{x.question_index + 1}: {x.correct_choice}
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+
+        {loadingAnalysis && <p>Loading quiz analysis...</p>}
+
+        {!loadingAnalysis && weakTopics.length > 0 && (
+          <>
+            <h3>Topic Performance</h3>
+            <ul>
+              {weakTopics.map((item) => (
+                <li key={item.topic}>
+                  {item.topic}: {item.average_score}% {item.is_weak ? "(Weak)" : "(Strong)"}
                 </li>
               ))}
             </ul>
