@@ -1,8 +1,12 @@
 from flask import Flask, request, jsonify
-from datetime import datetime
 from firebase_admin import firestore
 from firebase_admin_config import db
-from services import calculate_percentage, analyze_performance, get_total_study_time, get_study_summary
+from services import (
+    save_quiz_attempt,
+    analyze_performance,
+    get_total_study_time,
+    get_study_summary,
+) 
 
 
 app = Flask(__name__)
@@ -25,23 +29,14 @@ def quiz_history(user_id):
 def submit_quiz():
     data = request.json
 
-    percentage = calculate_percentage(
-        data["score"],
-        data["total_questions"]
+    attempt = save_quiz_attempt(
+        user_id=data["user_id"],
+        topic=data["topic"],
+        score=data["score"],
+        total_questions=data["total_questions"]
     )
 
-    attempt = {
-        "user_id": data["user_id"],
-        "topic": data["topic"],
-        "score": data["score"],
-        "total_questions": data["total_questions"],
-        "percentage": percentage,
-        "timestamp": firestore.SERVER_TIMESTAMP
-    }
-
-    db.collection("quiz_attempts").add(attempt)
-
-    return jsonify({"message": "Quiz saved successfully"}), 201
+    return jsonify({"message": "Quiz saved successfully", "attempt": attempt}), 201
 
 
 @app.route("/weak-topics/<user_id>", methods=["GET"])
