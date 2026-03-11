@@ -4,7 +4,21 @@ from firebase_admin import firestore
 from firebase_admin_config import db
 from services import calculate_percentage, analyze_performance, get_total_study_time, get_study_summary
 
+
 app = Flask(__name__)
+@app.route("/quiz-history/<user_id>", methods=["GET"])
+def quiz_history(user_id):
+    attempts = db.collection("quiz_attempts").where("user_id", "==", user_id).stream()
+    history = [
+        {
+            "score": doc.get("score"),
+            "timestamp": doc.get("timestamp"),
+            "topic": doc.get("topic")
+        }
+        for doc in attempts
+    ]
+    return jsonify(history)
+
 
 
 @app.route("/submit-quiz", methods=["POST"])
