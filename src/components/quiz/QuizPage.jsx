@@ -100,6 +100,36 @@ const disabledButtonStyle = {
 
 const DEV_USER_ID = "test-user-123";
 
+  const reviewCardStyle = {
+    backgroundColor: "#f8fafc",
+    border: "1px solid #e5e7eb",
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+  };
+
+  const reviewQuestionStyle = {
+    fontWeight: 600,
+    color: "#111827",
+    marginBottom: 8,
+  };
+
+  const reviewLabelStyle = {
+    fontSize: 14,
+    fontWeight: 600,
+    color: "#374151",
+  };
+
+  const correctAnswerStyle = {
+    color: "#16a34a",
+    fontWeight: 600,
+  };
+
+  const incorrectAnswerStyle = {
+    color: "#dc2626",
+    fontWeight: 600,
+  };
+
 export function QuizPage() {
   const [notes, setNotes] = useState("");
   const [quiz, setQuiz] = useState(null);
@@ -290,23 +320,36 @@ export function QuizPage() {
             <p style ={{ margin: 0, fontSize: 18, fontWeight: 600 }}>
           Score: {result.score} / {result.total} ({result.percentage}%)
         </p>
-        <p style={{ margin: 0, fontSize: 14, color: "#4b5563" }}>
-          {result.percentage}%
-        </p>
+
           </div>
 
         {result.incorrect?.length > 0 && (
-          <div style={resultSectionStyle}>
-            <h3 style={resultSectionTitleStyle}>Review</h3>
-            <ul>
-              {result.incorrect.map((x) => (
-                <li key={x.question_index}>
-                  Q{x.question_index + 1}: {x.correct_choice}
-                </li>
-              ))}
-            </ul>
-          </div>
+  <div style={resultSectionStyle}>
+    <h3 style={resultSectionTitleStyle}>Review Incorrect Answers</h3>
+
+    {result.incorrect.map((x) => (
+      <div key={x.question_index} style={reviewCardStyle}>
+        <p style={reviewQuestionStyle}>
+          Question {x.question_index + 1}: {x.question}
+        </p>
+
+        <p style={{ margin: "6px 0" }}>
+          <span style={reviewLabelStyle}>Correct Answer: </span>
+          <span style={correctAnswerStyle}>{x.correct_choice}</span>
+        </p>
+
+        {x.your_index !== undefined && x.your_index >= 0 && (
+          <p style={{ margin: "6px 0" }}>
+            <span style={reviewLabelStyle}>Your Answer: </span>
+            <span style={incorrectAnswerStyle}>
+              {quiz?.questions?.[x.question_index]?.choices?.[x.your_index]}
+            </span>
+          </p>
         )}
+      </div>
+    ))}
+  </div>
+)}
 
 
         {loadingAnalysis && (
