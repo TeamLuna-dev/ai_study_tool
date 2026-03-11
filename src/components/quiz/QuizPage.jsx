@@ -19,8 +19,45 @@ const layoutStyle = {
 };
 
 
+  const resultCardStyle = {
+    width: "100%",
+    maxWidth: 760,
+    backgroundColor: "white",
+    borderRadius: 16,
+    padding: 32,
+    boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
+  };
 
-// base button style to be reused and extended for different button types
+  const resultHeaderStyle = {
+    textAlign: "center",
+    marginBottom: 24,
+  };
+
+  const scoreSummaryStyle = {
+    textAlign: "center",
+    padding: 20,
+    borderRadius: 12,
+    backgroundColor: "#eff6ff",
+    border: "1px solid #bfdbfe",
+    marginBottom: 24,
+  };
+
+  const resultSectionStyle = {
+    marginTop: 24,
+  };
+
+  const resultSectionTitleStyle = {
+    marginBottom: 12,
+    fontSize: 20,
+    fontWeight: 600,
+    color: "#111827",
+  };
+
+  const restartButtonWrapperStyle = {
+    display: "flex",
+    justifyContent: "center",
+    marginTop: 28,
+  };
 
 const baseButtonStyle = {
   padding: "10px 16px",
@@ -87,6 +124,8 @@ export function QuizPage() {
 
   async function handleGenerate() {
     if (!notes.trim() || !topic) return;
+    setWeakTopics([]);
+    setLoadingAnalysis(false);
     setError("");
     setResult(null);
     setLoadingGen(true);
@@ -241,15 +280,24 @@ export function QuizPage() {
   if (result) {
     return (
       <div style={layoutStyle}>
-        <div style={{ padding: 24, width: "100%", maxWidth: 800 }}>
-        <h2>Quiz Completed</h2>
-        <p>
+        <div style={resultCardStyle}>
+          <div style={resultHeaderStyle}>
+            <h2 style={{ fontSize: 28, marginBottom: 8}}>Quiz Completed</h2>
+            <p style={{ color: "#6b7280" }}>Here's how you did and what to focus on next</p>
+          </div>
+
+          <div style={scoreSummaryStyle}>
+            <p style ={{ margin: 0, fontSize: 18, fontWeight: 600 }}>
           Score: {result.score} / {result.total} ({result.percentage}%)
         </p>
+        <p style={{ margin: 0, fontSize: 14, color: "#4b5563" }}>
+          {result.percentage}%
+        </p>
+          </div>
 
         {result.incorrect?.length > 0 && (
-          <>
-            <h3>Review</h3>
+          <div style={resultSectionStyle}>
+            <h3 style={resultSectionTitleStyle}>Review</h3>
             <ul>
               {result.incorrect.map((x) => (
                 <li key={x.question_index}>
@@ -257,14 +305,19 @@ export function QuizPage() {
                 </li>
               ))}
             </ul>
-          </>
+          </div>
         )}
 
-        {loadingAnalysis && <p>Loading quiz analysis...</p>}
+
+        {loadingAnalysis && (
+          <div style={resultSectionStyle}>
+            <p>Loading quiz analysis...</p>
+          </div>
+        )}
 
         {!loadingAnalysis && weakTopics.length > 0 && (
-          <>
-            <h3>Topic Performance</h3>
+          <div style={resultSectionStyle}>
+            <h3 style={resultSectionTitleStyle}>Topic Performance</h3>
             <ul>
               {weakTopics.map((item) => (
                 <li key={item.topic}>
@@ -272,16 +325,18 @@ export function QuizPage() {
                 </li>
               ))}
             </ul>
-          </>
+          </div>
         )}
 
         {error && <p style={{ color: "red", marginTop: 12 }}>{error}</p>}
 
-        <button onClick={handleRestart} style={{...primaryButtonStyle, marginTop: 16,}}>
-          Start New Quiz
-        </button>
+        <div style={restartButtonWrapperStyle}>
+          <button onClick={handleRestart} style={primaryButtonStyle}>
+            Start New Quiz
+          </button>
+        </div>
       </div>
-  </div>
+    </div>
     );
   }
 
