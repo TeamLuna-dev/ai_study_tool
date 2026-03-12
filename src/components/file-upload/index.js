@@ -9,3 +9,4 @@ export { AuthGate } from "./AuthGate";
 export { DropZone } from "./DropZone";
 export { ProgressBar } from "./ProgressBar";
 export { StatusAlert } from "./StatusAlert";
+export { ProcessingStatus } from "./ProcessingStatus";
