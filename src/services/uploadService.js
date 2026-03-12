@@ -31,14 +31,18 @@ export async function uploadFile(file, onProgress, signal, authToken) {
         onProgress(100);
         try {
           const data = JSON.parse(xhr.responseText);
-          resolve({ success: true, message: data.message ?? "File uploaded successfully." });
+          resolve({
+            success: true,
+            message: data.message ?? "File uploaded successfully.",
+            docId: data.doc_id ?? null,
+          });
         } catch {
-          resolve({ success: true, message: "File uploaded successfully." });
+          resolve({ success: true, message: "File uploaded successfully.", docId: null });
         }
       } else {
         try {
           const data = JSON.parse(xhr.responseText);
-          reject(new Error(data.detail ?? `Upload failed with status ${xhr.status}.`));
+          reject(new Error(data.error ?? data.detail ?? `Upload failed with status ${xhr.status}.`));
         } catch {
           reject(new Error(`Upload failed with status ${xhr.status}.`));
         }
