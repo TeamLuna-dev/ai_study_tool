@@ -50,3 +50,15 @@ backend
 └ config.py
 
 Each folder has the functionality of each feature.
+
+
+3. Main App Should Starts Everything
+
+app.py is the entry point for the backend. We need to:
+
+-Create the Flask app
+-Register feature blueprints
+-Load configuration
+
+To complete this task, we must analyze and understand the role of each file within the feature modules so that we can properly modify them and integrate their functionality into the main application.
+
