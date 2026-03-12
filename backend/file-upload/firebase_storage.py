@@ -30,7 +30,7 @@ def _get_firebase():
     """
     import sys
     # Add backend/ to path so firebase_admin_config can be found
-    backend_dir = os.path.join(os.path.dirname(__file__), "..", "..")
+    backend_dir = os.path.join(os.path.dirname(__file__), "..")
     if os.path.abspath(backend_dir) not in sys.path:
         sys.path.insert(0, os.path.abspath(backend_dir))
 

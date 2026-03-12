@@ -16,9 +16,12 @@ from firebase_admin import storage as _storage
 _SERVICE_ACCOUNT_PATH = os.path.join(os.path.dirname(__file__), "serviceAccountKey.json")
 
 _cred = credentials.Certificate(_SERVICE_ACCOUNT_PATH)
-firebase_admin.initialize_app(_cred, {
-    "storageBucket": os.environ.get("FIREBASE_STORAGE_BUCKET", "aitutorproject-197c3.appspot.com"),
-})
+try:
+    firebase_admin.initialize_app(_cred, {
+        "storageBucket": os.environ.get("FIREBASE_STORAGE_BUCKET", "aitutorproject-197c3.appspot.com"),
+    })
+except ValueError:
+    pass  # App already initialised (e.g. by a previous import)
 
 db: firestore.Client = firestore.client()
 bucket = _storage.bucket()

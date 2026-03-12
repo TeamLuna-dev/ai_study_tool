@@ -10,9 +10,16 @@ All Firebase operations are delegated to firebase_storage.py
 """
 
 import os
+import sys
 import uuid
+import threading
 from flask import Blueprint, jsonify, request
 from auth import verify_firebase_token
+
+# Add backend/embeddings to path so pipeline can be imported
+_embeddings_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "embeddings"))
+if _embeddings_dir not in sys.path:
+    sys.path.insert(0, _embeddings_dir)
 
 upload_bp = Blueprint("upload", __name__)
 
@@ -37,7 +44,7 @@ TEMP_DIR = os.path.join(os.path.dirname(__file__), "temp")
 os.makedirs(TEMP_DIR, exist_ok=True)
 
 
-@upload_bp.route("/", methods=["POST"])
+@upload_bp.route("", methods=["POST"])
 def upload_file():
     """
     Authenticated file upload endpoint.
@@ -118,9 +125,25 @@ def upload_file():
             )
         except FirebaseStorageError as exc:
             return jsonify({"error": str(exc)}), 500
-        
+
+        # Kick off embedding pipeline in a background thread so the upload
+        # response returns immediately. The pipeline updates the Firestore
+        # doc status to "ready" (or "error") when it finishes.
+        from pipeline import process_document
+        threading.Thread(
+            target=process_document,
+            kwargs={
+                "file_bytes": file_bytes,
+                "uid":        uid,
+                "file_name":  file.filename,
+                "doc_id":     result["doc_id"],
+                "mimetype":   file.mimetype,
+            },
+            daemon=True,
+        ).start()
+
         return jsonify({
-            "message": "File uploaded to Firebase and Firestore document created.",
+            "message": "File uploaded. Processing embeddings in the background.",
             "filename": file.filename,
             "mimetype": file.mimetype,
             "size_bytes": len(file_bytes),
