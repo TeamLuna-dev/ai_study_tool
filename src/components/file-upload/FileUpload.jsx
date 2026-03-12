@@ -30,6 +30,7 @@ export function FileUpload({ onUploadSuccess, onUploadError, uploadFn, getAuthTo
     progress,
     message,
     selectedFile,
+    docId,
     handleFileSelect,
     handleUpload,
     handleCancel,
@@ -40,8 +41,8 @@ export function FileUpload({ onUploadSuccess, onUploadError, uploadFn, getAuthTo
   const isSuccess   = status === UPLOAD_STATUS.SUCCESS;
 
   React.useEffect(() => {
-    if (isSuccess && message) onUploadSuccess?.(message);
-  }, [isSuccess, message, onUploadSuccess]);
+    if (isSuccess && message) onUploadSuccess?.(message, docId);
+  }, [isSuccess, message, docId, onUploadSuccess]);
 
   React.useEffect(() => {
     if (status === UPLOAD_STATUS.ERROR && message) onUploadError?.(message);
