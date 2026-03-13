@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { generateQuiz, scoreQuiz, getWeakTopics } from "../../services/quizService";
+import { useAuth } from "../../hooks/useAuth";
 
 // Kept same UI structure as before for simplicity... to be improved later. 
 // Note: Design is wacky now, will apply OCP later on
@@ -98,8 +99,6 @@ const disabledButtonStyle = {
   "Other",
 ]; // predefined topics for user to select from, can be extended as needed
 
-const DEV_USER_ID = "test-user-123";
-
   const reviewCardStyle = {
     backgroundColor: "#f8fafc",
     border: "1px solid #e5e7eb",
@@ -131,6 +130,8 @@ const DEV_USER_ID = "test-user-123";
   };
 
 export function QuizPage() {
+  const { user } = useAuth(); // get current user for personalized analysis
+  const analyticsUserId = user?.uid || "test-user-123"; // for  a temporary measure to connect to the backend
   const [notes, setNotes] = useState("");
   const [quiz, setQuiz] = useState(null);
   const [topic, setTopic] = useState(""); // for topic-based quiz generation, needed for two user storie
@@ -226,12 +227,13 @@ export function QuizPage() {
       setResult(scored);
 
         try {
-          const weak = await getWeakTopics(DEV_USER_ID);
-          console.log("Weak topics fetched:", weak); // debug log to verify whehter weak topics are being fetched
-          setWeakTopics(weak);
-        } catch (e) {
-          console.error("Failed to fetch weak topics:", e);
-        }
+        const weak = await getWeakTopics(analyticsUserId);
+        console.log("Weak topics fetched:", weak);
+        setWeakTopics(weak);
+          } catch (e) {
+          console.warn("Failed to fetch weak topics"); // debug log to verify whehter weak topics are being fetched
+          setWeakTopics([]); // if no user, set to empty array to avoid confusion
+          }
       } catch (e) {
         setError(e.message);
       } finally {
