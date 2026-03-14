@@ -16,7 +16,7 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
 """
-
+"""
 import sys
 import os
 
@@ -31,6 +31,17 @@ load_dotenv(os.path.join(os.path.dirname(__file__), "..", "..", ".env"))
 from flask import Flask
 from routes import upload_bp, ocr_bp
 
+"""
+"""
+Compatibility module for unified backend.
+
+The actual Flask app is created in backend/app.py.
+This file simply exposes the upload blueprint.
+"""
+
+from .routes import upload_bp
+
+"""
 
 def create_app():
     app = Flask(__name__)
@@ -42,3 +53,4 @@ def create_app():
 if __name__ == "__main__":
     app = create_app()
     app.run(debug=True)
+    """
