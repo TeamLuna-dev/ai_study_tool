@@ -14,13 +14,13 @@ import sys
 import uuid
 import threading
 from flask import Blueprint, jsonify, request
-from auth import verify_firebase_token
+from .auth import verify_firebase_token
 
 # Add backend/embeddings to path so pipeline can be imported
-_embeddings_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "embeddings"))
+"""_embeddings_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "embeddings"))
 if _embeddings_dir not in sys.path:
     sys.path.insert(0, _embeddings_dir)
-
+"""
 upload_bp = Blueprint("upload", __name__)
 
 # ---------------------------------------------------------------------------
@@ -114,7 +114,7 @@ def upload_file():
         }), 201
     else:
         # ── Production path: delegate to firebase_storage.py ───────────────
-        from firebase_storage import upload_file_to_storage, FirebaseStorageError
+        from .firebase_storage import upload_file_to_storage, FirebaseStorageError
 
         try:
             result = upload_file_to_storage(
@@ -129,7 +129,7 @@ def upload_file():
         # Kick off embedding pipeline in a background thread so the upload
         # response returns immediately. The pipeline updates the Firestore
         # doc status to "ready" (or "error") when it finishes.
-        from pipeline import process_document
+        from embeddings.pipeline import process_document
         threading.Thread(
             target=process_document,
             kwargs={
@@ -152,3 +152,7 @@ def upload_file():
             "storage_url": result["storage_url"],
             "storage_path": result["storage_path"],
         }), 201
+
+@upload_bp.route("/health", methods=["GET"])
+def health():
+    return jsonify({"upload": "ok"}), 200
