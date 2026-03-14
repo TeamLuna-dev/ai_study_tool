@@ -78,7 +78,7 @@ def chunk_pdf(file_path: str) -> List[dict]:
             )
 
     # Fallback — extract text first then character-chunk it
-    from pdf_parser import extract_text_from_pdf
+    from .pdf_parser import extract_text_from_pdf
     text = extract_text_from_pdf(file_path)
     return _character_chunk(text)
 
