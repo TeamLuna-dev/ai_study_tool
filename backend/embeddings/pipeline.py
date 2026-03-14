@@ -12,12 +12,6 @@ import sys
 import tempfile
 
 
-def _add_to_path(directory: str) -> None:
-    """Adds a directory to sys.path if not already present."""
-    abs_dir = os.path.abspath(directory)
-    if abs_dir not in sys.path:
-        sys.path.insert(0, abs_dir)
-
 
 def process_document(
     file_bytes: bytes,
@@ -41,16 +35,9 @@ def process_document(
     This function catches all exceptions internally so a background thread
     crash does not go silently — errors are logged and written to Firestore.
     """
-    # Resolve sibling directories relative to this file
-    embeddings_dir    = os.path.dirname(__file__)
-    backend_dir       = os.path.join(embeddings_dir, "..")
-    pdf_processing_dir = os.path.join(backend_dir, "pdf-processing")
-    file_upload_dir   = os.path.join(backend_dir, "file-upload")
+   
 
-    for directory in [embeddings_dir, backend_dir, pdf_processing_dir, file_upload_dir]:
-        _add_to_path(directory)
-
-    from firebase_storage import mark_document_ready, mark_document_error  # noqa
+    from features.upload.firebase_storage import mark_document_ready, mark_document_error
 
     # Only PDFs can be chunked; skip other types gracefully
     if mimetype != "application/pdf":
@@ -59,9 +46,9 @@ def process_document(
         return
 
     try:
-        from chunker import chunk_pdf    # noqa
-        from embedder import embed_chunks  # noqa
-        from qdrant_store import store_embeddings  # noqa
+        from processing.chunker import chunk_pdf
+        from .embedder import embed_chunks
+        from .qdrant_store import store_embeddings
 
         # 1. Write bytes to a temp file — chunker.py requires a file path
         with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
