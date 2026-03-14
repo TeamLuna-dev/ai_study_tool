@@ -21,32 +21,6 @@ import tempfile
 
 # ── Path setup (module level so imports below resolve correctly) ──────────────
 
-def _add_to_path(directory: str) -> None:
-    abs_dir = os.path.abspath(directory)
-    if abs_dir not in sys.path:
-        sys.path.insert(0, abs_dir)
-
-_base = os.path.dirname(__file__)
-for _rel in [".", "..", "../pdf-processing", "../file-upload"]:
-    _add_to_path(os.path.join(_base, _rel))
-
-# ── Module-level imports (patchable by tests) ─────────────────────────────────
-
-from chunker import chunk_pdf                                    # noqa: E402
-from ocr import extract_text_from_image                          # noqa: E402
-from embedder import embed_chunks                                # noqa: E402
-from qdrant_store import store_embeddings                        # noqa: E402
-from firebase_storage import (                                   # noqa: E402
-    update_document_status,
-    mark_document_ready,
-    mark_document_error,
-    store_ocr_text,
-)
-
-IMAGE_MIME_TYPES = {"image/jpeg", "image/png"}
-
-
-# ── Pipeline ──────────────────────────────────────────────────────────────────
 
 def process_document(
     file_bytes: bytes,
@@ -69,39 +43,20 @@ def process_document(
         doc_id:     Firestore document ID to update throughout processing.
         mimetype:   Only "application/pdf" is processed; others are rejected.
     """
-    if mimetype not in IMAGE_MIME_TYPES and mimetype != "application/pdf":
-        mark_document_error(
-            doc_id,
-            stage="extraction",
-            message=f"Unsupported file type: {mimetype}. Only PDF, JPEG, and PNG are accepted.",
-        )
+   
+
+    from features.upload.firebase_storage import mark_document_ready, mark_document_error
+
+    # Only PDFs can be chunked; skip other types gracefully
+    if mimetype != "application/pdf":
+        print(f"[PIPELINE] Skipping non-PDF file '{file_name}' (mimetype: {mimetype}).")
+        mark_document_error(doc_id, f"Embedding pipeline only supports PDFs, got {mimetype}.")
         return
 
-    # ── Stage 1: Extraction ───────────────────────────────────────────────
-    update_document_status(doc_id, "extracting")
     try:
-        if mimetype in IMAGE_MIME_TYPES:
-            # ── Image path: OCR via Google Vision API ─────────────────────
-            print(f"[PIPELINE] Running OCR on '{file_name}' …")
-            chunks = extract_text_from_image(file_bytes, mimetype)
-
-            if not chunks:
-                mark_document_error(
-                    doc_id,
-                    stage="extraction",
-                    message="No text could be extracted from the image.",
-                )
-                return
-
-            # Write combined text to Firestore so the review UI can display it
-            ocr_text = "\n\n".join(c["text"] for c in chunks)
-            store_ocr_text(doc_id, ocr_text)
-
-        else:
-            # ── PDF path: chunk via Unstructured API ──────────────────────
-            with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
-                tmp.write(file_bytes)
-                tmp_path = tmp.name
+        from processing.chunker import chunk_pdf
+        from .embedder import embed_chunks
+        from .qdrant_store import store_embeddings
 
             try:
                 print(f"[PIPELINE] Extracting '{file_name}' …")
