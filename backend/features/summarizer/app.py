@@ -1,0 +1,1 @@
+from .routes import summarizer_bp
