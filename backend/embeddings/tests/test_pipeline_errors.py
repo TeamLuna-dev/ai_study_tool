@@ -70,9 +70,9 @@ def test_extraction_failure_calls_error_with_extraction_stage():
     _, mock_error, mock_ready = _run(chunk_err=RuntimeError("bad pdf"))
 
     mock_error.assert_called_once()
-    args = mock_error.call_args[0]       # (doc_id, stage, message)
-    assert args[1] == "extraction"
-    assert "bad pdf" in args[2]
+    kwargs = mock_error.call_args[1]
+    assert kwargs["stage"] == "extraction"
+    assert "bad pdf" in kwargs["message"]
     mock_ready.assert_not_called()
 
 
@@ -87,9 +87,9 @@ def test_empty_chunks_marks_extraction_error():
     _, mock_error, mock_ready = _run(chunk_rv=[])
 
     mock_error.assert_called_once()
-    args = mock_error.call_args[0]
-    assert args[1] == "extraction"
-    assert "No text" in args[2]
+    kwargs = mock_error.call_args[1]
+    assert kwargs["stage"] == "extraction"
+    assert "No text" in kwargs["message"]
     mock_ready.assert_not_called()
 
 
@@ -114,9 +114,9 @@ def test_embedding_failure_calls_error_with_embedding_stage():
     )
 
     mock_error.assert_called_once()
-    args = mock_error.call_args[0]
-    assert args[1] == "embedding"
-    assert "OpenAI rate limit" in args[2]
+    kwargs = mock_error.call_args[1]
+    assert kwargs["stage"] == "embedding"
+    assert "OpenAI rate limit" in kwargs["message"]
     mock_ready.assert_not_called()
 
 
@@ -151,9 +151,9 @@ def test_storage_failure_calls_error_with_storage_stage():
     )
 
     mock_error.assert_called_once()
-    args = mock_error.call_args[0]
-    assert args[1] == "storage"
-    assert "Qdrant connection refused" in args[2]
+    kwargs = mock_error.call_args[1]
+    assert kwargs["stage"] == "storage"
+    assert "Qdrant connection refused" in kwargs["message"]
     mock_ready.assert_not_called()
 
 
@@ -192,6 +192,6 @@ def test_non_pdf_skipped_with_extraction_error():
     pipeline.process_document(b"data", "u", "photo.png", "doc-2", mimetype="image/png")
 
     mock_error.assert_called_once()
-    args = mock_error.call_args[0]
-    assert args[1] == "extraction"
+    kwargs = mock_error.call_args[1]
+    assert kwargs["stage"] == "extraction"
     mock_ready.assert_not_called()

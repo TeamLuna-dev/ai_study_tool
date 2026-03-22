@@ -114,7 +114,7 @@ def test_pipeline_marks_error_when_no_chunks():
     mock_store.assert_not_called()
     mock_ready.assert_not_called()
     mock_error.assert_called_once()
-    assert "No text" in mock_error.call_args[0][1]
+    assert "No text" in mock_error.call_args[1]["message"]
 
 
 def test_pipeline_marks_error_on_exception():
@@ -140,7 +140,7 @@ def test_pipeline_marks_error_on_exception():
 
     mock_ready.assert_not_called()
     mock_error.assert_called_once()
-    assert "chunker exploded" in mock_error.call_args[0][1]
+    assert "chunker exploded" in mock_error.call_args[1]["message"]
 
 
 def test_pipeline_skips_non_pdf():
