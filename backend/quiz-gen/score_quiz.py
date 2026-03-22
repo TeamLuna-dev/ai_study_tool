@@ -1,6 +1,7 @@
 import json
 import argparse
 import os
+from typing import Optional
 
 
 def load_quiz(path: str) -> dict:
@@ -31,7 +32,7 @@ def validate_quiz(quiz_obj: dict) -> list[dict]:
 
     return questions
 
-def normalize_answer(user_input: str) -> int | None:
+def normalize_answer(user_input: str) -> Optional[int]:
     s = user_input.strip().lower()
     if s in ("a", "b", "c", "d"):
         return ord(s) - ord("a")

@@ -13,6 +13,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 import random
 import string
 from datetime import datetime, timezone
+from typing import Dict, List, Optional, Set
 
 from firebase_admin_config import db
 
@@ -21,7 +22,7 @@ from firebase_admin_config import db
 # To add a new role (e.g. "moderator"), extend ROLE_PERMISSIONS.
 # Never modify has_permission() — the checking logic never changes.
 
-ROLE_PERMISSIONS: dict[str, set[str]] = {
+ROLE_PERMISSIONS: Dict[str, Set[str]] = {
     "owner":  {"can_delete_room", "can_remove_members", "can_upload", "can_read"},
     "member": {"can_upload", "can_read"},
 }
@@ -50,7 +51,7 @@ def _unique_invite_code() -> str:
     raise RuntimeError("Failed to generate a unique invite code after 10 attempts")
 
 
-def _get_member_role(room_id: str, uid: str) -> str | None:
+def _get_member_role(room_id: str, uid: str) -> Optional[str]:
     """Returns the uid's role in the room, or None if not a member."""
     doc = (
         db.collection("rooms")
@@ -131,7 +132,7 @@ def join_room(invite_code: str, user_uid: str) -> dict:
     }
 
 
-def get_members(room_id: str) -> list[dict]:
+def get_members(room_id: str) -> List[dict]:
     """Returns all members of the room with their roles and join timestamps."""
     room_ref = db.collection("rooms").document(room_id)
     if not room_ref.get().exists:
