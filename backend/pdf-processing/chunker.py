@@ -111,6 +111,7 @@ def _api_chunk(file_path: str) -> List[dict]:
     """
     from unstructured_client import UnstructuredClient
     from unstructured_client.models import shared
+    from unstructured_client.models.operations import PartitionRequest
 
     api_key = os.getenv("UNSTRUCTURED_API_KEY")
     if not api_key:
@@ -124,18 +125,20 @@ def _api_chunk(file_path: str) -> List[dict]:
     with open(file_path, "rb") as f:
         file_bytes = f.read()
 
-    req = shared.PartitionParameters(
-        files=shared.Files(
-            content=file_bytes,
-            file_name=os.path.basename(file_path),
-        ),
-        strategy=shared.Strategy.HI_RES,
-        chunking_strategy="by_title",
-        max_characters=MAX_CHARACTERS,
-        combine_under_n_chars=COMBINE_UNDER_N_CHARS,
+    req = PartitionRequest(
+        partition_parameters=shared.PartitionParameters(
+            files=shared.Files(
+                content=file_bytes,
+                file_name=os.path.basename(file_path),
+            ),
+            strategy=shared.Strategy.HI_RES,
+            chunking_strategy="by_title",
+            max_characters=MAX_CHARACTERS,
+            combine_under_n_chars=COMBINE_UNDER_N_CHARS,
+        )
     )
 
-    resp = client.general.partition(partition_parameters=req)
+    resp = client.general.partition(request=req)
 
     return [
         {

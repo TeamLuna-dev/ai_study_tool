@@ -11,25 +11,38 @@ Status progression:
                                                ↘ error (at any stage)
 
 Designed to run in a background thread after the upload route returns.
+All dependencies are imported at module level so tests can mock them via
+  pipeline.chunk_pdf = MagicMock(...)
 """
 
 import os
 import sys
 import tempfile
 
+# ── Path setup (module level so imports below resolve correctly) ──────────────
 
 def _add_to_path(directory: str) -> None:
     abs_dir = os.path.abspath(directory)
     if abs_dir not in sys.path:
         sys.path.insert(0, abs_dir)
 
+_base = os.path.dirname(__file__)
+for _rel in [".", "..", "../pdf-processing", "../file-upload"]:
+    _add_to_path(os.path.join(_base, _rel))
 
-def _setup_paths() -> None:
-    """Adds all required sibling directories to sys.path."""
-    base = os.path.dirname(__file__)
-    for rel in [".", "..", "../pdf-processing", "../file-upload"]:
-        _add_to_path(os.path.join(base, rel))
+# ── Module-level imports (patchable by tests) ─────────────────────────────────
 
+from chunker import chunk_pdf                                    # noqa: E402
+from embedder import embed_chunks                                # noqa: E402
+from qdrant_store import store_embeddings                        # noqa: E402
+from firebase_storage import (                                   # noqa: E402
+    update_document_status,
+    mark_document_ready,
+    mark_document_error,
+)
+
+
+# ── Pipeline ──────────────────────────────────────────────────────────────────
 
 def process_document(
     file_bytes: bytes,
@@ -52,14 +65,6 @@ def process_document(
         doc_id:     Firestore document ID to update throughout processing.
         mimetype:   Only "application/pdf" is processed; others are rejected.
     """
-    _setup_paths()
-
-    from firebase_storage import (  # noqa
-        update_document_status,
-        mark_document_ready,
-        mark_document_error,
-    )
-
     if mimetype != "application/pdf":
         print(f"[PIPELINE] Skipping non-PDF '{file_name}' ({mimetype}).")
         mark_document_error(
@@ -68,10 +73,6 @@ def process_document(
             message=f"Only PDF files can be processed. Received: {mimetype}.",
         )
         return
-
-    from chunker import chunk_pdf      # noqa
-    from embedder import embed_chunks  # noqa
-    from qdrant_store import store_embeddings  # noqa
 
     # ── Stage 1: Extraction ───────────────────────────────────────────────
     update_document_status(doc_id, "extracting")

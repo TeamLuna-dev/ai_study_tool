@@ -12,7 +12,7 @@ Simulates failures at each pipeline stage and verifies:
 import sys
 import os
 import pytest
-from unittest.mock import MagicMock, patch, call
+from unittest.mock import MagicMock, patch
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
@@ -22,22 +22,13 @@ FAKE_BYTES  = b"%PDF-1.4 fake"
 FAKE_CHUNKS = [{"index": 0, "text": "hello", "type": "text", "embedding": [0.1] * 1536}]
 
 
-def _make_temp_file_mock():
-    """Returns a NamedTemporaryFile context manager mock."""
-    tmp_mock = MagicMock()
-    tmp_mock.__enter__ = MagicMock(return_value=MagicMock(name="tmp.pdf"))
-    tmp_mock.__exit__ = MagicMock(return_value=False)
-    return tmp_mock
-
-
 def _run(chunk_rv=None, chunk_err=None,
          embed_rv=None, embed_err=None,
          store_rv=None, store_err=None):
     """
-    Helper: runs process_document with all external dependencies mocked.
-
-    Pass *_err to make that stage raise; pass *_rv to make it return a value.
-    Returns (mock_status, mock_error, mock_ready) for assertion.
+    Runs process_document with all external dependencies replaced by mocks.
+    Because pipeline.py uses module-level imports, assigning to pipeline.X
+    replaces the name in the function's global scope for the duration of the call.
     """
     mock_status = MagicMock()
     mock_error  = MagicMock()
@@ -47,6 +38,7 @@ def _run(chunk_rv=None, chunk_err=None,
     embed_mock = MagicMock(side_effect=embed_err) if embed_err else MagicMock(return_value=embed_rv)
     store_mock = MagicMock(side_effect=store_err) if store_err else MagicMock(return_value=store_rv)
 
+    # Patch module-level names — process_document looks these up in pipeline's globals
     pipeline.update_document_status = mock_status
     pipeline.mark_document_error    = mock_error
     pipeline.mark_document_ready    = mock_ready
@@ -55,9 +47,15 @@ def _run(chunk_rv=None, chunk_err=None,
     pipeline.store_embeddings       = store_mock
 
     with (
-        patch("pipeline.tempfile.NamedTemporaryFile", return_value=_make_temp_file_mock()),
+        patch("pipeline.tempfile.NamedTemporaryFile") as mock_tmp,
         patch("pipeline.os.unlink"),
     ):
+        # Make NamedTemporaryFile context manager return a mock with a .name
+        mock_file = MagicMock()
+        mock_file.name = "/tmp/fake.pdf"
+        mock_tmp.return_value.__enter__ = MagicMock(return_value=mock_file)
+        mock_tmp.return_value.__exit__  = MagicMock(return_value=False)
+
         pipeline.process_document(FAKE_BYTES, "user-1", "test.pdf", "doc-1")
 
     return mock_status, mock_error, mock_ready
@@ -81,9 +79,7 @@ def test_extraction_failure_calls_error_with_extraction_stage():
 def test_extraction_failure_stops_pipeline():
     """embed_chunks and store_embeddings must not be called after extraction fails."""
     _, _, mock_ready = _run(chunk_err=RuntimeError("fail"))
-
     mock_ready.assert_not_called()
-    # embed and store mocks were never called — verified implicitly by mock_ready
 
 
 def test_empty_chunks_marks_extraction_error():
@@ -101,7 +97,7 @@ def test_status_updated_to_extracting_before_chunking():
     """update_document_status('extracting') must be called before chunk_pdf."""
     mock_status, _, _ = _run(chunk_rv=FAKE_CHUNKS, embed_rv=FAKE_CHUNKS, store_rv=["id-1"])
 
-    calls = [c[0][1] for c in mock_status.call_args_list]  # second positional arg = status string
+    calls = [c[0][1] for c in mock_status.call_args_list]
     assert "extracting" in calls
     assert calls.index("extracting") < calls.index("embedding")
 
@@ -126,11 +122,10 @@ def test_embedding_failure_calls_error_with_embedding_stage():
 
 def test_embedding_failure_stops_pipeline():
     """store_embeddings must NOT be called if embedding fails."""
-    mock_status, mock_error, mock_ready = _run(
+    _, _, mock_ready = _run(
         chunk_rv=FAKE_CHUNKS,
         embed_err=RuntimeError("fail"),
     )
-    # store would have been called only if embedding succeeded
     mock_ready.assert_not_called()
 
 
@@ -163,7 +158,7 @@ def test_storage_failure_calls_error_with_storage_stage():
 
 
 # ---------------------------------------------------------------------------
-# Happy path — verify status progression
+# Happy path
 # ---------------------------------------------------------------------------
 
 def test_happy_path_status_progression():
