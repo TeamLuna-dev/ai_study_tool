@@ -131,6 +131,9 @@ const disabledButtonStyle = {
 
 export function QuizPage() {
   const { user } = useAuth(); // get current user for personalized analysis
+  console.log("Current user:", user); // debug log to verify user object
+  console.log("User UID:", user?.uid); 
+  
   const analyticsUserId = user?.uid || "test-user-123"; // for  a temporary measure to connect to the backend
   const [notes, setNotes] = useState("");
   const [quiz, setQuiz] = useState(null);
@@ -223,7 +226,7 @@ export function QuizPage() {
       // backend expects ints 0..3; if any null remain, send -1 to force 400
       const normalized = finalizedAnswers.map((a) => (a === null ? -1 : a));
 
-      const scored = await scoreQuiz(quiz, normalized, topic);
+      const scored = await scoreQuiz(quiz, normalized, topic, analyticsUserId);
       setResult(scored);
 
         try {

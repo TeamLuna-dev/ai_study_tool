@@ -49,6 +49,7 @@ def score_quiz():
     data = request.get_json(silent=True) or {}
     quiz_obj = data.get("quiz")
     answers = data.get("answers")
+    user_id = data.get("user_id", DEV_USER_ID) # in production, user_id should be required and validated
 
     try:
         topic = validate_topic(data.get("topic"))
@@ -79,7 +80,7 @@ def score_quiz():
         analytics_saved = False
 
         try:
-            persist_quiz_attempt(topic=topic, score=score, total_questions=total)
+            persist_quiz_attempt(topic=topic, score=score, total_questions=total, user_id=user_id)
             analytics_saved = True
         except Exception:
             analytics_saved = False
