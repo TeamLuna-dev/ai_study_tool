@@ -48,6 +48,20 @@ export default function OnboardingPage() {
           </select>
         </div>
 
+        <div className="field-group">
+            <label className="field-label">Academic Level</label>
+            <div className="level-grid">
+              <button type="button" className="level-btn">High School</button>
+              <button type="button" className="level-btn">Undergraduate</button>
+              <button type="button" className="level-btn">Graduate / Postgrad</button>
+            </div>
+          </div>
+
+          <div className="btn-row">
+            <button type="button" className="btn-back">← Back</button>
+            <button type="button" className="btn-primary">Continue →</button>
+        </div>
+
       </div>
 
     </div>
@@ -131,6 +145,77 @@ export default function OnboardingPage() {
         color: #7a7a8c;
         margin-bottom: 8px;
       }
+
+      .field-input {
+      width: 100%;
+      background: #f7f8fa;
+      border: 1px solid #e8eaed;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      color: #1a1a2e;
+      outline: none;
+      transition: border-color 0.2s;
+      box-sizing: border-box;
+    }
+    .field-input::placeholder { color: #b0b0be; }
+    .field-input:focus { border-color: #2563eb; }
+    .field-select { appearance: none; cursor: pointer; }
+
+    .level-grid { display: flex; gap: 10px; flex-wrap: wrap; }
+    .level-btn {
+      flex: 1;
+      min-width: 100px;
+      padding: 10px 14px;
+      background: #f7f8fa;
+      border: 1px solid #e8eaed;
+      border-radius: 10px;
+      color: #7a7a8c;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      text-align: center;
+    }
+    .level-btn:hover {
+      border-color: #2563eb;
+      color: #2563eb;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 28px;
+    }
+    .btn-primary {
+      flex: 1;
+      padding: 13px 24px;
+      background: #2563eb;
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn-primary:hover { opacity: 0.88; }
+
+    .btn-back {
+      padding: 13px 18px;
+      background: transparent;
+      border: 1px solid #e8eaed;
+      border-radius: 10px;
+      color: #7a7a8c;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-back:hover { border-color: #b0b0be; color: #1a1a2e; }
 
       `}</style>
     </div>
