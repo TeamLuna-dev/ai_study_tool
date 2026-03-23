@@ -14,6 +14,19 @@ export default function OnboardingPage() {
             Let's personalise your experience. What's your name?
               </p>
           </div>
+          <div className="field-group">
+            <label htmlFor="displayName" className="field-label">
+            Your name 
+            </label>
+            <input
+              id="displayName"
+              name="displayName"
+              type="text"
+              className="field-input"
+              placeholder="e.g. Matt Murdock"
+            />
+          </div>
+
       </div>
 
     </div>
@@ -86,6 +99,18 @@ export default function OnboardingPage() {
           margin: 0;
           line-height: 1.6;
         }
+        
+        .field-group { margin-bottom: 20px; }
+        .field-label {
+        display: block;
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #7a7a8c;
+        margin-bottom: 8px;
+      }
+
       `}</style>
     </div>
   );
