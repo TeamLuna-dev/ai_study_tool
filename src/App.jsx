@@ -6,6 +6,7 @@ import LoginPage from "./components/auth/LoginPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import LoadingSpinner from "./components/common/LoadingSpinner";
 import NavBar from "./components/Navbar";
+import OnboardingPage from "./components/onboarding/OnboardingPage";
 
 // Protected route components are lazy-loaded so the login bundle stays small.
 // DashboardPage is a named export — unwrap it from the module object.
@@ -59,6 +60,12 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
 
             {/* Protected routes */}
+            <Route 
+            path="/onboarding" 
+            element={
+            <OnboardingPage />
+          } 
+            />
             <Route
               path="/dashboard"
               element={
