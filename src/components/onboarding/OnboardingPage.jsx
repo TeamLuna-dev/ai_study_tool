@@ -2,7 +2,6 @@ export default function OnboardingPage() {
   return (
     <div className="onboarding-root">
       <div className="onboarding-card">
-
         <div className="progress-track">
           <div className="progress-fill" style={{ width: "50%" }} />
         </div>
@@ -82,6 +81,7 @@ export default function OnboardingPage() {
         }
 
         .onboarding-card {
+          overflow: hidden; 
           width: 100%;
           max-width: 460px;
           min-height: 200px;
