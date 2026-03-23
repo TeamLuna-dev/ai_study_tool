@@ -11,9 +11,11 @@ export default function OnboardingPage() {
             <div className="step-badge">Step 1 of 2</div>
               <h1>Hey there!</h1>
               <p className="subtitle">
-            Let's personalise your experience. What's your name?
+            Let's personalise your experience!
               </p>
           </div>
+
+          
           <div className="field-group">
             <label htmlFor="displayName" className="field-label">
             Your name 
@@ -26,6 +28,25 @@ export default function OnboardingPage() {
               placeholder="e.g. Matt Murdock"
             />
           </div>
+
+          <div className="field-group">
+
+          <label htmlFor="major" className="field-label">
+            Subject / Major
+          </label>
+          <select id="major" className="field-input field-select">
+            <option value="">Select your major…</option>
+            <option>Biology</option>
+            <option>Business</option>
+            <option>Computer Science</option>
+            <option>Economics</option>
+            <option>Engineering</option>
+            <option>Mathematics</option>
+            <option>Psychology</option>
+            <option>Philosophy</option>
+            <option>Other</option>
+          </select>
+        </div>
 
       </div>
 
