@@ -1,21 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 import { FileUpload } from "./FileUpload";
 import { AuthGate } from "./AuthGate";
-import { ProcessingStatus } from "./ProcessingStatus";
 import { useAuth } from "../../hooks/useAuth";
-import { useDocumentStatus } from "../../hooks/useDocumentStatus";
 
 export default function FileUploadPage() {
   const { user } = useAuth();
   const is_authenticated = !!user;
   const get_auth_token = user ? () => user.getIdToken() : null;
-
-  const [docId, setDocId] = useState(null);
-  const { pipelineStatus, pipelineError } = useDocumentStatus(docId);
-
-  function handleUploadSuccess(_message, uploadedDocId) {
-    setDocId(uploadedDocId);
-  }
 
   return (
     <main className="flex justify-center px-4 py-12">
@@ -37,12 +28,7 @@ export default function FileUploadPage() {
           <AuthGate isAuthenticated={is_authenticated}>
             <FileUpload
               getAuthToken={get_auth_token}
-              onUploadSuccess={handleUploadSuccess}
               onUploadError={(msg) => console.error("Upload error:", msg)}
-            />
-            <ProcessingStatus
-              pipelineStatus={pipelineStatus}
-              pipelineError={pipelineError}
             />
           </AuthGate>
         </div>

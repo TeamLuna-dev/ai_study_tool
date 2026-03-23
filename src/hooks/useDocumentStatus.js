@@ -24,6 +24,10 @@ export function useDocumentStatus(docId) {
   const [pipelineError, setPipelineError]   = useState(null);
 
   useEffect(() => {
+    // Reset immediately whenever docId changes (including when set to null)
+    setPipelineStatus(null);
+    setPipelineError(null);
+
     if (!docId) return;
 
     const ref = doc(db, "documents", docId);
