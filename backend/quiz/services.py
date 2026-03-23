@@ -1,9 +1,37 @@
+from firebase_admin import firestore
+from firebase_admin_config import db
+
 WEAK_THRESHOLD = 70
 
 def calculate_percentage(score, total):
     if total == 0:
         return 0
     return (score / total) * 100
+
+# function to save quiz attempts to Firestore, including percentage calculation and timestamp
+def save_quiz_attempt(user_id, topic, score, total_questions):
+    percentage = calculate_percentage(score, total_questions)
+
+    firestore_attempt = {
+        "user_id": user_id,
+        "topic": topic,
+        "score": score,
+        "total_questions": total_questions,
+        "percentage": percentage,
+        "timestamp": firestore.SERVER_TIMESTAMP
+    }
+
+    db.collection("quiz_attempts").add(firestore_attempt)
+
+    response_attempt = {
+        "user_id": user_id,
+        "topic": topic,
+        "score": score,
+        "total_questions": total_questions,
+        "percentage": percentage
+    }
+
+    return response_attempt
 
 
 def analyze_performance(attempts):

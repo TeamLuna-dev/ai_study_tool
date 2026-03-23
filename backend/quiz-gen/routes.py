@@ -1,9 +1,27 @@
 # Defines the routes for the quiz-gen service.
 from service import generate_quiz_from_notes
 from flask import Blueprint, jsonify, request
-from validators import validate_quiz, validate_answers
+from validators import validate_quiz, validate_answers, validate_topic
+import requests
 
 quiz_bp = Blueprint("quiz_bp", __name__)
+
+# For development will use a hardcoded URL and user ID. In production this should be configured via environment variables or a config file.
+ANALYTICS_URL = "http://127.0.0.1:5000/submit-quiz"
+DEV_USER_ID = "test-user-123"
+
+def persist_quiz_attempt(topic, score, total_questions, user_id=DEV_USER_ID):
+    payload = {
+        "user_id": user_id,
+        "topic": topic,
+        "score": score,
+        "total_questions": total_questions,
+    }
+
+    response = requests.post(ANALYTICS_URL, json=payload, timeout=5)
+    response.raise_for_status()
+    return response.json()
+
 
 @quiz_bp.get("/api/quiz/health")
 def quiz_health():
@@ -31,8 +49,10 @@ def score_quiz():
     data = request.get_json(silent=True) or {}
     quiz_obj = data.get("quiz")
     answers = data.get("answers")
+    user_id = data.get("user_id", DEV_USER_ID) # in production, user_id should be required and validated
 
     try:
+        topic = validate_topic(data.get("topic"))
         questions = validate_quiz(quiz_obj)
         answers = validate_answers(answers, total_questions=len(questions))
 
@@ -57,11 +77,21 @@ def score_quiz():
         total = len(questions)
         percentage = round((score / total) * 100, 2)
 
+        analytics_saved = False
+
+        try:
+            persist_quiz_attempt(topic=topic, score=score, total_questions=total, user_id=user_id)
+            analytics_saved = True
+        except Exception:
+            analytics_saved = False
+
         return jsonify({
             "score": score,
             "total": total,
             "percentage": percentage,
-            "incorrect": incorrect
+            "incorrect": incorrect,
+            "topic": topic,
+            "analytics_saved": analytics_saved
         }), 200
 
     except ValueError as e:

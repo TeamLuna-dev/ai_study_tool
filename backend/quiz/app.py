@@ -1,11 +1,17 @@
 from flask import Flask, request, jsonify
-from datetime import datetime
 from firebase_admin import firestore
+from flask_cors import CORS
 from firebase_admin_config import db
-from services import calculate_percentage, analyze_performance, get_total_study_time, get_study_summary
+from services import (
+    save_quiz_attempt,
+    analyze_performance,
+    get_total_study_time,
+    get_study_summary,
+) 
 
 
 app = Flask(__name__)
+CORS(app)
 @app.route("/quiz-history/<user_id>", methods=["GET"])
 def quiz_history(user_id):
     attempts = db.collection("quiz_attempts").where("user_id", "==", user_id).stream()
@@ -19,29 +25,18 @@ def quiz_history(user_id):
     ]
     return jsonify(history)
 
-
-
 @app.route("/submit-quiz", methods=["POST"])
 def submit_quiz():
     data = request.json
 
-    percentage = calculate_percentage(
-        data["score"],
-        data["total_questions"]
+    attempt = save_quiz_attempt(
+        user_id=data["user_id"],
+        topic=data["topic"],
+        score=data["score"],
+        total_questions=data["total_questions"]
     )
 
-    attempt = {
-        "user_id": data["user_id"],
-        "topic": data["topic"],
-        "score": data["score"],
-        "total_questions": data["total_questions"],
-        "percentage": percentage,
-        "timestamp": firestore.SERVER_TIMESTAMP
-    }
-
-    db.collection("quiz_attempts").add(attempt)
-
-    return jsonify({"message": "Quiz saved successfully"}), 201
+    return jsonify({"message": "Quiz saved successfully", "attempt": attempt}), 201
 
 
 @app.route("/weak-topics/<user_id>", methods=["GET"])
