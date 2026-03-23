@@ -2,8 +2,23 @@ export default function OnboardingPage() {
   return (
     <div className="onboarding-root">
       <div className="onboarding-card">
-        <div className="card-inner" />
+
+        <div className="progress-track">
+          <div className="progress-fill" style={{ width: "50%" }} />
+        </div>
+        <div className="card-inner">
+                  <div className="onboarding-header">
+            <div className="step-badge">Step 1 of 2</div>
+              <h1>Hey there!</h1>
+              <p className="subtitle">
+            Let's personalise your experience. What's your name?
+              </p>
+          </div>
       </div>
+
+    </div>
+
+      
 
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&display=swap');
@@ -34,6 +49,42 @@ export default function OnboardingPage() {
 
         @media (max-width: 520px) {
           .card-inner { padding: 28px 24px; }
+        }
+
+                .progress-track {
+          height: 3px;
+          background: #f0f0f0;
+        }
+        .progress-fill {
+          height: 100%;
+          background: #2563eb;
+        }
+        .onboarding-header { margin-bottom: 32px; }
+        .step-badge {
+          display: inline-block;
+          font-size: 11px;
+          font-weight: 500;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: #2563eb;
+          background: #f0effe;
+          border-radius: 100px;
+          padding: 4px 12px;
+          margin-bottom: 16px;
+        }
+        .onboarding-header h1 {
+          font-family: 'Syne', sans-serif;
+          font-size: 26px;
+          font-weight: 800;
+          color: #1a1a2e;
+          margin: 0 0 8px;
+          line-height: 1.2;
+        }
+        .subtitle {
+          font-size: 14px;
+          color: #7a7a8c;
+          margin: 0;
+          line-height: 1.6;
         }
       `}</style>
     </div>
