@@ -3,7 +3,7 @@ import { FileUpload } from "./FileUpload";
 import { AuthGate } from "./AuthGate";
 import { useAuth } from "../../hooks/useAuth";
 
-export default function FileUploadPage({ isAuthenticated, getAuthToken }) {
+export default function FileUploadPage() {
   const { user } = useAuth();
   const is_authenticated = !!user;
   const get_auth_token = user ? () => user.getIdToken() : null;
@@ -28,8 +28,7 @@ export default function FileUploadPage({ isAuthenticated, getAuthToken }) {
           <AuthGate isAuthenticated={is_authenticated}>
             <FileUpload
               getAuthToken={get_auth_token}
-              onUploadSuccess={(msg) => console.log("Success:", msg)}
-              onUploadError={(msg) => console.error("Error:", msg)}
+              onUploadError={(msg) => console.error("Upload error:", msg)}
             />
           </AuthGate>
         </div>

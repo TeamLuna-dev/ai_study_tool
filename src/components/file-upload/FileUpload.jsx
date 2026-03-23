@@ -13,7 +13,9 @@ import React from "react";
 import { DropZone } from "./DropZone";
 import { ProgressBar } from "./ProgressBar";
 import { StatusAlert } from "./StatusAlert";
+import { ProcessingStatus } from "./ProcessingStatus";
 import { useFileUpload, UPLOAD_STATUS } from "../../hooks/useFileUpload";
+import { useDocumentStatus } from "../../hooks/useDocumentStatus";
 import { formatFileSize } from "../../util/fileValidation";
 
 /**
@@ -30,6 +32,7 @@ export function FileUpload({ onUploadSuccess, onUploadError, uploadFn, getAuthTo
     progress,
     message,
     selectedFile,
+    docId,
     handleFileSelect,
     handleUpload,
     handleCancel,
@@ -38,6 +41,8 @@ export function FileUpload({ onUploadSuccess, onUploadError, uploadFn, getAuthTo
 
   const isUploading = status === UPLOAD_STATUS.UPLOADING;
   const isSuccess   = status === UPLOAD_STATUS.SUCCESS;
+
+  const { pipelineStatus, pipelineError } = useDocumentStatus(docId);
 
   React.useEffect(() => {
     if (isSuccess && message) onUploadSuccess?.(message);
@@ -72,6 +77,9 @@ export function FileUpload({ onUploadSuccess, onUploadError, uploadFn, getAuthTo
 
       {/* Success / error / info alert — driven by upload status */}
       <StatusAlert status={status} message={message} />
+
+      {/* Live pipeline progress — visible after upload succeeds */}
+      <ProcessingStatus pipelineStatus={pipelineStatus} pipelineError={pipelineError} />
 
       {/* Action buttons — only one set is visible at a time */}
       <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>

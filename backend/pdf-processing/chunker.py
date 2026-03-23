@@ -2,23 +2,9 @@
 chunker.py
 Handles only text chunking — nothing else.
 
-Strategy: structure-aware chunking via the `unstructured` library.
-  - Partitions the PDF into typed elements (Title, NarrativeText, Table, etc.)
-  - Chunks by title boundaries so each chunk stays within one section
-  - Falls back to character-based chunking if unstructured is unavailable
-
-structure-aware vs. character-based chunking:
-  Character-based chunking cuts mid-sentence and mid-paragraph, producing
-  chunks with no semantic coherence. Structure-aware chunking respects the
-  document's natural boundaries — a chunk is a section, not an arbitrary
-  slice — which significantly improves retrieval accuracy in Qdrant.
-
-  TLDR: structure-aware chunking is better, but requires unstructured, 
-  which can be heavy to install. character-based chunking is a simpler, lightweight
-  failsafe.
-
-The fallback character chunker is . Swap strategies bychanging CHUNKING_STRATEGY 
-in your .env without touching callers.
+Two strategies, controlled by CHUNKING_STRATEGY in .env:
+  "api"        → Unstructured hosted API (structure-aware, no local install)
+  anything else → pdfminer character-based fallback
 """
 
 import os
@@ -52,11 +38,9 @@ def chunk_pdf(file_path: str) -> List[dict]:
     """
     Partitions and chunks a PDF file into semantically coherent chunks.
 
-    Preferred path: uses unstructured to detect document structure
-    (headings, paragraphs, tables) and chunk by title boundaries.
-
-    Fallback path: reads extracted text and splits by character count
-    with overlap (used when unstructured is not installed).
+    Strategy is controlled by CHUNKING_STRATEGY in .env:
+      "api"        → Unstructured hosted API (recommended — no local install needed)
+      anything else → pdfminer character-based fallback
 
     Arguments:
         file_path: Path to the PDF file.
@@ -68,14 +52,8 @@ def chunk_pdf(file_path: str) -> List[dict]:
           - "type":     str   element type e.g. "NarrativeText", "Table"
           - "metadata": dict  page numbers and any other structural info
     """
-    if CHUNKING_STRATEGY == "structural":
-        try:
-            return _structural_chunk(file_path)
-        except ImportError:
-            print(
-                "[chunker] unstructured not installed — falling back to "
-                "character chunking. Run: pip install unstructured[pdf]"
-            )
+    if CHUNKING_STRATEGY == "api":
+        return _api_chunk(file_path)
 
     # Fallback — extract text first then character-chunk it
     from pdf_parser import extract_text_from_pdf
@@ -123,43 +101,54 @@ def get_chunk_stats(chunks: List[dict]) -> dict:
 
 # ── Internal implementations ───────────────────────────────────────────────
 
-def _structural_chunk(file_path: str) -> List[dict]:
+def _api_chunk(file_path: str) -> List[dict]:
     """
-    Uses unstructured to partition the PDF by layout and chunk by title.
+    Sends the PDF to the Unstructured hosted API for partitioning and chunking.
+    Requires UNSTRUCTURED_API_KEY in the environment.
 
-    partition_pdf detects element types automatically:
-      - Title, NarrativeText, ListItem, Table, Header, Footer, etc.
-
-    chunk_by_title groups elements under their nearest heading, so each
-    chunk represents one coherent section of the document rather than
-    an arbitrary character slice.
+    The API handles both partitioning (detecting element types) and chunking
+    (grouping by title) in a single request — no local ML models needed.
     """
-    from unstructured.partition.pdf import partition_pdf
-    from unstructured.chunking.title import chunk_by_title
+    from unstructured_client import UnstructuredClient
+    from unstructured_client.models import shared
+    from unstructured_client.models.operations import PartitionRequest
 
-    # hi_res strategy uses layout analysis for better accuracy on
-    # complex PDFs (multi-column, tables, mixed content)
-    elements = partition_pdf(
-        filename=file_path,
-        strategy="hi_res",
+    api_key = os.getenv("UNSTRUCTURED_API_KEY")
+    if not api_key:
+        raise ValueError(
+            "UNSTRUCTURED_API_KEY is not set. "
+            "Add it to your .env or switch CHUNKING_STRATEGY=fast."
+        )
+
+    client = UnstructuredClient(api_key_auth=api_key)
+
+    with open(file_path, "rb") as f:
+        file_bytes = f.read()
+
+    req = PartitionRequest(
+        partition_parameters=shared.PartitionParameters(
+            files=shared.Files(
+                content=file_bytes,
+                file_name=os.path.basename(file_path),
+            ),
+            strategy=shared.Strategy.HI_RES,
+            chunking_strategy="by_title",
+            max_characters=MAX_CHARACTERS,
+            combine_under_n_chars=COMBINE_UNDER_N_CHARS,
+        )
     )
 
-    chunks = chunk_by_title(
-        elements,
-        max_characters=MAX_CHARACTERS,
-        combine_text_under_n_chars=COMBINE_UNDER_N_CHARS,
-    )
+    resp = client.general.partition(request=req)
 
     return [
         {
             "index":    i,
-            "text":     str(chunk),
-            # element_type tells us if this is a heading, paragraph, table etc.
-            "type":     type(chunk).__name__,
-            "metadata": chunk.metadata.to_dict() if hasattr(chunk, "metadata") else {},
+            "text":     element.get("text", ""),
+            "type":     element.get("type", "text"),
+            "metadata": element.get("metadata", {}),
         }
-        for i, chunk in enumerate(chunks)
-        if str(chunk).strip()   # skip empty chunks
+        for i, element in enumerate(resp.elements or [])
+        if element.get("text", "").strip()
     ]
 
 

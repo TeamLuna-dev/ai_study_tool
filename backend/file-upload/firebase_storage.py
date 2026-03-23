@@ -107,37 +107,55 @@ def upload_file_to_storage(
     }
 
 
+def update_document_status(doc_id: str, status: str, extra: dict = None) -> None:
+    """
+    Sets the Firestore document's status field.
+    Used by the pipeline to broadcast each processing stage to the frontend.
+
+    Arguments:
+        doc_id:  Firestore document ID.
+        status:  One of "extracting", "embedding", "storing", "ready", "error".
+        extra:   Optional extra fields to merge into the update (e.g. vectorIds).
+    """
+    db, _ = _get_firebase()
+    update = {"status": status}
+    if extra:
+        update.update(extra)
+    try:
+        db.collection("documents").document(doc_id).update(update)
+    except Exception as exc:
+        # Non-fatal — log but don't crash the pipeline
+        print(f"[FIREBASE] Warning: could not update status to '{status}': {exc}")
+
+
 def mark_document_ready(doc_id: str, vector_ids: list) -> None:
     """
     Updates a Firestore document status to "ready" after embeddings stored.
-    Called by Task 5 after storing all vectors in Qdrant.
     """
-    db, _ = _get_firebase()
-    try:
-        db.collection("documents").document(doc_id).update({
-            "status":    "ready",
-            "vectorIds": vector_ids,
-        })
-        print(f"[FIREBASE] Document {doc_id} marked ready with {len(vector_ids)} vectors.")
-
-    except Exception as exc:
-        raise FirebaseStorageError(
-            f"Failed to update document status: {exc}"
-        ) from exc
+    update_document_status(doc_id, "ready", {"vectorIds": vector_ids})
+    print(f"[FIREBASE] Document {doc_id} marked ready with {len(vector_ids)} vectors.")
 
 
-def mark_document_error(doc_id: str, error_message: str) -> None:
+def mark_document_error(doc_id: str, stage: str, message: str) -> None:
     """
-    Updates a Firestore document status to "error" when processing fails.
+    Updates a Firestore document status to "error" with structured context.
     Best-effort — logs but does not raise if the update itself fails.
+
+    Arguments:
+        doc_id:  Firestore document ID.
+        stage:   Which pipeline stage failed: "extraction", "embedding", or "storage".
+        message: Human-readable description of what went wrong.
     """
     try:
         db, _ = _get_firebase()
         db.collection("documents").document(doc_id).update({
             "status": "error",
-            "error":  error_message,
+            "error": {
+                "stage":   stage,
+                "message": message,
+            },
         })
-        print(f"[FIREBASE] Document {doc_id} marked as error: {error_message}")
+        print(f"[FIREBASE] Document {doc_id} error at '{stage}': {message}")
 
     except Exception as exc:
         print(f"[FIREBASE] Warning: could not mark document as error: {exc}")

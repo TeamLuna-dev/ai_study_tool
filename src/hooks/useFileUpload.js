@@ -51,10 +51,11 @@ export function useFileUpload({ uploadFn = uploadFile, getAuthToken } = {}) {
 
   // ── State ──────────────────────────────────────────────────────────────────
 
-  const [status, setStatus]           = useState(UPLOAD_STATUS.IDLE);
-  const [progress, setProgress]       = useState(0);
-  const [message, setMessage]         = useState(null);
+  const [status, setStatus]             = useState(UPLOAD_STATUS.IDLE);
+  const [progress, setProgress]         = useState(0);
+  const [message, setMessage]           = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [docId, setDocId]               = useState(null);
 
   // useRef stores the AbortController so we can cancel an in-flight upload.
   // We use a ref (not state) because changing it shouldn't trigger a re-render.
@@ -74,6 +75,7 @@ export function useFileUpload({ uploadFn = uploadFile, getAuthToken } = {}) {
     setProgress(0);
     setMessage(null);
     setSelectedFile(null);
+    setDocId(null);
   }, []);
 
   /**
@@ -132,6 +134,7 @@ export function useFileUpload({ uploadFn = uploadFile, getAuthToken } = {}) {
 
       setStatus(UPLOAD_STATUS.SUCCESS);
       setMessage(result.message);
+      setDocId(result.docId ?? null);
 
     } catch (err) {
       if (err.name === "AbortError") {
@@ -162,6 +165,7 @@ export function useFileUpload({ uploadFn = uploadFile, getAuthToken } = {}) {
     progress,
     message,
     selectedFile,
+    docId,
     handleFileSelect,
     handleUpload,
     handleCancel,

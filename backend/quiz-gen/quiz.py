@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 import argparse
 import json
+from typing import Optional
 
 def extract_output_text(response) -> str:
     """
@@ -20,7 +21,7 @@ def extract_output_text(response) -> str:
                     chunks.append(getattr(c, "text", "")) # if it's an output_text chunk, we want to extract the text and add it to our list of chunks
     return "\n".join(chunks).strip()
 
-def load_notes(notes_path: str | None) -> str:
+def load_notes(notes_path: Optional[str]) -> str:
     """
     Load notes from the root as it would normally do
     """
