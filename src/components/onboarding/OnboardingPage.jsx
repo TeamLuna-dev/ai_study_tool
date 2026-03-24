@@ -1,4 +1,47 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
+import { saveUserProfile } from "../../services/userService";
+
 export default function OnboardingPage() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const [form, setForm] = useState({
+    displayName: "", // empty string to allow controlled input with placeholder (finally fixed bug)
+    major: "",
+    academicLevel: "",
+  });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+// function to update form state, using the input's name attribute to identify which field to update. Also clears error on change.
+  function handleChange(e) {
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setError("");
+  }
+// async function to handle form submission. Validates that all fields are filled, then saves the profile and navigates to dashboard. Shows error message if something goes wrong.
+  async function handleSubmit(e) {
+    e.preventDefault();
+    if (!form.displayName.trim()) { setError("Please enter your name."); return; }
+    if (!form.major) { setError("Please select your major."); return; }
+    if (!form.academicLevel) { setError("Please select your academic level."); return; }
+
+    setLoading(true);
+    try {
+      await saveUserProfile(user.uid, {
+        displayName: form.displayName.trim(),
+        major: form.major,
+        academicLevel: form.academicLevel,
+        email: user.email,
+      });
+      navigate("/dashboard");
+    } catch (err) {
+      console.error(err);
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
   return (
     <div className="onboarding-root">
       <div className="onboarding-card">
