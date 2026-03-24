@@ -49,7 +49,8 @@ export default function OnboardingPage() {
           <div className="progress-fill" style={{ width: "50%" }} />
         </div>
         <div className="card-inner">
-                  <div className="onboarding-header">
+          <form onSubmit={handleSubmit}>
+            <div className="onboarding-header">
             <div className="step-badge">Step 1 of 2</div>
               <h1>Hey there!</h1>
               <p className="subtitle">
@@ -68,6 +69,8 @@ export default function OnboardingPage() {
               type="text"
               className="field-input"
               placeholder="e.g. Matt Murdock"
+              value={form.displayName}
+              onChange={handleChange}
             />
           </div>
 
@@ -76,7 +79,12 @@ export default function OnboardingPage() {
           <label htmlFor="major" className="field-label">
             Subject / Major
           </label>
-          <select id="major" className="field-input field-select">
+          <select id="major"
+            name="major"
+            className="field-input field-select"
+            value={form.major}
+            onChange={handleChange}
+          >
             <option value="">Select your major…</option>
             <option>Biology</option>
             <option>Business</option>
@@ -93,16 +101,27 @@ export default function OnboardingPage() {
         <div className="field-group">
             <label className="field-label">Academic Level</label>
             <div className="level-grid">
-              <button type="button" className="level-btn">High School</button>
-              <button type="button" className="level-btn">Undergraduate</button>
-              <button type="button" className="level-btn">Graduate / Postgrad</button>
+            {["high_school", "undergraduate", "graduate"].map((level) => (
+                  <button
+                    key={level}
+                    type="button"
+                    className={`level-btn ${form.academicLevel === level ? "level-btn--active" : ""}`}
+                    onClick={() => { setForm((prev) => ({ ...prev, academicLevel: level })); setError(""); }}
+                  >
+                    {{ high_school: "High School", undergraduate: "Undergraduate", graduate: "Graduate / Postgrad" }[level]}
+                  </button>
+                ))}
             </div>
           </div>
 
           <div className="btn-row">
-            <button type="button" className="btn-back">← Back</button>
-            <button type="button" className="btn-primary">Continue →</button>
-        </div>
+              <button type="button" className="btn-back" onClick={() => navigate(-1)}>← Back</button>
+              <button type="submit" className="btn-primary" disabled={loading}>
+                {loading ? "Saving…" : "Continue →"}
+              </button>
+            
+          </div>
+        </form>
 
       </div>
 
@@ -259,6 +278,13 @@ export default function OnboardingPage() {
       transition: all 0.2s;
     }
     .btn-back:hover { border-color: #b0b0be; color: #1a1a2e; }
+
+    .level-btn--active {
+      background: #eff6ff;
+      border-color: #2563eb;
+      color: #2563eb;
+    }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
       `}</style>
     </div>
