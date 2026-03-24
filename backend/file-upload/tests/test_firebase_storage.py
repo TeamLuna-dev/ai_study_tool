@@ -49,12 +49,12 @@ class TestDevMode:
 
     def test_valid_upload_returns_201(self, client):
         data = {"file": make_file("notes.pdf", "application/pdf")}
-        res  = client.post("/api/upload/", data=data, content_type="multipart/form-data")
+        res  = client.post("/api/upload", data=data, content_type="multipart/form-data")
         assert res.status_code == 201
 
     def test_response_contains_expected_fields(self, client):
         data = {"file": make_file("notes.pdf", "application/pdf")}
-        res  = client.post("/api/upload/", data=data, content_type="multipart/form-data")
+        res  = client.post("/api/upload", data=data, content_type="multipart/form-data")
         body = res.json
         assert body["user_uid"]  == "test-user-123"
         assert body["filename"]  == "notes.pdf"
@@ -67,7 +67,7 @@ class TestDevMode:
         monkeypatch.setattr(routes, "TEMP_DIR", str(tmp_path))
 
         data = {"file": make_file("slide.pdf", "application/pdf")}
-        client.post("/api/upload/", data=data, content_type="multipart/form-data")
+        client.post("/api/upload", data=data, content_type="multipart/form-data")
 
         files = list(tmp_path.iterdir())
         assert len(files) == 1
@@ -96,14 +96,14 @@ class TestProductionMode:
     def test_successful_upload_returns_201(self, mock_upload, client):
         self._mock_firebase(mock_upload)
         data = {"file": make_file("notes.pdf", "application/pdf")}
-        res  = client.post("/api/upload/", data=data, content_type="multipart/form-data")
+        res  = client.post("/api/upload", data=data, content_type="multipart/form-data")
         assert res.status_code == 201
 
     @patch("firebase_storage.upload_file_to_storage")
     def test_response_contains_firebase_fields(self, mock_upload, client):
         self._mock_firebase(mock_upload)
         data = {"file": make_file("notes.pdf", "application/pdf")}
-        res  = client.post("/api/upload/", data=data, content_type="multipart/form-data")
+        res  = client.post("/api/upload", data=data, content_type="multipart/form-data")
         body = res.json
         assert body["doc_id"]       == "firestore-doc-abc123"
         assert body["storage_url"]  == "https://storage.googleapis.com/test/notes.pdf"
@@ -115,7 +115,7 @@ class TestProductionMode:
         """Confirms routes.py passes the right data to firebase_storage."""
         self._mock_firebase(mock_upload)
         data = {"file": make_file("lecture.pdf", "application/pdf", size_bytes=2048)}
-        client.post("/api/upload/", data=data, content_type="multipart/form-data")
+        client.post("/api/upload", data=data, content_type="multipart/form-data")
 
         mock_upload.assert_called_once()
         call_kwargs = mock_upload.call_args.kwargs
@@ -131,7 +131,7 @@ class TestProductionMode:
         mock_upload.side_effect = FirebaseStorageError("Storage bucket unavailable.")
 
         data = {"file": make_file("notes.pdf", "application/pdf")}
-        res  = client.post("/api/upload/", data=data, content_type="multipart/form-data")
+        res  = client.post("/api/upload", data=data, content_type="multipart/form-data")
         assert res.status_code == 500
         assert "Storage bucket unavailable" in res.json["error"]
 
@@ -141,17 +141,17 @@ class TestProductionMode:
 class TestAuth:
 
     def test_missing_file_rejected(self, client):
-        res = client.post("/api/upload/", data={}, content_type="multipart/form-data")
+        res = client.post("/api/upload", data={}, content_type="multipart/form-data")
         assert res.status_code == 400
 
     def test_invalid_mime_type_rejected(self, client):
         data = {"file": make_file("doc.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")}
-        res  = client.post("/api/upload/", data=data, content_type="multipart/form-data")
+        res  = client.post("/api/upload", data=data, content_type="multipart/form-data")
         assert res.status_code == 415
 
     def test_oversized_file_rejected(self, client):
         data = {"file": make_file("big.pdf", "application/pdf", 21 * 1024 * 1024)}
-        res  = client.post("/api/upload/", data=data, content_type="multipart/form-data")
+        res  = client.post("/api/upload", data=data, content_type="multipart/form-data")
         assert res.status_code == 413
 
     def test_invalid_token_rejected(self, client, monkeypatch):
@@ -160,5 +160,5 @@ class TestAuth:
         monkeypatch.setattr(auth, "DEV_MODE", False)
 
         data = {"file": make_file("notes.pdf", "application/pdf")}
-        res  = client.post("/api/upload/", data=data, content_type="multipart/form-data")
+        res  = client.post("/api/upload", data=data, content_type="multipart/form-data")
         assert res.status_code == 401
