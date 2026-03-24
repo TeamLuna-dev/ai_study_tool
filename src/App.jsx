@@ -63,7 +63,9 @@ function App() {
             <Route 
             path="/onboarding" 
             element={
-            <OnboardingPage />
+              <ProtectedRoute exempt={true}>
+                <OnboardingPage />
+              </ProtectedRoute>
           } 
             />
             <Route
