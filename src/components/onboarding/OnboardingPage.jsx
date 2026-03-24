@@ -113,6 +113,8 @@ export default function OnboardingPage() {
                 ))}
             </div>
           </div>
+          
+          {error && <p className="field-error">{error}</p>}
 
           <div className="btn-row">
               <button type="button" className="btn-back" onClick={() => navigate(-1)}>← Back</button>
@@ -285,6 +287,16 @@ export default function OnboardingPage() {
       color: #2563eb;
     }
     .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .field-error {
+      font-size: 13px;
+      color: #dc2626;
+      margin-bottom: 16px;
+      padding: 10px 14px;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 8px;
+    }
 
       `}</style>
     </div>
