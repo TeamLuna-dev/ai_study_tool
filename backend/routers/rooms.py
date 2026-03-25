@@ -12,6 +12,7 @@ from models.room_models import (
     JoinRoomRequest,
     RoomResponse,
     JoinRoomResponse,
+    GetRoomResponse,
     MembersListResponse,
     RemoveMemberResponse,
     DeleteRoomResponse,
@@ -75,6 +76,20 @@ async def join_room(
         )
     try:
         return room_service.join_room(body.inviteCode, uid)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+@router.get("/{room_id}", response_model=GetRoomResponse, status_code=200)
+async def get_room(
+    room_id: str,
+    uid: str = Depends(get_current_uid),
+):
+    """Returns the room document. Caller must be a member (enforced by Firestore rules on direct reads; verified here via service)."""
+    try:
+        return room_service.get_room(room_id)
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc))
     except Exception as exc:

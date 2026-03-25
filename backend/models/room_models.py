@@ -39,10 +39,20 @@ class JoinRoomResponse(BaseModel):
     joinedAt: str
 
 
+class GetRoomResponse(BaseModel):
+    roomId: str
+    name: str
+    description: str
+    inviteCode: str
+    creatorId: str
+    createdAt: str
+
+
 class MemberResponse(BaseModel):
     uid: str
     role: str
     joinedAt: str
+    displayName: str
 
 
 class MembersListResponse(BaseModel):

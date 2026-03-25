@@ -40,7 +40,7 @@ export function RoomLobby({ room, members }) {
             type="text"
             value={inviteLink}
             readOnly
-            className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-600"
+            className="flex-1 min-w-0 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-600 truncate"
           />
           <button
             onClick={handleCopy}
@@ -83,7 +83,7 @@ export function RoomLobby({ room, members }) {
                 </div>
 
                 {/* Name */}
-                <span className="flex-1 text-sm text-gray-900">{member.name}</span>
+                <span className="flex-1 min-w-0 text-sm text-gray-900 truncate">{member.name}</span>
 
                 {/* Host badge */}
                 {member.isHost && (

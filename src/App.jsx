@@ -25,6 +25,11 @@ const RoomPage = lazy(() =>
     default: m.RoomPage,
   }))
 );
+const RoomsPage = lazy(() =>
+  import("./components/rooms/RoomsPage").then((m) => ({
+    default: m.RoomsPage,
+  }))
+);
 const UploadPage = lazy(() =>
   import("./components/file-upload/FileUploadPage").then((m) => ({
     default: m.default,
@@ -112,7 +117,15 @@ function App() {
               path="/rooms"
               element={
                 <ProtectedRoute>
-                  <RoomPage title="Study Rooms" />
+                  <RoomsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/rooms/:roomId"
+              element={
+                <ProtectedRoute>
+                  <RoomPage />
                 </ProtectedRoute>
               }
             />
