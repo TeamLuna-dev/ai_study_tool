@@ -85,6 +85,9 @@ def create_room(name: str, description: str, creator_uid: str) -> dict:
         "creatorId":   creator_uid,
         "createdAt":   now,
         "inviteCode":  invite_code,
+        # Denormalized array so the frontend can run an array-contains query
+        # without a subcollection lookup. Keep in sync with the members subcollection.
+        "members": [creator_uid],
     })
 
     room_ref.collection("members").document(creator_uid).set({
