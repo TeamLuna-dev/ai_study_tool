@@ -5,14 +5,13 @@ import { Send, MessageSquare } from 'lucide-react';
  * Chat area for room communication
  * Single responsibility: Display messages and message input
  */
-export function ChatArea({ messages }) {
+export function ChatArea({ messages, onSend }) {
   const [newMessage, setNewMessage] = useState('');
 
   const handleSend = (e) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
-    // In future: send message to backend
-    console.log('Send message:', newMessage);
+    onSend?.(newMessage);
     setNewMessage('');
   };
 
