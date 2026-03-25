@@ -157,6 +157,23 @@ def join_room(invite_code: str, user_uid: str) -> dict:
     }
 
 
+def get_room(room_id: str) -> dict:
+    """Returns the room document fields."""
+    room_ref = db.collection("rooms").document(room_id)
+    doc = room_ref.get()
+    if not doc.exists:
+        raise ValueError("Room not found")
+    data = doc.to_dict()
+    return {
+        "roomId":      doc.id,
+        "name":        data.get("name"),
+        "description": data.get("description", ""),
+        "inviteCode":  data.get("inviteCode"),
+        "creatorId":   data.get("creatorId"),
+        "createdAt":   _ts(data.get("createdAt")),
+    }
+
+
 def get_members(room_id: str) -> List[dict]:
     """Returns all members of the room with their roles and join timestamps."""
     room_ref = db.collection("rooms").document(room_id)
@@ -167,9 +184,10 @@ def get_members(room_id: str) -> List[dict]:
     for doc in room_ref.collection("members").get():
         data = doc.to_dict()
         result.append({
-            "uid":      doc.id,
-            "role":     data.get("role"),
-            "joinedAt": _ts(data.get("joinedAt")),
+            "uid":         doc.id,
+            "role":        data.get("role"),
+            "joinedAt":    _ts(data.get("joinedAt")),
+            "displayName": data.get("displayName", doc.id),
         })
     return result
 
