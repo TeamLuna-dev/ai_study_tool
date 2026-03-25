@@ -143,6 +143,12 @@ def join_room(invite_code: str, user_uid: str) -> dict:
         "displayName": display_name,
     })
 
+    # Keep the denormalized members array in sync so Firestore security rules
+    # (which use array-contains queries) and room-read checks stay valid.
+    room_doc.reference.update({
+        "members": firebase_firestore.ArrayUnion([user_uid])
+    })
+
     return {
         "roomId":   room_id,
         "userId":   user_uid,
@@ -194,6 +200,7 @@ def remove_member(room_id: str, target_uid: str, requesting_uid: str) -> dict:
         raise PermissionError("Only the room owner can remove other members")
 
     room_ref.collection("members").document(target_uid).delete()
+    room_ref.update({"members": firebase_firestore.ArrayRemove([target_uid])})
     return {"removed": target_uid, "roomId": room_id}
 
 
