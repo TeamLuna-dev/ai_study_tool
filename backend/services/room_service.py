@@ -15,6 +15,8 @@ import string
 from datetime import datetime, timezone
 from typing import Dict, List, Optional, Set
 
+from firebase_admin import auth as firebase_auth
+from firebase_admin import firestore as firebase_firestore
 from firebase_admin_config import db
 
 
@@ -90,9 +92,16 @@ def create_room(name: str, description: str, creator_uid: str) -> dict:
         "members": [creator_uid],
     })
 
+    try:
+        user_record = firebase_auth.get_user(creator_uid)
+        display_name = user_record.display_name or user_record.email or creator_uid
+    except Exception:
+        display_name = creator_uid
+
     room_ref.collection("members").document(creator_uid).set({
-        "role":     "owner",
-        "joinedAt": now,
+        "role":        "owner",
+        "joinedAt":    now,
+        "displayName": display_name,
     })
 
     return {
@@ -122,9 +131,16 @@ def join_room(invite_code: str, user_uid: str) -> dict:
         raise ValueError(f"Already a member of this room with role: {existing_role}")
 
     now = datetime.now(timezone.utc)
+    try:
+        user_record = firebase_auth.get_user(user_uid)
+        display_name = user_record.display_name or user_record.email or user_uid
+    except Exception:
+        display_name = user_uid
+
     room_doc.reference.collection("members").document(user_uid).set({
-        "role":     "member",
-        "joinedAt": now,
+        "role":        "member",
+        "joinedAt":    now,
+        "displayName": display_name,
     })
 
     return {
