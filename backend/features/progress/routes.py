@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from firebase_admin import firestore
 from security.firebase_admin_config import db
 from .services import (
-    calculate_percentage,
+    save_quiz_attempt,
     analyze_performance,
     get_total_study_time,
     get_study_summary,
@@ -12,25 +12,46 @@ progress_bp = Blueprint("progress_bp", __name__)
 
 @progress_bp.post("/submit-quiz")
 def submit_quiz():
-    data = request.json
+    data = request.get_json(silent=True) or {}
 
-    percentage = calculate_percentage(
-        data["score"],
-        data["total_questions"]
-    )
+    user_id = data.get("user_id")
+    topic = data.get("topic")
+    score = data.get("score")
+    total_questions = data.get("total_questions")
 
-    attempt = {
-        "user_id": data["user_id"],
-        "topic": data["topic"],
-        "score": data["score"],
-        "total_questions": data["total_questions"],
-        "percentage": percentage,
-        "timestamp": firestore.SERVER_TIMESTAMP
-    }
+    if not user_id or not topic:
+        return jsonify({"error": "user_id and topic are required"}), 400
 
-    db.collection("quiz_attempts").add(attempt)
+    if score is None or total_questions is None:
+        return jsonify({"error": "score and total_questions are required"}), 400
 
-    return jsonify({"message": "Quiz saved successfully"}), 201
+    try:
+        saved_attempt = save_quiz_attempt(
+            user_id=user_id,
+            topic=topic,
+            score=score,
+            total_questions=total_questions
+        )
+        return jsonify({
+            "message": "Quiz saved successfully",
+            "attempt": saved_attempt
+        }), 201
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+
+@progress_bp.get("/quiz-attempts/<user_id>")
+def get_quiz_attempts(user_id):
+    attempts = db.collection("quiz_attempts").where("user_id", "==", user_id).stream()
+
+    result = []
+    for doc in attempts:
+        attempt = doc.to_dict()
+        attempt["id"] = doc.id
+        result.append(attempt)
+
+    return jsonify(result), 200
 
 
 @progress_bp.get("/weak-topics/<user_id>")
@@ -43,12 +64,22 @@ def weak_topics(user_id):
 
 @progress_bp.post("/log-session")
 def log_session():
-    data = request.json
+    data = request.get_json(silent=True) or {}
+
+    user_id = data.get("user_id")
+    topic = data.get("topic")
+    duration_minutes = data.get("duration_minutes")
+
+    if not user_id or not topic:
+        return jsonify({"error": "user_id and topic are required"}), 400
+
+    if duration_minutes is None:
+        return jsonify({"error": "duration_minutes is required"}), 400
 
     session = {
-        "user_id": data["user_id"],
-        "topic": data["topic"],
-        "duration_minutes": data["duration_minutes"],
+        "user_id": user_id,
+        "topic": topic,
+        "duration_minutes": duration_minutes,
         "timestamp": firestore.SERVER_TIMESTAMP
     }
 

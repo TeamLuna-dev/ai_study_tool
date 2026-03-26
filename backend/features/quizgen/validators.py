@@ -30,6 +30,13 @@ def validate_quiz(quiz_obj: dict) -> list[dict]:
 
     return questions
 
+def validate_topic(topic) -> str:
+    if not isinstance(topic, str) or not topic.strip():
+        raise ValueError("Topic must be a non-empty string.")
+
+    return topic.strip() # validate topic is non-empty string and strip whitespace
+
+
 
 def validate_answers(answers, total_questions: int) -> list[int]:
     if not isinstance(answers, list):
