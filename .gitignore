@@ -17,7 +17,8 @@ serviceAccountKey.json
 venv/
 
 /quiz-gen/.env
-/quiz-gen/.venv
+/backend/.venv
+/backend/.python-version
 # Compiled Java class files
 *.class
 

@@ -42,15 +42,41 @@ def generate_quiz():
         return jsonify({"error": "Provide either 'notes' or 'doc_id'."}), 400
     
     try:
-        quiz_obj = generate_quiz_from_notes(notes)
-         
-        validate_quiz(quiz_obj) # ensure the generated quiz is valid before returning
+         # if doc_id provided, fetch chunks from Qdrant
+        if doc_id:
+            client = get_client()
+            results = client.scroll(
+                collection_name=COLLECTION_NAME,
+                scroll_filter=Filter(
+                    must=[
+                        FieldCondition(
+                            key="doc_id",
+                            match=MatchValue(value=doc_id),
+                        )
+                    ]
+                ),
+                limit=50,
+                with_payload=True,
+                with_vectors=False,
+            )
 
+            chunks = results[0]  # scroll returns (points, next_page_offset)
+
+            if not chunks:
+                return jsonify({"error": "No chunks found for this document."}), 404
+
+            # sort by chunk_index and build notes string
+            chunks.sort(key=lambda p: p.payload.get("chunk_index", 0))
+            notes = "\n\n".join(p.payload["text"] for p in chunks)
+
+        quiz_obj = generate_quiz_from_notes(notes)
+        validate_quiz(quiz_obj)
         return jsonify({"quiz": quiz_obj}), 200
 
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
-    except Exception:
+    except Exception as e:
+        print(f"[QUIZ-GEN] Error: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
 @quiz_bp.post("/api/quiz/score")
@@ -61,6 +87,7 @@ def score_quiz():
     user_id = data.get("user_id", DEV_USER_ID) # in production, user_id should be required and validated
 
     try:
+        
         topic = validate_topic(data.get("topic"))
         questions = validate_quiz(quiz_obj)
         answers = validate_answers(answers, total_questions=len(questions))
