@@ -151,6 +151,10 @@ export function QuizPage() {
   const [weakTopics, setWeakTopics] = useState([]); // new states for personalized quiz-generation. (wll use in future tasks)
   const [loadingAnalysis, setLoadingAnalysis] = useState(false); // state to track loading 
 
+  const [userDocs, setUserDocs] = useState([]); // state to hold user's uploaded documents for doc-based quiz generation
+  const [selectedDocId, setSelectedDocId] = useState(""); // state to track which document the user has selected for quiz generation
+  const [inputMode, setInputMode] = useState("docs"); // "docs" | "notes"
+
   const questions = quiz?.questions || [];
   const q = questions[current];
   const isLast = current === questions.length - 1;
