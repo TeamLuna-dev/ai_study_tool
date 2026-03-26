@@ -165,7 +165,7 @@ export function QuizPage() {
     setLoadingGen(true);
 
     try {
-      const newQuiz = await generateQuiz(notes);
+      const newQuiz = await generateQuiz({ notes });
       setQuiz(newQuiz);
 
       // resets the quiz UI
