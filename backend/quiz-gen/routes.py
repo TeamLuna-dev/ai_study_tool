@@ -1,4 +1,9 @@
 # Defines the routes for the quiz-gen service.
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "embeddings")))
+from qdrant_store import get_client, COLLECTION_NAME
+from qdrant_client.models import Filter, FieldCondition, MatchValue
 from service import generate_quiz_from_notes
 from flask import Blueprint, jsonify, request
 from validators import validate_quiz, validate_answers, validate_topic
@@ -31,7 +36,11 @@ def quiz_health():
 def generate_quiz():
     data = request.get_json(silent=True) or {}
     notes = (data.get("notes") or "").strip()
+    doc_id = (data.get("doc_id") or "").strip() # implemented doc_id support, FEAT
 
+    if not notes and not doc_id:
+        return jsonify({"error": "Provide either 'notes' or 'doc_id'."}), 400
+    
     try:
         quiz_obj = generate_quiz_from_notes(notes)
          
