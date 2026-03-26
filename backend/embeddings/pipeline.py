@@ -11,15 +11,19 @@ Status progression:
                                                ↘ error (at any stage)
 
 Designed to run in a background thread after the upload route returns.
-All dependencies are imported at module level so tests can mock them via
-  pipeline.chunk_pdf = MagicMock(...)
 """
 
 import os
-import sys
 import tempfile
 
-# ── Path setup (module level so imports below resolve correctly) ──────────────
+from processing.processing.chunker import chunk_pdf
+from embeddings.embedder import embed_chunks
+from embeddings.qdrant_store import store_embeddings
+from features.upload.firebase_storage import (
+    update_document_status,
+    mark_document_ready,
+    mark_document_error,
+)
 
 
 def process_document(
@@ -43,44 +47,46 @@ def process_document(
         doc_id:     Firestore document ID to update throughout processing.
         mimetype:   Only "application/pdf" is processed; others are rejected.
     """
-   
-
-    from features.upload.firebase_storage import mark_document_ready, mark_document_error
-
-    # Only PDFs can be chunked; skip other types gracefully
     if mimetype != "application/pdf":
-        print(f"[PIPELINE] Skipping non-PDF file '{file_name}' (mimetype: {mimetype}).")
-        mark_document_error(doc_id, f"Embedding pipeline only supports PDFs, got {mimetype}.")
+        print(f"[PIPELINE] Skipping non-PDF '{file_name}' ({mimetype}).")
+        mark_document_error(
+            doc_id,
+            stage="extraction",
+            message=f"Only PDF files can be processed. Received: {mimetype}.",
+        )
         return
 
+    # Stage 1: Extraction
+    update_document_status(doc_id, "extracting")
     try:
-        from processing.chunker import chunk_pdf
-        from .embedder import embed_chunks
-        from .qdrant_store import store_embeddings
+        with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
+            tmp.write(file_bytes)
+            tmp_path = tmp.name
 
-            try:
-                print(f"[PIPELINE] Extracting '{file_name}' …")
-                chunks = chunk_pdf(tmp_path)
-            finally:
+        try:
+            print(f"[PIPELINE] Extracting '{file_name}' ...")
+            chunks = chunk_pdf(tmp_path)
+        finally:
+            if os.path.exists(tmp_path):
                 os.unlink(tmp_path)
 
-            if not chunks:
-                mark_document_error(
-                    doc_id,
-                    stage="extraction",
-                    message="No text could be extracted. The PDF may be image-based or empty.",
-                )
-                return
+        if not chunks:
+            mark_document_error(
+                doc_id,
+                stage="extraction",
+                message="No text could be extracted. The PDF may be image-based or empty.",
+            )
+            return
 
     except Exception as exc:
         print(f"[PIPELINE] Extraction failed for '{file_name}': {exc}")
         mark_document_error(doc_id, stage="extraction", message=str(exc))
         return
 
-    # ── Stage 2: Embedding ────────────────────────────────────────────────
+    # Stage 2: Embedding
     update_document_status(doc_id, "embedding")
     try:
-        print(f"[PIPELINE] Embedding {len(chunks)} chunks …")
+        print(f"[PIPELINE] Embedding {len(chunks)} chunks ...")
         chunks = embed_chunks(chunks)
 
     except Exception as exc:
@@ -88,10 +94,10 @@ def process_document(
         mark_document_error(doc_id, stage="embedding", message=str(exc))
         return
 
-    # ── Stage 3: Qdrant Storage ───────────────────────────────────────────
+    # Stage 3: Storage
     update_document_status(doc_id, "storing")
     try:
-        print(f"[PIPELINE] Storing embeddings in Qdrant …")
+        print(f"[PIPELINE] Storing embeddings in Qdrant ...")
         vector_ids = store_embeddings(
             chunks,
             uid=uid,
@@ -104,6 +110,6 @@ def process_document(
         mark_document_error(doc_id, stage="storage", message=str(exc))
         return
 
-    # ── Done ──────────────────────────────────────────────────────────────
+    # Done
     mark_document_ready(doc_id, vector_ids)
     print(f"[PIPELINE] Done — '{file_name}': {len(vector_ids)} vectors stored.")

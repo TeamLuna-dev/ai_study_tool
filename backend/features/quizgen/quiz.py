@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 import argparse
 import json
+from typing import Optional
 
 def extract_output_text(response) -> str:
     """
