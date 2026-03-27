@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { generateQuiz, scoreQuiz, getWeakTopics } from "../../services/quizService";
 import { useAuth } from "../../hooks/useAuth";
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { db } from "../../config/firebase";
 
 // Kept same UI structure as before for simplicity... to be improved later. 
 // Note: Design is wacky now, will apply OCP later on
@@ -155,13 +157,32 @@ export function QuizPage() {
   const [selectedDocId, setSelectedDocId] = useState(""); // state to track which document the user has selected for quiz generation
   const [inputMode, setInputMode] = useState("docs"); // "docs" | "notes"
 
+  useEffect(() => { // fetch user's uploaded documents on component mount, if user is logged in
+  if (!user) return;
+
+  async function fetchDocs() {
+    const q = query(
+      collection(db, "documents"),
+      where("ownerId", "==", user.uid),
+      where("status", "==", "ready")
+    );
+    const snap = await getDocs(q);
+    const docs = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+    setUserDocs(docs);
+  }
+
+  fetchDocs();
+}, [user]);
+
   const questions = quiz?.questions || [];
   const q = questions[current];
   const isLast = current === questions.length - 1;
   const isFirst = current === 0;
 
   async function handleGenerate() {
-    if (!notes.trim() || !topic) return;
+    if (inputMode === "docs" && !selectedDocId) return;
+    if (inputMode === "notes" && !notes.trim()) return;
+    if (!topic) return;
     setWeakTopics([]);
     setLoadingAnalysis(false);
     setError("");
@@ -169,10 +190,12 @@ export function QuizPage() {
     setLoadingGen(true);
 
     try {
-      const newQuiz = await generateQuiz({ notes });
-      setQuiz(newQuiz);
-
+      const newQuiz = inputMode === "docs"
+        ? await generateQuiz({ docId: selectedDocId })
+        : await generateQuiz({ notes });
       // resets the quiz UI
+
+      setQuiz(newQuiz);
       setCurrent(0);
       setSelected(null);
       setAnswers(new Array(newQuiz.questions.length).fill(null));
@@ -252,6 +275,8 @@ export function QuizPage() {
   function handleRestart() {
     setQuiz(null);
     setNotes("");
+    setSelectedDocId("");
+    setInputMode("docs");
     setCurrent(0);
     setSelected(null);
     setAnswers([]);
