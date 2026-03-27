@@ -1,6 +1,7 @@
 # integrity_service.py
 # idea: a simple script to check the integrity of the quiz generation process, part of the QA process for the quiz gen service.
 
+import json
 
 MIN_QUESTION_LENGTH = 10   # characters
 MAX_QUESTION_LENGTH = 500  # characters
@@ -48,7 +49,7 @@ def check_question(question: dict, notes: str) -> list[str]:
     return failures
 
 def run_integrity_checks(quiz: dict, notes: str) -> dict:
-    
+
     questions = quiz.get("questions", [])
     passed = []
     failed = []
@@ -76,3 +77,48 @@ def run_integrity_checks(quiz: dict, notes: str) -> dict:
         "failed":  failed,
         "blocked": blocked,
     }
+
+def verify_question_with_llm(question: dict, notes: str, client, model: str = "gpt-4o") -> list[str]:
+    q_text       = question.get("question", "")
+    choices      = question.get("choices", [])
+    correct      = question.get("correct_index", -1)
+    correct_choice = choices[correct] if 0 <= correct < len(choices) else "unknown"
+
+    prompt = f"""
+You are an academic reviewer for a student study tool.
+
+Given the source notes and a multiple choice question generated from them,
+determine whether the question is:
+1. Accurate: the correct answer is actually correct based on the notes
+2. Grounded: the question is based on information present in the notes
+3. Unambiguous: there is clearly one correct answer and the others are wrong
+
+Source Notes:
+{notes}
+
+Question: {q_text}
+Choices: {choices}
+Marked correct answer: {correct_choice}
+
+Respond ONLY with a JSON object in this exact format, no other text:
+{{
+  "passes": true or false,
+  "reasons": ["reason 1", "reason 2"]
+}}
+
+If the question passes all checks, reasons should be an empty list.
+""".strip()
+
+    try:
+        response = client.chat.completions.create(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            response_format={"type": "json_object"},
+        )
+        result = json.loads(response.choices[0].message.content)
+        if not result.get("passes", True):
+            return result.get("reasons", ["LLM flagged this question."])
+        return []
+    except Exception as e:
+        print(f"[INTEGRITY] LLM verify failed: {e}")
+        return []  # fail open — don't block if LLM call fails
