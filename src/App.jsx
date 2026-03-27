@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation  } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { useAuth } from "./hooks/useAuth";
 import LoginPage from "./components/auth/LoginPage";
@@ -50,87 +50,115 @@ function RootRedirect() {
   return <Navigate to={user ? "/dashboard" : "/login"} replace />;
 }
 
-function App() {
+function AppLayout() {
+  const location = useLocation();
+
+  const hideNavbarRoutes = ["/login"];
+  const shouldShowNavbar = !hideNavbarRoutes.includes(location.pathname);
+
   return (
-    <AuthProvider>
-      <BrowserRouter>
-      <NavBar />
-        {/* Suspense catches the lazy-load suspend of protected route components. */}
-        <Suspense fallback={<LoadingSpinner />}>
-          <Routes>
-            {/* Root — redirect based on auth state */}
-            <Route path="/" element={<RootRedirect />} />
+    <>
+      {shouldShowNavbar && <NavBar />}
 
-            {/* Public */}
-            <Route path="/login" element={<LoginPage />} />
+      <Suspense fallback={<LoadingSpinner />}>
+        <Routes>
+          <Route path="/" element={<RootRedirect />} />
 
-            {/* Protected routes */}
-            <Route 
-            path="/onboarding" 
+          <Route path="/login" element={<LoginPage />} />
+
+          <Route
+            path="/onboarding"
             element={
               <ProtectedRoute exempt={true}>
                 <OnboardingPage />
               </ProtectedRoute>
-          } 
-            />
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <DashboardPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/file-upload"
-              element={
-                <ProtectedRoute>
-                  <UploadPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/qa"
-              element={
-                <ProtectedRoute>
-                  <ToolPlaceholderPage title="Q&A" />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/quiz"
-              element={
-                <ProtectedRoute>
-                  <QuizPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/summaries"
-              element={
-                <ProtectedRoute>
-                  <ToolPlaceholderPage title="Summaries" />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/rooms"
-              element={
-                <ProtectedRoute>
-                  <RoomsPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/rooms/:roomId"
-              element={
-                <ProtectedRoute>
-                  <RoomPage />
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-        </Suspense>
+            }
+          />
+
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/file-upload"
+            element={
+              <ProtectedRoute>
+                <UploadPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/quiz"
+            element={
+              <ProtectedRoute>
+                <QuizPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/summaries"
+            element={
+              <ProtectedRoute>
+                <ToolPlaceholderPage title="Summaries" />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/study-plan"
+            element={
+              <ProtectedRoute>
+                <ToolPlaceholderPage title="Study Plan Generator" />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/qa"
+            element={
+              <ProtectedRoute>
+                <ToolPlaceholderPage title="Q&A" />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/rooms"
+            element={
+              <ProtectedRoute>
+                <RoomsPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/rooms/:roomId"
+            element={
+              <ProtectedRoute>
+                <RoomPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Suspense>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <AppLayout />
       </BrowserRouter>
     </AuthProvider>
   );

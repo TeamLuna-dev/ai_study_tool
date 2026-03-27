@@ -1,7 +1,7 @@
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:5001";
 
 export async function getWeakTopics(userId) {
-  const res = await fetch(`http://127.0.0.1:5002/weak-topics/${userId}`);
+  const res = await fetch(`${API_BASE}/api/progress/weak-topics/${userId}`);
   const data = await res.json().catch(() => ({}));
 
   if (!res.ok) {
@@ -13,7 +13,7 @@ export async function getWeakTopics(userId) {
 }
 
 export async function getSessionSummary(userId) {
-  const res = await fetch(`http://127.0.0.1:5000/session-summary/${userId}`);
+  const res = await fetch(`${API_BASE}/api/progress/session-summary/${userId}`);
   const data = await res.json().catch(() => ({}));
 
   if (!res.ok) {
