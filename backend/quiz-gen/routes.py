@@ -3,7 +3,7 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "embeddings")))
 from qdrant_store import get_client, COLLECTION_NAME
-from qdrant_client.models import Filter, FieldCondition, MatchValue
+from qdrant_client.models import Filter, FieldCondition, MatchValue, PayloadSchemaType
 from service import generate_quiz_from_notes
 from flask import Blueprint, jsonify, request
 from validators import validate_quiz, validate_answers, validate_topic
@@ -45,6 +45,11 @@ def generate_quiz():
          # if doc_id provided, fetch chunks from Qdrant
         if doc_id:
             client = get_client()
+            client.create_payload_index(
+            collection_name=COLLECTION_NAME,
+            field_name="doc_id",
+            field_schema=PayloadSchemaType.KEYWORD,
+        )
             results = client.scroll(
                 collection_name=COLLECTION_NAME,
                 scroll_filter=Filter(
