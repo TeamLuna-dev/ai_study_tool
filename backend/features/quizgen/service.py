@@ -45,7 +45,7 @@ def _extract_output_text(response) -> str:
                     chunks.append(getattr(c, "text", ""))
     return "\n".join(chunks).strip()
 
-def generate_quiz_from_notes(notes: str, model: str = "gpt-4.1") -> dict:
+def generate_quiz_from_notes(notes: str, model: str = "gpt-4.1", academic_level: str = "undergraduate", major: str = "") -> dict:
     if not isinstance(notes, str) or not notes.strip():
         raise ValueError("notes must be a non-empty string")
 
@@ -53,11 +53,24 @@ def generate_quiz_from_notes(notes: str, model: str = "gpt-4.1") -> dict:
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
         raise RuntimeError("Missing OPENAI_API_KEY")
-
     client = OpenAI(api_key=api_key)
+
+    level_instructions = {
+        "high_school":   "Use simple vocabulary and straightforward concepts. Avoid jargon.",
+        "undergraduate": "Use standard academic language appropriate for a university student.",
+        "graduate":      "Use advanced terminology and assume strong domain knowledge.",
+    }
+
+    level_guidance = level_instructions.get(academic_level, level_instructions["undergraduate"])
+    major_context  = f"The student is studying {major}." if major else ""
 
     prompt = f"""
 You are helping a student study.
+
+Student context:
+- Academic level: {academic_level}
+- {major_context}
+- Complexity guidance: {level_guidance}
 
 Create exactly 5 multiple-choice questions based ONLY on the notes below.
 
@@ -65,17 +78,18 @@ Rules:
 - Exactly 4 answer choices.
 - Exactly one correct answer.
 - Do not use outside facts.
+- Match question complexity to the student's academic level.
 
 NOTES:
 {notes}
 """.strip()
 
-    response = client.responses.create(
+    response = client.chat.completions.create(
         model=model,
-        input=prompt,
-        text={
-            "format": {
-                "type": "json_schema",
+        messages=[{"role": "user", "content": prompt}],
+        response_format={
+            "type": "json_schema",
+            "json_schema": {
                 "name": fiveMCQ_schema["name"],
                 "schema": fiveMCQ_schema["schema"],
                 "strict": True,
@@ -83,5 +97,5 @@ NOTES:
         },
     )
 
-    json_text = _extract_output_text(response)
+    json_text = response.choices[0].message.content
     return json.loads(json_text)
