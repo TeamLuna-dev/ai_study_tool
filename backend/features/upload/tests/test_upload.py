@@ -41,19 +41,19 @@ def make_file(filename, mimetype, size_bytes=1024):
 
 def test_valid_pdf_upload(client):
     data = {"file": make_file("notes.pdf", "application/pdf")}
-    res = client.post("/api/upload/", data=data, content_type="multipart/form-data")
+    res = client.post("/api/upload", data=data, content_type="multipart/form-data")
     assert res.status_code == 201
     assert res.json["user_uid"] == "test-user-123"
     assert res.json["filename"] == "notes.pdf"
 
 def test_valid_jpg_upload(client):
     data = {"file": make_file("photo.jpg", "image/jpeg")}
-    res = client.post("/api/upload/", data=data, content_type="multipart/form-data")
+    res = client.post("/api/upload", data=data, content_type="multipart/form-data")
     assert res.status_code == 201
 
 def test_valid_png_upload(client):
     data = {"file": make_file("diagram.png", "image/png")}
-    res = client.post("/api/upload/", data=data, content_type="multipart/form-data")
+    res = client.post("/api/upload", data=data, content_type="multipart/form-data")
     assert res.status_code == 201
 
 
@@ -61,7 +61,7 @@ def test_valid_png_upload(client):
 
 def test_invalid_mime_type_rejected(client):
     data = {"file": make_file("doc.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")}
-    res = client.post("/api/upload/", data=data, content_type="multipart/form-data")
+    res = client.post("/api/upload", data=data, content_type="multipart/form-data")
     assert res.status_code == 415
     assert "Unsupported file type" in res.json["error"]
 
@@ -71,7 +71,7 @@ def test_invalid_mime_type_rejected(client):
 def test_oversized_file_rejected(client):
     size = 21 * 1024 * 1024  # 21MB — over the 20MB limit
     data = {"file": make_file("huge.pdf", "application/pdf", size)}
-    res = client.post("/api/upload/", data=data, content_type="multipart/form-data")
+    res = client.post("/api/upload", data=data, content_type="multipart/form-data")
     assert res.status_code == 413
     assert "size limit" in res.json["error"]
 
@@ -79,7 +79,7 @@ def test_oversized_file_rejected(client):
 # ── Missing file ───────────────────────────────────────────────────────────
 
 def test_missing_file_rejected(client):
-    res = client.post("/api/upload/", data={}, content_type="multipart/form-data")
+    res = client.post("/api/upload", data={}, content_type="multipart/form-data")
     assert res.status_code == 400
     assert "No file provided" in res.json["error"]
 
@@ -89,7 +89,7 @@ def test_missing_file_rejected(client):
 def test_uid_associated_with_upload(client):
     """Confirms the response contains the UID from DEV_MODE."""
     data = {"file": make_file("notes.pdf", "application/pdf")}
-    res = client.post("/api/upload/", data=data, content_type="multipart/form-data")
+    res = client.post("/api/upload", data=data, content_type="multipart/form-data")
     assert res.status_code == 201
     assert res.json["user_uid"] == "test-user-123"
 
@@ -99,5 +99,5 @@ def test_auth_rejected_when_dev_mode_off(client, monkeypatch):
     monkeypatch.setattr(auth, "DEV_MODE", False)
 
     data = {"file": make_file("notes.pdf", "application/pdf")}
-    res = client.post("/api/upload/", data=data, content_type="multipart/form-data")
+    res = client.post("/api/upload", data=data, content_type="multipart/form-data")
     assert res.status_code == 401
