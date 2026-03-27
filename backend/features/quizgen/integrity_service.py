@@ -122,3 +122,32 @@ If the question passes all checks, reasons should be an empty list.
     except Exception as e:
         print(f"[INTEGRITY] LLM verify failed: {e}")
         return []  # fail open — don't block if LLM call fails
+
+def run_llm_verification(quiz: dict, notes: str, client, model: str = "gpt-4o") -> dict:
+    questions = quiz.get("questions", [])
+    passed = []
+    failed = []
+
+    for i, q in enumerate(questions):
+        reasons = verify_question_with_llm(q, notes, client, model)
+        if reasons:
+            failed.append({
+                "question_index": i,
+                "question":       q.get("question"),
+                "reasons":        reasons,
+            })
+        else:
+            passed.append(q)
+
+    blocked = len(failed) > 0
+
+    if failed:
+        print(f"[INTEGRITY] {len(failed)} question(s) failed LLM verification:")
+        for f in failed:
+            print(f"  Q{f['question_index']}: {f['reasons']}")
+
+    return {
+        "passed":  passed,
+        "failed":  failed,
+        "blocked": blocked,
+    } # returns dict with lists of passed and failed questions, and whether the quiz should be blocked due to integrity issues
