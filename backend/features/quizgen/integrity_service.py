@@ -46,3 +46,33 @@ def check_question(question: dict, notes: str) -> list[str]:
         failures.append("Question does not appear to be grounded in source notes.")
 
     return failures
+
+def run_integrity_checks(quiz: dict, notes: str) -> dict:
+    
+    questions = quiz.get("questions", [])
+    passed = []
+    failed = []
+
+    for i, q in enumerate(questions):
+        reasons = check_question(q, notes)
+        if reasons:
+            failed.append({
+                "question_index": i,
+                "question":       q.get("question"),
+                "reasons":        reasons,
+            })
+        else:
+            passed.append(q)
+
+    blocked = len(failed) > 0
+
+    if failed:
+        print(f"[INTEGRITY] {len(failed)} question(s) failed integrity checks:")
+        for f in failed:
+            print(f"  Q{f['question_index']}: {f['reasons']}")
+
+    return {
+        "passed":  passed,
+        "failed":  failed,
+        "blocked": blocked,
+    }
