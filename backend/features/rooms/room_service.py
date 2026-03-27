@@ -9,6 +9,9 @@ import string
 from datetime import datetime, timezone
 from typing import Dict, List, Optional, Set
 
+from firebase_admin import auth as firebase_auth
+from firebase_admin import firestore as firebase_firestore
+
 from security.firebase_admin_config import db
 
 
@@ -79,11 +82,21 @@ def create_room(name: str, description: str, creator_uid: str) -> dict:
         "creatorId":   creator_uid,
         "createdAt":   now,
         "inviteCode":  invite_code,
+        # Denormalized array so the frontend can run an array-contains query
+        # without a subcollection lookup. Keep in sync with the members subcollection.
+        "members": [creator_uid],
     })
 
+    try:
+        user_record = firebase_auth.get_user(creator_uid)
+        display_name = user_record.display_name or user_record.email or creator_uid
+    except Exception:
+        display_name = creator_uid  
+
     room_ref.collection("members").document(creator_uid).set({
-        "role":     "owner",
-        "joinedAt": now,
+        "role":        "owner",
+        "joinedAt":    now,
+        "displayName": display_name,
     })
 
     return {
@@ -113,9 +126,22 @@ def join_room(invite_code: str, user_uid: str) -> dict:
         raise ValueError(f"Already a member of this room with role: {existing_role}")
 
     now = datetime.now(timezone.utc)
+    try:
+        user_record = firebase_auth.get_user(user_uid)
+        display_name = user_record.display_name or user_record.email or user_uid
+    except Exception:
+        display_name = user_uid
+
     room_doc.reference.collection("members").document(user_uid).set({
-        "role":     "member",
-        "joinedAt": now,
+        "role":        "member",
+        "joinedAt":    now,
+        "displayName": display_name,
+    })
+
+    # Keep the denormalized members array in sync so Firestore security rules
+    # (which use array-contains queries) and room-read checks stay valid.
+    room_doc.reference.update({
+        "members": firebase_firestore.ArrayUnion([user_uid])
     })
 
     return {
@@ -125,6 +151,21 @@ def join_room(invite_code: str, user_uid: str) -> dict:
         "joinedAt": now.isoformat(),
     }
 
+def get_room(room_id: str) -> dict:
+    """Returns the room document fields."""
+    room_ref = db.collection("rooms").document(room_id)
+    doc = room_ref.get()
+    if not doc.exists:
+        raise ValueError("Room not found")
+    data = doc.to_dict()
+    return {
+        "roomId":      doc.id,
+        "name":        data.get("name"),
+        "description": data.get("description", ""),
+        "inviteCode":  data.get("inviteCode"),
+        "creatorId":   data.get("creatorId"),
+        "createdAt":   _ts(data.get("createdAt")),
+    }
 
 def get_members(room_id: str) -> List[dict]:
     """Returns all members of the room with their roles and join timestamps."""
@@ -136,9 +177,10 @@ def get_members(room_id: str) -> List[dict]:
     for doc in room_ref.collection("members").get():
         data = doc.to_dict()
         result.append({
-            "uid":      doc.id,
-            "role":     data.get("role"),
-            "joinedAt": _ts(data.get("joinedAt")),
+            "uid":         doc.id,
+            "role":        data.get("role"),
+            "joinedAt":    _ts(data.get("joinedAt")),
+            "displayName": data.get("displayName", doc.id),
         })
     return result
 

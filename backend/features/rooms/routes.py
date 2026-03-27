@@ -6,6 +6,7 @@ from models.room_models import (
     JoinRoomRequest,
     RoomResponse,
     JoinRoomResponse,
+    GetRoomResponse,
     MembersListResponse,
     RemoveMemberResponse,
     DeleteRoomResponse
@@ -67,6 +68,21 @@ def join_room():
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
+@rooms_bp.get("/<room_id>")
+def get_room(room_id):
+    uid, error = get_current_uid()
+    if error:
+        return jsonify({"error": error[0]}), error[1]
+
+    try:
+        room = room_service.get_room(room_id, uid)
+        return jsonify(room), 200
+    except PermissionError as exc:
+        return jsonify({"error": str(exc)}), 403
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 404
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
 
 @rooms_bp.get("/<room_id>/members")
 def get_members(room_id):
