@@ -29,7 +29,6 @@ from features.upload.firebase_storage import (
 
 IMAGE_MIME_TYPES = {"image/jpeg", "image/png"}
 
-
 def process_document(
     file_bytes: bytes,
     uid: str,
