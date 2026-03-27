@@ -3,6 +3,10 @@ import os
 import sys
 
 from flask import Blueprint, jsonify, request
+from dotenv import load_dotenv
+from openai import OpenAI
+from integrity_service import run_integrity_checks, run_llm_verification
+from validators import validate_quiz, validate_answers, validate_topic
 import requests
 from qdrant_client.models import Filter, FieldCondition, MatchValue, PayloadSchemaType
 
@@ -90,6 +94,23 @@ def generate_quiz():
 
         quiz_obj = generate_quiz_from_notes(notes)
         validate_quiz(quiz_obj)
+
+        rule_result = run_integrity_checks(quiz_obj, notes)
+        total_questions = len(quiz_obj.get("questions", []))
+        rule_pass_count = len(rule_result["passed"])
+        rule_fail_count = len(rule_result["failed"])
+        rule_pct = round((rule_pass_count / total_questions) * 100, 1) if total_questions else 0
+
+        print(f"[INTEGRITY] Rule checks: {rule_pass_count}/{total_questions} passed ({rule_pct}%)")
+
+        if rule_result["blocked"]:
+            print(f"[INTEGRITY] Quiz blocked by rule checks — {rule_fail_count} question(s) failed.")
+            return jsonify({
+                "error": "Generated quiz failed integrity checks.",
+                "failed": rule_result["failed"],
+            }), 422
+
+        print(f"[INTEGRITY] Rule checks passed — proceeding to LLM verification.")
 
         return jsonify({"quiz": quiz_obj}), 200
 
