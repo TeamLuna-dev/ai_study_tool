@@ -40,8 +40,9 @@ def create_app():
         print("Summarizer feature failed to load:", e)
 
     try:
-        from features.upload.routes import upload_bp
+        from features.upload.routes import upload_bp, ocr_bp
         app.register_blueprint(upload_bp, url_prefix="/api/upload")
+        app.register_blueprint(ocr_bp, url_prefix="/api/ocr")
         print("Upload feature loaded")
     except Exception as e:
         print("Upload feature failed to load:", e)

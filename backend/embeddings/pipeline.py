@@ -17,13 +17,17 @@ import os
 import tempfile
 
 from processing.processing.chunker import chunk_pdf
+from processing.processing.ocr import extract_text_from_image
 from embeddings.embedder import embed_chunks
 from embeddings.qdrant_store import store_embeddings
 from features.upload.firebase_storage import (
     update_document_status,
     mark_document_ready,
     mark_document_error,
+    store_ocr_text,
 )
+
+IMAGE_MIME_TYPES = {"image/jpeg", "image/png"}
 
 
 def process_document(
@@ -47,36 +51,53 @@ def process_document(
         doc_id:     Firestore document ID to update throughout processing.
         mimetype:   Only "application/pdf" is processed; others are rejected.
     """
-    if mimetype != "application/pdf":
-        print(f"[PIPELINE] Skipping non-PDF '{file_name}' ({mimetype}).")
+    if mimetype not in IMAGE_MIME_TYPES and mimetype != "application/pdf":
         mark_document_error(
             doc_id,
             stage="extraction",
-            message=f"Only PDF files can be processed. Received: {mimetype}.",
+            message=f"Unsupported file type: {mimetype}. Only PDF, JPEG, and PNG are accepted.",
         )
         return
 
     # Stage 1: Extraction
     update_document_status(doc_id, "extracting")
     try:
-        with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
-            tmp.write(file_bytes)
-            tmp_path = tmp.name
+        if mimetype in IMAGE_MIME_TYPES:
+            # ── Image path: OCR via Google Vision API ─────────────────────
+            print(f"[PIPELINE] Running OCR on '{file_name}' …")
+            chunks = extract_text_from_image(file_bytes, mimetype)
 
-        try:
-            print(f"[PIPELINE] Extracting '{file_name}' ...")
-            chunks = chunk_pdf(tmp_path)
-        finally:
-            if os.path.exists(tmp_path):
+            if not chunks:
+                mark_document_error(
+                    doc_id,
+                    stage="extraction",
+                    message="No text could be extracted from the image.",
+                )
+                return
+
+            # Write combined text to Firestore so the review UI can display it
+            ocr_text = "\n\n".join(c["text"] for c in chunks)
+            store_ocr_text(doc_id, ocr_text)
+
+        else:
+            # ── PDF path: chunk via Unstructured API ──────────────────────
+            with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
+                tmp.write(file_bytes)
+                tmp_path = tmp.name
+
+            try:
+                print(f"[PIPELINE] Extracting '{file_name}' …")
+                chunks = chunk_pdf(tmp_path)
+            finally:
                 os.unlink(tmp_path)
 
         if not chunks:
-            mark_document_error(
-                doc_id,
-                stage="extraction",
-                message="No text could be extracted. The PDF may be image-based or empty.",
-            )
-            return
+                mark_document_error(
+                    doc_id,
+                    stage="extraction",
+                    message="No text could be extracted. The PDF may be image-based or empty.",
+                )
+                return
 
     except Exception as exc:
         print(f"[PIPELINE] Extraction failed for '{file_name}': {exc}")
