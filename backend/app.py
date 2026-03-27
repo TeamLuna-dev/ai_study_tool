@@ -1,7 +1,12 @@
 from flask import Flask
 from flask_cors import CORS
+import os
+from dotenv import load_dotenv
 
 def create_app():
+    # Load .env from project root
+    load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
+
     app = Flask(__name__)
 
     CORS(
