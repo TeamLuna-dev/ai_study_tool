@@ -14,9 +14,12 @@ import { DropZone } from "./DropZone";
 import { ProgressBar } from "./ProgressBar";
 import { StatusAlert } from "./StatusAlert";
 import { ProcessingStatus } from "./ProcessingStatus";
+import { OcrTextReview } from "./OcrTextReview";
 import { useFileUpload, UPLOAD_STATUS } from "../../hooks/useFileUpload";
 import { useDocumentStatus } from "../../hooks/useDocumentStatus";
 import { formatFileSize } from "../../util/fileValidation";
+
+const IMAGE_TYPES = new Set(["image/jpeg", "image/png"]);
 
 /**
  * @param {{
@@ -42,7 +45,15 @@ export function FileUpload({ onUploadSuccess, onUploadError, uploadFn, getAuthTo
   const isUploading = status === UPLOAD_STATUS.UPLOADING;
   const isSuccess   = status === UPLOAD_STATUS.SUCCESS;
 
-  const { pipelineStatus, pipelineError } = useDocumentStatus(docId);
+  const { pipelineStatus, pipelineError, ocrText } = useDocumentStatus(docId);
+
+  const [authToken, setAuthToken] = React.useState(null);
+  React.useEffect(() => {
+    getAuthToken?.().then(setAuthToken).catch(() => {});
+  }, [getAuthToken]);
+
+  const isImage = selectedFile && IMAGE_TYPES.has(selectedFile.type);
+  const showOcrReview = pipelineStatus === "ready" && isImage && ocrText;
 
   React.useEffect(() => {
     if (isSuccess && message) onUploadSuccess?.(message);
@@ -80,6 +91,15 @@ export function FileUpload({ onUploadSuccess, onUploadError, uploadFn, getAuthTo
 
       {/* Live pipeline progress — visible after upload succeeds */}
       <ProcessingStatus pipelineStatus={pipelineStatus} pipelineError={pipelineError} />
+
+      {/* OCR text review — shown when an image finishes processing */}
+      {showOcrReview && (
+        <OcrTextReview
+          docId={docId}
+          extractedText={ocrText}
+          authToken={authToken}
+        />
+      )}
 
       {/* Action buttons — only one set is visible at a time */}
       <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>

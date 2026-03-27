@@ -10,3 +10,4 @@ export { DropZone } from "./DropZone";
 export { ProgressBar } from "./ProgressBar";
 export { StatusAlert } from "./StatusAlert";
 export { ProcessingStatus } from "./ProcessingStatus";
+export { OcrTextReview } from "./OcrTextReview";

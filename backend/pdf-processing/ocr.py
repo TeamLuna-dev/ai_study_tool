@@ -20,13 +20,29 @@ import os
 from typing import List
 
 from google.cloud import vision
+from google.oauth2 import service_account
 
+# Resolve the service account key using an absolute path relative to this
+# file so the client works regardless of the process working directory.
+# serviceAccountKey.json lives one level up in backend/
+_KEY_PATH = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "serviceAccountKey.json")
+)
+_SCOPES = ["https://www.googleapis.com/auth/cloud-platform"]
 
 SUPPORTED_MIMETYPES = {"image/jpeg", "image/png"}
 
 
 class OCRError(Exception):
     """Raised when the Vision API returns an error or text cannot be extracted."""
+
+
+def _make_client() -> vision.ImageAnnotatorClient:
+    """Creates a Vision API client using the service account key."""
+    creds = service_account.Credentials.from_service_account_file(
+        _KEY_PATH, scopes=_SCOPES
+    )
+    return vision.ImageAnnotatorClient(credentials=creds)
 
 
 # ── Public API ──────────────────────────────────────────────────────────────
@@ -56,7 +72,7 @@ def extract_text_from_image(image_bytes: bytes, mimetype: str = "image/jpeg") ->
         )
 
     try:
-        client   = vision.ImageAnnotatorClient()
+        client   = _make_client()
         image    = vision.Image(content=image_bytes)
         response = client.document_text_detection(image=image)
     except Exception as exc:

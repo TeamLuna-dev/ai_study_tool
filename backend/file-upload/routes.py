@@ -22,6 +22,7 @@ if _embeddings_dir not in sys.path:
     sys.path.insert(0, _embeddings_dir)
 
 upload_bp = Blueprint("upload", __name__)
+ocr_bp    = Blueprint("ocr",    __name__)
 
 # ---------------------------------------------------------------------------
 # Validation constants
@@ -152,3 +153,32 @@ def upload_file():
             "storage_url": result["storage_url"],
             "storage_path": result["storage_path"],
         }), 201
+
+
+@ocr_bp.route("/<doc_id>/text", methods=["PUT"])
+def save_ocr_text(doc_id):
+    """
+    Saves the user-confirmed OCR text back to the Firestore document.
+
+    Called by the OcrTextReview component after the user edits and confirms
+    the extracted text. Overwrites the ocr_text field in Firestore.
+
+    Expects:
+        - Authorization: Bearer <token> header (skipped in DEV_MODE)
+        - JSON body: { "text": "<confirmed text>" }
+
+    Returns:
+        200 on success, 4xx on failure.
+    """
+    uid, auth_error = verify_firebase_token(request)
+    if auth_error:
+        return jsonify({"error": auth_error}), 401
+
+    body = request.get_json(silent=True)
+    if not body or "text" not in body:
+        return jsonify({"error": "Request body must include a 'text' field."}), 400
+
+    from firebase_storage import store_ocr_text
+    store_ocr_text(doc_id, body["text"])
+
+    return jsonify({"message": "OCR text saved."}), 200

@@ -136,6 +136,22 @@ def mark_document_ready(doc_id: str, vector_ids: list) -> None:
     print(f"[FIREBASE] Document {doc_id} marked ready with {len(vector_ids)} vectors.")
 
 
+def store_ocr_text(doc_id: str, text: str) -> None:
+    """
+    Writes the raw OCR-extracted text to the Firestore document so the
+    frontend review UI can display it for editing before confirmation.
+
+    Arguments:
+        doc_id: Firestore document ID.
+        text:   Full extracted text joined from all OCR blocks.
+    """
+    try:
+        db, _ = _get_firebase()
+        db.collection("documents").document(doc_id).update({"ocr_text": text})
+    except Exception as exc:
+        print(f"[FIREBASE] Warning: could not store OCR text for {doc_id}: {exc}")
+
+
 def mark_document_error(doc_id: str, stage: str, message: str) -> None:
     """
     Updates a Firestore document status to "error" with structured context.
