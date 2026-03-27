@@ -1,9 +1,18 @@
+# Core API frameworks
+flask>=3.0.0
+flask-cors>=4.0.0
+fastapi>=0.100.0
+uvicorn[standard]>=0.20.0
+
+# OpenAI
 openai>=1.0.0
 google-cloud-vision>=3.7.0
 python-dotenv>=1.0.0
 flask>=3.0.0
 flask-sqlalchemy==3.1.1
 firebase-admin==6.5.0
+
+# Vector DB
 qdrant-client==1.9.1
 pytest>=8.0
 fastapi>=0.100.0

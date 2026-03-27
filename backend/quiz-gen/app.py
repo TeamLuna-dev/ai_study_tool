@@ -2,6 +2,11 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
 from routes import quiz_bp
+import os
+from dotenv import load_dotenv
+
+# Load .env from project root (three levels up from backend/quiz-gen/)
+load_dotenv(os.path.join(os.path.dirname(__file__), "..", "..", ".env"))
 
 app = Flask(__name__)
 CORS(app) 

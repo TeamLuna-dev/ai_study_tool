@@ -96,4 +96,4 @@ def session_summary(user_id):
     })
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=5002) # so it can run alongside the other backends
