@@ -5,9 +5,9 @@ import sys
 from flask import Blueprint, jsonify, request
 from dotenv import load_dotenv
 from openai import OpenAI
-from integrity_logger import log_integrity_result
-from integrity_service import run_integrity_checks, run_llm_verification
-from validators import validate_quiz, validate_answers, validate_topic
+from .integrity_logger import log_integrity_result
+from .integrity_service import run_integrity_checks, run_llm_verification
+from .validators import validate_quiz, validate_answers, validate_topic
 import requests
 from qdrant_client.models import Filter, FieldCondition, MatchValue, PayloadSchemaType
 
@@ -16,7 +16,6 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..",
 
 from embeddings.qdrant_store import get_client, COLLECTION_NAME
 from .service import generate_quiz_from_notes
-from .validators import validate_quiz, validate_answers, validate_topic
 
 quiz_bp = Blueprint("quiz_bp", __name__)
 
