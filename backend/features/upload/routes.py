@@ -178,12 +178,12 @@ def save_ocr_text(doc_id):
     if not body or "text" not in body:
         return jsonify({"error": "Request body must include a 'text' field."}), 400
 
-    from firebase_storage import store_ocr_text, get_document_metadata
+    from .firebase_storage import store_ocr_text, get_document_metadata
     store_ocr_text(doc_id, body["text"])
 
     # Kick off embedding in a background thread — same pattern as upload_file.
     # Fetches uid/file_name from Firestore so the caller doesn't need to send them.
-    from pipeline import process_confirmed_ocr_text
+    from embeddings.pipeline import process_confirmed_ocr_text
     meta = get_document_metadata(doc_id)
     threading.Thread(
         target=process_confirmed_ocr_text,

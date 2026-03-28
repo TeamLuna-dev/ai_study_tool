@@ -18,6 +18,7 @@ Designed to run in a background thread after the upload route returns.
 """
 
 import os
+import sys
 import tempfile
 
 # ── Path setup (module level so imports below resolve correctly) ──────────────
@@ -33,7 +34,7 @@ for _rel in [".", "..", "../pdf-processing", "../file-upload"]:
 
 # ── Module-level imports (patchable by tests) ─────────────────────────────────
 
-from processing.processing.chunker import chunk_pdf
+from processing.processing.chunker import chunk_pdf, chunk_text
 from processing.processing.ocr import extract_text_from_image
 from embeddings.embedder import embed_chunks
 from embeddings.qdrant_store import store_embeddings

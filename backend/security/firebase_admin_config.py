@@ -13,7 +13,7 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 from firebase_admin import storage as _storage
 
-_SERVICE_ACCOUNT_PATH = os.path.join(os.path.dirname(__file__), "serviceAccountKey.json")
+_SERVICE_ACCOUNT_PATH = os.path.join(os.path.dirname(__file__), "..", "serviceAccountKey.json")
 
 _cred = credentials.Certificate(_SERVICE_ACCOUNT_PATH)
 try:
