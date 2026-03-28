@@ -26,10 +26,10 @@ DEV_UID  = os.getenv("DEV_UID", "test-user-123")
 if not DEV_MODE:
     import sys as _sys
     import os as _os
-    _backend_dir = _os.path.abspath(_os.path.join(_os.path.dirname(__file__), ".."))
+    _backend_dir = _os.path.abspath(_os.path.join(_os.path.dirname(__file__), "..", ".."))
     if _backend_dir not in _sys.path:
         _sys.path.insert(0, _backend_dir)
-    import firebase_admin_config  # noqa: F401 — initialises firebase_admin with storage bucket
+    from security import firebase_admin_config  # noqa: F401 — initialises firebase_admin with storage bucket
 
 
 def verify_firebase_token(request):
