@@ -178,7 +178,22 @@ def save_ocr_text(doc_id):
     if not body or "text" not in body:
         return jsonify({"error": "Request body must include a 'text' field."}), 400
 
-    from firebase_storage import store_ocr_text
+    from .firebase_storage import store_ocr_text, get_document_metadata
     store_ocr_text(doc_id, body["text"])
 
-    return jsonify({"message": "OCR text saved."}), 200
+    # Kick off embedding in a background thread — same pattern as upload_file.
+    # Fetches uid/file_name from Firestore so the caller doesn't need to send them.
+    from embeddings.pipeline import process_confirmed_ocr_text
+    meta = get_document_metadata(doc_id)
+    threading.Thread(
+        target=process_confirmed_ocr_text,
+        kwargs={
+            "text":      body["text"],
+            "uid":       meta["uid"],
+            "file_name": meta["file_name"],
+            "doc_id":    doc_id,
+        },
+        daemon=True,
+    ).start()
+
+    return jsonify({"message": "OCR text saved. Embedding in progress."}), 200

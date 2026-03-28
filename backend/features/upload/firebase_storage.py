@@ -138,6 +138,29 @@ def mark_document_ready(doc_id: str, vector_ids: list) -> None:
     print(f"[FIREBASE] Document {doc_id} marked ready with {len(vector_ids)} vectors.")
     
 
+def get_document_metadata(doc_id: str) -> dict:
+    """
+    Returns the stored uid and file_name for a Firestore document.
+    Used by the OCR confirmation route to pass metadata to the embedding pipeline.
+
+    Returns:
+        dict with "uid" and "file_name" keys, or empty strings if not found.
+    """
+    try:
+        db, _ = _get_firebase()
+        snap = db.collection("documents").document(doc_id).get()
+        if not snap.exists:
+            return {"uid": "", "file_name": ""}
+        data = snap.to_dict()
+        return {
+            "uid":       data.get("ownerId",  ""),
+            "file_name": data.get("fileName", ""),
+        }
+    except Exception as exc:
+        print(f"[FIREBASE] Warning: could not fetch metadata for {doc_id}: {exc}")
+        return {"uid": "", "file_name": ""}
+
+
 def store_ocr_text(doc_id: str, text: str) -> None:
     """
     Writes the raw OCR-extracted text to the Firestore document so the
