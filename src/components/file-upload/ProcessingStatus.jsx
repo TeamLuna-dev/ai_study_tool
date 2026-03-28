@@ -16,8 +16,9 @@ const STAGES = [
   { key: "storing",    label: "Storing in Qdrant" },
 ];
 
-// The order in which statuses occur — used to decide which stages are "done"
-const STATUS_ORDER = ["processing", "extracting", "embedding", "storing", "ready"];
+// The order in which statuses occur — used to decide which stages are "done".
+// pending_review sits between extracting and embedding for image uploads.
+const STATUS_ORDER = ["processing", "extracting", "pending_review", "embedding", "storing", "ready"];
 
 function stageState(stageKey, pipelineStatus, errorStage) {
   if (pipelineStatus === "error" && errorStage === stageKey) return "error";
@@ -64,8 +65,9 @@ function Spinner() {
 export function ProcessingStatus({ pipelineStatus, pipelineError }) {
   if (!pipelineStatus || pipelineStatus === "processing") return null;
 
-  const errorStage = pipelineError?.stage ?? null;
-  const isDone     = pipelineStatus === "ready";
+  const errorStage      = pipelineError?.stage ?? null;
+  const isDone          = pipelineStatus === "ready";
+  const isPendingReview = pipelineStatus === "pending_review";
 
   return (
     <div
@@ -81,7 +83,9 @@ export function ProcessingStatus({ pipelineStatus, pipelineError }) {
       }}
     >
       <p style={{ margin: "0 0 10px", fontWeight: 600, color: "#1e293b" }}>
-        {isDone ? "Processing complete" : "Processing…"}
+        {isDone          ? "Processing complete"      :
+         isPendingReview ? "Text extracted — review below" :
+                           "Processing…"}
       </p>
 
       <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: "8px" }}>

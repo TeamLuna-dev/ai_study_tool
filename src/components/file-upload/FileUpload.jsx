@@ -53,7 +53,7 @@ export function FileUpload({ onUploadSuccess, onUploadError, uploadFn, getAuthTo
   }, [getAuthToken]);
 
   const isImage = selectedFile && IMAGE_TYPES.has(selectedFile.type);
-  const showOcrReview = pipelineStatus === "ready" && isImage && ocrText;
+  const showOcrReview = pipelineStatus === "pending_review" && isImage && ocrText;
 
   React.useEffect(() => {
     if (isSuccess && message) onUploadSuccess?.(message);
