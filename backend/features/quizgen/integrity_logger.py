@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 
 def _get_db():
     """Lazily imports Firestore client to avoid requiring Firebase in tests."""
-    from firebase_admin_config import db
+    from security.firebase_admin_config import db
     return db
 
 
