@@ -153,6 +153,63 @@ export default function LoginPage() {
     Your AI-powered study companion
   </p>
 
+  {/* Google sign-in button */}
+  <button
+    onClick={handleGoogleSignIn}
+    disabled={signingIn}
+    style={{
+      width: "100%",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: "12px",
+      padding: "13px 24px",
+      background: "#ffffff",
+      border: "1px solid #e8eaed",
+      borderRadius: "10px",
+      color: "#1a1a2e",
+      fontSize: "15px",
+      fontWeight: 500,
+      fontFamily: "'DM Sans', sans-serif",
+      cursor: signingIn ? "not-allowed" : "pointer",
+      opacity: signingIn ? 0.6 : 1,
+      boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+      transition: "all 0.2s",
+    }}
+  >
+    {signingIn ? (
+      <svg
+        style={{ animation: "spin 1s linear infinite", width: 20, height: 20 }}
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <circle
+          style={{ opacity: 0.25 }}
+          cx="12" cy="12" r="10"
+          stroke="#2563eb"
+          strokeWidth="4"
+        />
+        <path
+          style={{ opacity: 0.75 }}
+          fill="#2563eb"
+          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+        />
+      </svg>
+    ) : (
+      <GoogleIcon />
+    )}
+    {signingIn ? "Signing in…" : "Sign in with Google"}
+  </button>
+
+  {/* Spin animation */}
+  <style>{`
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+  `}</style>
+
 </div>
     </div>
 
