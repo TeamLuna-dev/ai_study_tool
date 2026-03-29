@@ -210,6 +210,33 @@ export default function LoginPage() {
     }
   `}</style>
 
+  {/* Error message */}
+  {error && (
+    <p style={{
+      marginTop: "12px",
+      textAlign: "center",
+      fontSize: "13px",
+      color: "#dc2626",
+      padding: "10px 14px",
+      background: "#fef2f2",
+      border: "1px solid #fecaca",
+      borderRadius: "8px",
+    }} role="alert">
+      {error}
+    </p>
+  )}
+
+  {/* Footer */}
+  <p style={{
+    marginTop: "24px",
+    textAlign: "center",
+    fontSize: "12px",
+    color: "#b0b0be",
+    lineHeight: 1.6,
+  }}>
+    By signing in you agree to follow our (hypothetical) <a href="#" style={{ color: "#2563eb", textDecoration: "underline" }}>Terms of Service</a> and acknowledge our <a href="#" style={{ color: "#2563eb", textDecoration: "underline" }}>Privacy Policy</a>.
+  </p>
+
 </div>
     </div>
 
