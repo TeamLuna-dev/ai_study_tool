@@ -154,6 +154,37 @@ export default function LoginPage() {
   </p>
 </div>
 
+  {/* Feature highlights */}
+  <div style={{
+    display: "flex",
+    justifyContent: "space-between",
+    gap: "8px",
+    marginBottom: "28px",
+  }}>
+    {[
+      { icon: "📄", label: "Upload notes" },
+      { icon: "🧠", label: "Generate quizzes" },
+      { icon: "📊", label: "Track progress" },
+    ].map(({ icon, label }) => (
+      <div key={label} style={{
+        flex: 1,
+        textAlign: "center",
+        padding: "12px 8px",
+        background: "#f7f8fa",
+        border: "1px solid #e8eaed",
+        borderRadius: "10px",
+      }}>
+        <div style={{ fontSize: "20px", marginBottom: "4px" }}>{icon}</div>
+        <div style={{
+          fontSize: "11px",
+          color: "#7a7a8c",
+          fontWeight: 500,
+          lineHeight: 1.3,
+        }}>{label}</div>
+      </div>
+    ))}
+  </div>
+
   {/* Google sign-in button */}
   <button
     onClick={handleGoogleSignIn}
@@ -248,8 +279,7 @@ export default function LoginPage() {
       © 2026 Team Luna. All rights reserved.
   </p>
 
-</div>
-
+  </div>
   </div>
 );
 }
