@@ -10,7 +10,6 @@ import { signInWithGoogle } from "../../services/authService";
 import { useAuth } from "../../hooks/useAuth";
 import LoadingSpinner from "../common/LoadingSpinner";
 
-
 const link = document.createElement("link");
 link.rel = "stylesheet";
 link.href = "https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@700;800&display=swap";
@@ -114,6 +113,47 @@ export default function LoginPage() {
       boxShadow: "0 8px 32px rgba(0,0,0,0.08)",
       padding: "48px 40px",
     }}>
+
+      {/* Branding — logo, app name, tagline */}
+<div style={{ textAlign: "center", marginBottom: "40px" }}>
+
+  {/* Logo mark */}
+  <div style={{
+    width: "56px",
+    height: "56px",
+    background: "#2563eb",
+    borderRadius: "14px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    margin: "0 auto 16px",
+    boxShadow: "0 4px 12px rgba(37,99,235,0.3)",
+  }}>
+    <span style={{ color: "#fff", fontSize: "24px", fontWeight: 800, fontFamily: "'Syne', sans-serif" }}>S</span>
+  </div>
+
+  {/* App name */}
+  <h1 style={{
+    fontFamily: "'Syne', sans-serif",
+    fontSize: "26px",
+    fontWeight: 800,
+    color: "#1a1a2e",
+    margin: "0 0 8px",
+  }}>
+    AI Study Assistant
+  </h1>
+
+  {/* Tagline */}
+  <p style={{
+    fontSize: "14px",
+    color: "#7a7a8c",
+    margin: 0,
+    lineHeight: 1.6,
+  }}>
+    Your AI-powered study companion
+  </p>
+
+</div>
     </div>
 
   </div>
