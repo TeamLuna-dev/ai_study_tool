@@ -10,6 +10,12 @@ import { signInWithGoogle } from "../../services/authService";
 import { useAuth } from "../../hooks/useAuth";
 import LoadingSpinner from "../common/LoadingSpinner";
 
+
+const link = document.createElement("link");
+link.rel = "stylesheet";
+link.href = "https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@700;800&display=swap";
+document.head.appendChild(link);
+
 // Official Google "G" logo mark using brand colors
 function GoogleIcon() {
   return (
@@ -39,7 +45,7 @@ function GoogleIcon() {
 function getErrorMessage(code) {
   switch (code) {
     case "auth/popup-closed-by-user":
-      return null; // user intentionally cancelled — show nothing
+      return null;
     case "auth/popup-blocked":
       return "Popup was blocked. Please allow popups for this site.";
     case "auth/network-request-failed":
@@ -55,9 +61,7 @@ export default function LoginPage() {
   const [signingIn, setSigningIn] = useState(false);
   const [error, setError] = useState("");
 
-  // Show spinner while Firebase resolves the persisted session — prevents flash to /login.
   if (authLoading) return <LoadingSpinner />;
-  // Already authenticated — skip the login page entirely.
   if (user) return <Navigate to="/dashboard" replace />;
 
   async function handleGoogleSignIn() {
@@ -71,73 +75,47 @@ export default function LoginPage() {
       if (message !== null) {
         setError(message);
       }
-      // null means user closed the popup — loading state clears in finally, no error shown
     } finally {
       setSigningIn(false);
     }
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-primary-100 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-[400px] p-8">
+    <div style={{
+    minHeight: "100vh",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    background: "#f7f8fa",
+    padding: "24px",
+    fontFamily: "'DM Sans', sans-serif",
+  }}>
 
-        {/* App logo + name + tagline */}
-        <div className="flex flex-col items-center mb-8">
-          <div className="w-14 h-14 bg-primary-600 rounded-xl flex items-center justify-center mb-4 shadow-md">
-            <span className="text-white text-2xl font-bold select-none">S</span>
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
-            AI Study Assistant
-          </h1>
-          <p className="text-sm text-gray-500 mt-1">
-            Your AI-powered study companion
-          </p>
-        </div>
+    {/* subtle blue grid background */}
+    <div style={{
+      position: "fixed",
+      inset: 0,
+      backgroundImage: `
+        linear-gradient(rgba(37,99,235,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(37,99,235,0.04) 1px, transparent 1px)
+      `,
+      backgroundSize: "48px 48px",
+      pointerEvents: "none",
+    }} />
 
-        {/* Google sign-in button — spinner stays inside button, never full-page */}
-        <button
-          onClick={handleGoogleSignIn}
-          disabled={signingIn}
-          className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-700 font-medium text-sm hover:bg-gray-50 active:bg-gray-100 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
-        >
-          {signingIn ? (
-            <svg
-              className="animate-spin h-5 w-5 text-primary-600"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-              />
-            </svg>
-          ) : (
-            <GoogleIcon />
-          )}
-          {signingIn ? "Signing in…" : "Sign in with Google"}
-        </button>
-
-        {/* Error message — beneath button, never above */}
-        {error && (
-          <p className="mt-3 text-center text-sm text-red-600" role="alert">
-            {error}
-          </p>
-        )}
-
-        <p className="mt-6 text-center text-xs text-gray-400">
-          By signing in you agree to use this tool for study purposes only.
-        </p>
-      </div>
+    {/* card shell — empty for now */}
+    <div style={{
+      position: "relative",
+      width: "100%",
+      maxWidth: "420px",
+      background: "#ffffff",
+      border: "1px solid #e8eaed",
+      borderRadius: "20px",
+      boxShadow: "0 8px 32px rgba(0,0,0,0.08)",
+      padding: "48px 40px",
+    }}>
     </div>
-  );
+
+  </div>
+);
 }
