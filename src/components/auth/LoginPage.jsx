@@ -237,6 +237,16 @@ export default function LoginPage() {
     By signing in you agree to follow our (hypothetical) <a href="#" style={{ color: "#2563eb", textDecoration: "underline" }}>Terms of Service</a> and acknowledge our <a href="#" style={{ color: "#2563eb", textDecoration: "underline" }}>Privacy Policy</a>.
   </p>
 
+  {/* Team credit as we should!!! */}
+  <p style={{
+    marginTop: "8px",
+    textAlign: "center",
+    fontSize: "11px",
+    color: "#d0d0da",
+  }}>
+      © 2026 Team Luna. All rights reserved.
+  </p>
+
 </div>
     </div>
 
