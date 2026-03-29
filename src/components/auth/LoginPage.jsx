@@ -152,6 +152,7 @@ export default function LoginPage() {
   }}>
     Your AI-powered study companion
   </p>
+</div>
 
   {/* Google sign-in button */}
   <button
@@ -248,7 +249,6 @@ export default function LoginPage() {
   </p>
 
 </div>
-    </div>
 
   </div>
 );
