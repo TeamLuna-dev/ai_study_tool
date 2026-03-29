@@ -4,10 +4,12 @@
  * Loads real Firestore data via hooks; no mock data.
  */
 
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { useRoomDetail } from "../../hooks/useRoomDetail";
+import { deleteRoom } from "../../services/roomService";
 import { RoomLobby } from "./RoomLobby";
 import { SharedDocumentPanel } from "./SharedDocumentPanel";
 import { ChatArea } from "./ChatArea";
@@ -18,7 +20,21 @@ export function RoomPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const { room, members, messages, sharedDocuments, sendMessage, loading, error } = useRoomDetail(roomId);
+  const { room, members, messages, sendMessage, sharedDocuments, loading, error } = useRoomDetail(roomId);
+  const [deleting, setDeleting] = useState(false);
+
+  async function handleDeleteRoom() {
+    if (!window.confirm('Delete this room? This cannot be undone.')) return;
+    setDeleting(true);
+    try {
+      const token = await user.getIdToken();
+      await deleteRoom(token, roomId);
+      navigate('/rooms');
+    } catch (err) {
+      alert(err.message);
+      setDeleting(false);
+    }
+  }
 
   if (loading) return <LoadingSpinner />;
 
@@ -54,9 +70,18 @@ export function RoomPage() {
             >
               <ArrowLeft className="h-5 w-5" />
             </button>
-            <span className="text-lg font-semibold text-gray-900 truncate">
+            <span className="text-lg font-semibold text-gray-900 truncate flex-1">
               {room.name}
             </span>
+            {room.creatorId === user?.uid && (
+              <button
+                onClick={handleDeleteRoom}
+                disabled={deleting}
+                className="text-red-500 hover:text-red-700 text-sm"
+              >
+                {deleting ? 'Deleting...' : 'Delete Room'}
+              </button>
+            )}
           </div>
         </div>
       </header>
