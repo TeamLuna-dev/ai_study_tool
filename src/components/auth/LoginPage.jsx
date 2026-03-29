@@ -112,6 +112,7 @@ export default function LoginPage() {
       borderRadius: "20px",
       boxShadow: "0 8px 32px rgba(0,0,0,0.08)",
       padding: "48px 40px",
+      animation: "fadeSlideUp 0.5s cubic-bezier(0.16,1,0.3,1) both", // ← only add this line
     }}>
 
       {/* Branding — logo, app name, tagline */}
@@ -239,6 +240,10 @@ export default function LoginPage() {
     @keyframes spin {
       from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
+    }
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
   `}</style>
 
