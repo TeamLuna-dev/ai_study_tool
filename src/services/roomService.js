@@ -140,7 +140,7 @@ export async function createRoom(idToken, { name, description }) {
       Authorization: `Bearer ${idToken}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ name, description }),
+    body: JSON.stringify({ name, description, displayName }),
   });
 
   const data = await res.json().catch(() => ({}));
