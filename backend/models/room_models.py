@@ -13,11 +13,13 @@ from typing import Optional
 class CreateRoomRequest(BaseModel):
     name: str
     description: str
+    displayName: Optional[str] = None
     # creatorId is NOT here — it comes from the verified Firebase token
 
 
 class JoinRoomRequest(BaseModel):
-    inviteCode: str
+    invite_code: str
+    display_name: Optional[str] = None
     userId: Optional[str] = None  # for client reference; authoritative UID comes from token
 
 
