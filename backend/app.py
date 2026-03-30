@@ -61,6 +61,13 @@ def create_app():
     except Exception as e:
         print("Rooms feature failed to load:", e)
 
+    try:
+        from features.study_brief.routes import study_brief_bp
+        app.register_blueprint(study_brief_bp, url_prefix="/api/study-brief")
+        print("Study Brief feature loaded")
+    except Exception as e:
+        print("Study Brief feature failed to load:", e)
+
     return app
 
     

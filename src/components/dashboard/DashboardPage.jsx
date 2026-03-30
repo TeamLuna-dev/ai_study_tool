@@ -9,18 +9,42 @@ import { useAuth } from "../../hooks/useAuth";
 import { DashboardWelcome } from "./DashboardWelcome";
 import { DashboardStats } from "./DashboardStats";
 import { RecentDocuments } from "./RecentDocuments";
+import { StudyBriefCard } from "./StudyBriefCard";
 import { useEffect, useState } from "react";
 import { getUserProfile } from "../../services/userService";
+import { fetchStudyBrief } from "../../services/studyBriefService";
 
 export function DashboardPage() {
   const { user } = useAuth();
   const isAuthenticated = !!user;
   const getAuthToken = user ? () => user.getIdToken() : null;
   const [profile, setProfile] = useState(null);
+  const [brief, setBrief] = useState(null);
+  const [briefGeneratedAt, setBriefGeneratedAt] = useState(null);
+  const [briefLoading, setBriefLoading] = useState(true);
+  const [briefError, setBriefError] = useState(null);
 
   useEffect(() => {
     if (!user) return;
     getUserProfile(user.uid).then(setProfile);
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) return; // EC-9: guard against null user before getIdToken
+    let cancelled = false; // EC-11: prevent setState after unmount / StrictMode double-fire
+    setBriefLoading(true);
+    user
+      .getIdToken()
+      .then((idToken) => fetchStudyBrief(idToken))
+      .then((data) => {
+        if (!cancelled) {
+          setBrief(data.brief);
+          setBriefGeneratedAt(data.generatedAt);
+        }
+      })
+      .catch((err) => { if (!cancelled) setBriefError(err.message); })
+      .finally(() => { if (!cancelled) setBriefLoading(false); });
+    return () => { cancelled = true; }; // EC-11: cleanup cancels in-flight callbacks
   }, [user]);
 
   return (
@@ -33,6 +57,13 @@ export function DashboardPage() {
           <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
           <p className="mt-2 text-gray-600">Welcome to your dashboard! Use the navigation above to access different tools.</p>
         </header>
+
+        <StudyBriefCard
+          brief={brief}
+          isLoading={briefLoading}
+          error={briefError}
+          generatedAt={briefGeneratedAt}
+        />
 
         <DashboardWelcome />
 
