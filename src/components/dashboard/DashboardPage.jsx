@@ -7,7 +7,7 @@
 import { AuthGate, FileUpload } from "../file-upload";
 import { useAuth } from "../../hooks/useAuth";
 import { DashboardWelcome } from "./DashboardWelcome";
-import DashboardStats from "./DashboardStats";
+import { DashboardStats } from "./DashboardStats";
 import { useEffect, useState } from "react";
 import { getUserProfile } from "../../services/userService";
 

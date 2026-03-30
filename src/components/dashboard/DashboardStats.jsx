@@ -2,10 +2,10 @@ import { FileText, Brain, Clock, Users } from "lucide-react";
 import { useDashboardStats } from "../../hooks/useDashboardStats";
 
 const STAT_CARDS = [
-  { key: "documents", label: "Documents Uploaded", icon: FileText },
-  { key: "quizzes",   label: "Quizzes Taken",      icon: Brain },
-  { key: "sessions",  label: "Study Sessions",      icon: Clock },
-  { key: "rooms",     label: "Rooms Joined",        icon: Users },
+  { key: "documents", label: "Documents Uploaded", icon: FileText, color: "text-blue-600" },
+  { key: "quizzes",   label: "Quizzes Taken",      icon: Brain,    color: "text-emerald-600" },
+  { key: "sessions",  label: "Study Sessions",      icon: Clock,    color: "text-amber-500" },
+  { key: "rooms",     label: "Rooms Joined",        icon: Users,    color: "text-violet-600" },
 ];
 
 export default function DashboardStats() {
@@ -36,7 +36,7 @@ export default function DashboardStats() {
 
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-      {STAT_CARDS.map(({ key, label, icon: Icon }) => {
+      {STAT_CARDS.map(({ key, label, icon: Icon, color }) => {
         const stat = stats[key];
 
         // Per-card skeleton while this individual listener is still loading.
@@ -52,7 +52,7 @@ export default function DashboardStats() {
 
         return (
           <div key={key} className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-            <Icon className="w-5 h-5 text-gray-400 mb-3" />
+            <Icon className={`w-5 h-5 ${color} mb-3`} />
             <p
               className="text-3xl font-bold text-gray-900"
               title={stat.error ? "Not available yet" : undefined}
