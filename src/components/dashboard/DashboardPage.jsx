@@ -6,6 +6,7 @@
 // Import the two components needed from the FileUpload feature folder.
 import { AuthGate, FileUpload } from "../file-upload";
 import { useAuth } from "../../hooks/useAuth";
+import { DashboardWelcome } from "./DashboardWelcome";
 import { useEffect, useState } from "react";
 import { getUserProfile } from "../../services/userService";
 
@@ -30,7 +31,9 @@ export function DashboardPage() {
           <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
           <p className="mt-2 text-gray-600">Welcome to your dashboard! Use the navigation above to access different tools.</p>
         </header>
-        
+
+        <DashboardWelcome />
+
         {/* Add dashboard components here */}
 
               {profile && (
