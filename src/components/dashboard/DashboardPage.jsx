@@ -8,6 +8,7 @@ import { AuthGate, FileUpload } from "../file-upload";
 import { useAuth } from "../../hooks/useAuth";
 import { DashboardWelcome } from "./DashboardWelcome";
 import { DashboardStats } from "./DashboardStats";
+import { RecentDocuments } from "./RecentDocuments";
 import { useEffect, useState } from "react";
 import { getUserProfile } from "../../services/userService";
 
@@ -37,7 +38,7 @@ export function DashboardPage() {
 
         <DashboardStats />
 
-        {/* Add dashboard components here */}
+        <RecentDocuments />
 
               {profile && (
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 mb-8 flex items-center gap-6">

@@ -8,7 +8,7 @@ const STAT_CARDS = [
   { key: "rooms",     label: "Rooms Joined",        icon: Users,    color: "text-violet-600" },
 ];
 
-export default function DashboardStats() {
+export function DashboardStats() {
   const { stats, loading } = useDashboardStats();
 
   // All 4 still initializing — show full skeleton row.
