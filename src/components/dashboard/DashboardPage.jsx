@@ -7,6 +7,7 @@
 import { AuthGate, FileUpload } from "../file-upload";
 import { useAuth } from "../../hooks/useAuth";
 import { DashboardWelcome } from "./DashboardWelcome";
+import { DashboardStats } from "./DashboardStats";
 import { useEffect, useState } from "react";
 import { getUserProfile } from "../../services/userService";
 
@@ -33,6 +34,8 @@ export function DashboardPage() {
         </header>
 
         <DashboardWelcome />
+
+        <DashboardStats />
 
         {/* Add dashboard components here */}
 
