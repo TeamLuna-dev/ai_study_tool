@@ -16,6 +16,22 @@ from openai import OpenAI
 from security.firebase_admin_config import db
 
 
+def _ts_key(doc, field):
+    """Returns a sortable float (Unix seconds) for a Firestore doc field.
+
+    Works with both Firestore DatetimeWithNanoseconds and plain Python
+    datetime objects.  Returns 0.0 when the field is missing or unreadable
+    so that docs without a timestamp sort to the bottom.
+    """
+    val = doc.to_dict().get(field)
+    if val is None:
+        return 0.0
+    try:
+        return val.timestamp()
+    except Exception:
+        return 0.0
+
+
 def generate_study_brief(uid: str) -> dict:
     """
     Generates a 2–3 sentence personalised study recommendation for the user.
@@ -34,18 +50,20 @@ def generate_study_brief(uid: str) -> dict:
     now_iso = datetime.now(timezone.utc).isoformat()
 
     # ── 1. Most recent quiz session ───────────────────────────────────────────
+    # NOTE: order_by("createdAt") on a where("userId") query requires a
+    # composite Firestore index.  To avoid a silent index-missing failure we
+    # fetch all sessions for the user and sort them in Python instead.
     quiz_data = None
     try:
-        quiz_sessions = (
+        all_sessions = (
             db.collection("sessions")
             .where("userId", "==", uid)
-            .where("type", "==", "quiz")
-            .order_by("createdAt", direction="DESCENDING")
-            .limit(1)
             .get()
         )
+        quiz_sessions = [s for s in all_sessions if s.to_dict().get("type") == "quiz"]
         if quiz_sessions:
-            raw = quiz_sessions[0].to_dict()
+            most_recent = max(quiz_sessions, key=lambda s: _ts_key(s, "createdAt"))
+            raw = most_recent.to_dict()
             quiz_data = {
                 "score":      raw.get("score"),
                 "weakTopics": raw.get("weakTopics", []),
@@ -55,18 +73,19 @@ def generate_study_brief(uid: str) -> dict:
         pass  # Firestore query failure should not crash the endpoint
 
     # ── 2. Three most recent documents ────────────────────────────────────────
+    # NOTE: order_by("uploadedAt") on a where("ownerId") query requires a
+    # composite Firestore index.  Same fix: fetch and sort in Python.
     doc_names = []
     try:
-        recent_docs = (
+        all_docs = (
             db.collection("documents")
             .where("ownerId", "==", uid)
-            .order_by("uploadedAt", direction="DESCENDING")
-            .limit(3)
             .get()
         )
+        sorted_docs = sorted(all_docs, key=lambda d: _ts_key(d, "uploadedAt"), reverse=True)
         doc_names = [
             d.to_dict().get("fileName", "")
-            for d in recent_docs
+            for d in sorted_docs[:3]
             if d.to_dict().get("fileName")
         ]
     except Exception:
@@ -111,25 +130,22 @@ def generate_study_brief(uid: str) -> dict:
     prompt = "\n".join(lines)
 
     # ── 5. Call OpenAI ────────────────────────────────────────────────────────
+    # Uses the Chat Completions API (client.chat.completions.create) rather
+    # than the newer Responses API (client.responses.create).  The Chat
+    # Completions API has a stable, well-documented response shape that makes
+    # extracting the text reliable: response.choices[0].message.content.
     try:
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
             raise RuntimeError("Missing OPENAI_API_KEY")
 
         client = OpenAI(api_key=api_key)
-        response = client.responses.create(
-            model="gpt-4.1-mini",
-            input=prompt,
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}],
         )
 
-        brief_text = ""
-        for item in getattr(response, "output", []) or []:
-            if getattr(item, "type", None) == "message":
-                for content in getattr(item, "content", []) or []:
-                    if getattr(content, "type", None) == "output_text":
-                        brief_text += getattr(content, "text", "")
-
-        brief_text = brief_text.strip()
+        brief_text = (response.choices[0].message.content or "").strip()
         if not brief_text:
             raise RuntimeError("Empty response from OpenAI")
 

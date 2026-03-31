@@ -9,24 +9,27 @@ import {
   subscribeToRoom,
   subscribeToRoomMembers,
   subscribeToMessages,
+  subscribeToSharedDocuments,
   sendMessage as sendMsg,
 } from '../services/roomService';
 
 /**
  * @param {string | undefined} roomId
  * @returns {{
- *   room:        object | null,
- *   members:     Array<{ id: string, name: string, isHost: boolean, isOnline: boolean }>,
- *   messages:    Array<{ id: string, sender: string, text: string, timestamp: Date }>,
- *   sendMessage: (text: string, user: object) => Promise<void>,
- *   loading:     boolean,
- *   error:       Error | null,
+ *   room:            object | null,
+ *   members:         Array<{ id: string, name: string, isHost: boolean, isOnline: boolean }>,
+ *   messages:        Array<{ id: string, sender: string, text: string, timestamp: Date }>,
+ *   sharedDocuments: Array<object>,
+ *   sendMessage:     (text: string, user: object) => Promise<void>,
+ *   loading:         boolean,
+ *   error:           Error | null,
  * }}
  */
 export function useRoomDetail(roomId) {
   const [room, setRoom] = useState(null);
   const [members, setMembers] = useState([]);
   const [messages, setMessages] = useState([]);
+  const [sharedDocuments, setSharedDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -39,9 +42,10 @@ export function useRoomDetail(roomId) {
     let roomLoaded = false;
     let membersLoaded = false;
     let messagesLoaded = false;
+    let docsLoaded = false;
 
     const checkLoading = () => {
-      if (roomLoaded && membersLoaded && messagesLoaded) setLoading(false);
+      if (roomLoaded && membersLoaded && messagesLoaded && docsLoaded) setLoading(false);
     };
 
     const unsubs = [
@@ -90,6 +94,28 @@ export function useRoomDetail(roomId) {
         },
         (err) => { console.error('Messages error:', err); messagesLoaded = true; checkLoading(); }
       ),
+
+      subscribeToSharedDocuments(
+        roomId,
+        (snapshot) => {
+          setSharedDocuments(snapshot.docs.map((d) => {
+            const data = d.data();
+            return {
+              id:          d.id,
+              fileName:    data.fileName,
+              fileType:    data.fileType,
+              fileSize:    data.fileSize,
+              storageUrl:  data.storageUrl,
+              uploaderName: data.uploaderName || "Anonymous",
+              uploadedAt:  data.uploadedAt?.toDate() ?? new Date(),
+              status:      data.status,
+            };
+          }));
+          docsLoaded = true;
+          checkLoading();
+        },
+        (err) => { console.error('Shared documents error:', err); docsLoaded = true; checkLoading(); }
+      ),
     ];
 
     return () => unsubs.forEach((fn) => fn && fn());
@@ -104,5 +130,5 @@ export function useRoomDetail(roomId) {
     });
   }, [roomId]);
 
-  return { room, members, messages, sendMessage, loading, error };
+  return { room, members, messages, sharedDocuments, sendMessage, loading, error };
 }

@@ -1,10 +1,45 @@
-import { FileText, Image, Presentation, File, Upload, FolderOpen } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { FileText, Image, Presentation, File, Upload, FolderOpen, Loader2 } from 'lucide-react';
+import { uploadRoomDocument } from '../../services/roomService';
+
+const ACCEPTED_FILE_TYPES = '.pdf,.pptx,.docx,.png,.jpg,.jpeg';
 
 /**
- * Panel displaying shared documents in the room
- * Single responsibility: List documents with contributor attribution
+ * Panel displaying shared documents in the room.
+ * Single responsibility: list documents and trigger room-scoped uploads.
+ * No Firebase imports — all storage/Firestore calls go through roomService.
  */
-export function SharedDocumentPanel({ documents }) {
+export function SharedDocumentPanel({ documents, roomId, user }) {
+  const fileInputRef = useRef(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState(null);
+
+  const handleUploadClick = () => {
+    if (!uploading && user?.uid) {
+      setUploadError(null);
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    // Reset the input so the same file can be re-selected after an error
+    e.target.value = '';
+    if (!file) return;
+
+    setUploading(true);
+    setUploadError(null);
+
+    try {
+      await uploadRoomDocument(roomId, file, user);
+      // The onSnapshot listener in useRoomDetail updates the list automatically
+    } catch (err) {
+      setUploadError(err.message ?? 'Upload failed. Please try again.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const getFileIcon = (fileType) => {
     const icons = {
       pdf: FileText,
@@ -28,7 +63,9 @@ export function SharedDocumentPanel({ documents }) {
   };
 
   const formatTime = (date) => {
-    return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    return date instanceof Date
+      ? date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+      : '';
   };
 
   return (
@@ -36,11 +73,34 @@ export function SharedDocumentPanel({ documents }) {
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold text-gray-900">Shared Documents</h3>
-        <button className="flex items-center gap-1 text-sm text-primary-600 hover:text-primary-700 font-medium">
-          <Upload className="h-4 w-4" />
-          <span className="hidden sm:inline">Upload</span>
+        <button
+          onClick={handleUploadClick}
+          disabled={uploading || !user?.uid}
+          className="flex items-center gap-1 text-sm text-primary-600 hover:text-primary-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {uploading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Upload className="h-4 w-4" />
+          )}
+          <span className="hidden sm:inline">{uploading ? 'Uploading…' : 'Upload'}</span>
         </button>
+        {/* Hidden file input — triggered programmatically by the button above */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept={ACCEPTED_FILE_TYPES}
+          style={{ display: 'none' }}
+          onChange={handleFileChange}
+        />
       </div>
+
+      {/* Inline upload error */}
+      {uploadError && (
+        <p className="text-xs text-red-600 bg-red-50 rounded-lg px-3 py-2 mb-3">
+          {uploadError}
+        </p>
+      )}
 
       {/* Document List or Empty State */}
       {documents.length === 0 ? (
@@ -73,7 +133,7 @@ export function SharedDocumentPanel({ documents }) {
                     {doc.fileName}
                   </p>
                   <p className="text-xs text-gray-500">
-                    <span className="font-medium">{doc.uploadedBy}</span>
+                    <span className="font-medium">{doc.uploaderName}</span>
                     <span className="mx-1">•</span>
                     <span>{formatTime(doc.uploadedAt)}</span>
                   </p>
