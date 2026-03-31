@@ -144,7 +144,7 @@ def generate_quiz():
         return jsonify({"error": "Internal server error"}), 500
 
 
-@quiz_bp.post("/api/quiz/score")
+@quiz_bp.post("/score")
 def score_quiz():
     data = request.get_json(silent=True) or {}
     quiz_obj = data.get("quiz")
