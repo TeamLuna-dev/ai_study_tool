@@ -33,7 +33,7 @@ export function useDashboardStats() {
 
     unsubscribes.push(
       onSnapshot(
-        collection(db, "users", uid, "documents"),
+        query(collection(db, "documents"), where("ownerId", "==", uid)),
         (snap) => setStats((prev) => ({ ...prev, documents: { count: snap.size, loading: false, error: null } })),
         ()     => setStats((prev) => ({ ...prev, documents: { count: 0, loading: false, error: "unavailable" } }))
       )
@@ -41,7 +41,7 @@ export function useDashboardStats() {
 
     unsubscribes.push(
       onSnapshot(
-        collection(db, "users", uid, "quizzes"),
+        query(collection(db, "sessions"), where("userId", "==", uid), where("type", "==", "quiz")),
         (snap) => setStats((prev) => ({ ...prev, quizzes: { count: snap.size, loading: false, error: null } })),
         ()     => setStats((prev) => ({ ...prev, quizzes: { count: 0, loading: false, error: "unavailable" } }))
       )
@@ -49,7 +49,7 @@ export function useDashboardStats() {
 
     unsubscribes.push(
       onSnapshot(
-        collection(db, "users", uid, "sessions"),
+        query(collection(db, "sessions"), where("userId", "==", uid)),
         (snap) => setStats((prev) => ({ ...prev, sessions: { count: snap.size, loading: false, error: null } })),
         ()     => setStats((prev) => ({ ...prev, sessions: { count: 0, loading: false, error: "unavailable" } }))
       )
