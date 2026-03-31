@@ -11,14 +11,20 @@ Rules:
 - Contains no business logic.
 
 Run from the project root:
-    python3 backend/init_firestore_schema.py
+    python -m backend.security.init_firestore_schema
 """
 
+import os
 import sys
 from datetime import datetime, timezone
 
+# Ensure the backend directory is on sys.path so `security.firebase_admin_config` resolves
+_BACKEND_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if _BACKEND_DIR not in sys.path:
+    sys.path.insert(0, _BACKEND_DIR)
+
 # ── import the already-initialized Firestore client ──────────────────────────
-from firebase_admin_config import db
+from security.firebase_admin_config import db
 from google.cloud.firestore_v1 import SERVER_TIMESTAMP
 
 

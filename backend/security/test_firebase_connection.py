@@ -2,10 +2,17 @@
 Verification script: confirms the Python backend can connect to Firestore.
 
 Writes a test document, reads it back, then deletes it.
-Run with:  python backend/test_firebase_connection.py
+Run with:  python backend/security/test_firebase_connection.py
 """
 
-from firebase_admin_config import db
+import os
+import sys
+
+_BACKEND_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if _BACKEND_DIR not in sys.path:
+    sys.path.insert(0, _BACKEND_DIR)
+
+from security.firebase_admin_config import db
 
 TEST_COLLECTION = "_connection_test"
 TEST_DOC_ID = "ping"
