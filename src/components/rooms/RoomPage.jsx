@@ -18,7 +18,7 @@ export function RoomPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const { room, members, messages, sendMessage, loading, error } = useRoomDetail(roomId);
+  const { room, members, messages, sharedDocuments, sendMessage, loading, error } = useRoomDetail(roomId);
 
   if (loading) return <LoadingSpinner />;
 
@@ -71,7 +71,11 @@ export function RoomPage() {
 
           {/* Center — Shared Documents */}
           <div className="lg:col-span-5">
-            <SharedDocumentPanel documents={[]} />
+            <SharedDocumentPanel
+              documents={sharedDocuments}
+              roomId={roomId}
+              user={user}
+            />
           </div>
 
           {/* Right — Chat */}
