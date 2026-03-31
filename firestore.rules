@@ -66,6 +66,11 @@ service cloud.firestore {
       }
     }
 
+    // ── quiz_attempts ─────────────────────────────────────────────────────────
+    match /quiz_attempts/{attemptId} {
+      allow read: if isSignedIn() && request.auth.uid == resource.data.user_id;
+    }
+
     // ── sessions ──────────────────────────────────────────────────────────────
     match /sessions/{sessionId} {
       allow create:             if isSignedIn() && request.resource.data.userId == request.auth.uid;

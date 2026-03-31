@@ -41,7 +41,7 @@ export function useDashboardStats() {
 
     unsubscribes.push(
       onSnapshot(
-        query(collection(db, "sessions"), where("userId", "==", uid), where("type", "==", "quiz")),
+        query(collection(db, "quiz_attempts"), where("user_id", "==", uid)),
         (snap) => setStats((prev) => ({ ...prev, quizzes: { count: snap.size, loading: false, error: null } })),
         ()     => setStats((prev) => ({ ...prev, quizzes: { count: 0, loading: false, error: "unavailable" } }))
       )
