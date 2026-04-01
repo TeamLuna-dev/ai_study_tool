@@ -132,42 +132,122 @@ Features to be implemented:<br>
 - Jira Task: Sam - [Desing Quiz Screen (React)]
   - [Scrum-11](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-11), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/branch/SCRUM-11-design-quiz-screen-react)
 
+
 ## Reports
 
 <img src="Assets/SP1-REPORT.png" alt="Dashboard" width="700">
 
+## Sprint 2
+
+### Contributions
+
+**Sumit:** "Quiz History API, Trend Analysis & Firestore Verification"
+
+- Jira Task: Sumit - [Develop Quiz History Retrieval API]
+  - [SCRUM-88](https://cs3398-luna-s26.atlassian.net/browse/SCRUM-88), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-88)
+
+- Jira Task: Sumit - [Implement Trend Analysis and Progress Charts for Quiz Attempt History]
+  - [SCRUM-90](https://cs3398-luna-s26.atlassian.net/browse/SCRUM-90), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-90)
+
+- Jira Task: Sumit - [Verify Firebase Collections Visibility in Firestore UI]
+  - [SCRUM-89](https://cs3398-luna-s26.atlassian.net/browse/SCRUM-89), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-89)
+
+
+**Lane:** "Started and finished implementing the OCR image processing & handling, finishing off the file-upload backend altogether."
+
+- Jira Task: Lane - [Embedding Generation & Qdrant Storage]
+  - [Scrum-39](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-39), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-39)
+
+- Jira Task: Lane - [Processing Error Handling]
+  - [Scrum-40](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-40), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-40)
+
+- Jira Task: Lane - [OCR Integration]
+  - [Scrum-36](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-36), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-36)
+
+- Jira Task: Lane - [Editable Text Review UI]
+  - [Scrum-37](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-37), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-37)
+
+- Jira Task: Lane - [Embedding Creation from Edited Text]
+  - [Scrum-41](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-41), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-41)
+
+  
+
+**Angel:** "To be added"
+
+- Jira Task: Angel - [Task Name]
+  - [Scrum-XX](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-XX), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-XX)
+
+
+**Chris:** "Implemented Study Rooms using previous shema and current Dashboard UI"
+
+- Jira Task: Chris - [Build RoomsPage with Firestore-Wired Room Cards]
+  - [Scrum-68](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-68), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-68-build-roomspage-w-firestore-rooms)
+
+- Jira Task: Chris - [Build Dashboard Welcome Banner Component]
+  - [Scrum-79](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-79), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-79-build-dashboard-welcome-banner)
+
+- Jira Task: Chris - [Build Stats Row with Real Firestore Counts]
+  - [Scrum-80](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-80), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-80-build-stats-row-with--firestore-counts)
+
+- Jira Task: Chris - [Build Recent Activity Section with Empty State]
+  - [Scrum-81](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-81), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-81-build-recent-activity-section)
+
+- Jira Task: Chris - [AI-Generated Daily Study Brief]
+  - [Scrum-82](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-82), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-82-ai-generated-daily-study-brief)
+
+
+**Sam:** "Improved Quiz Generation pipeline and user onboarding"
+
+- Jira Task: Sam - [Quiz Analysis + Logic]
+  - [Scrum-63](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-63), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-63)
+
+- Jira Task: Sam - [Improved Login Page]
+  - [Scrum-83](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-83), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-83)
+
+- Jira Task: Sam - [Entry for PDF + Images Implementation for Quizzes]
+  - [Scrum-69](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-69), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-69)
+
+- Jira Task: Sam - [Prompt the User to Gather Personal Info]
+  - [Scrum-74](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-74), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-74)
+
+- Jira Task: Sam - [Quiz Quality Assurance]
+  - [Scrum-65](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-65), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-65)
+
+## Reports
+
+<img src="Assets/SP2-REPORT.png" alt="Dashboard" width="700">
+
 ## Next Steps
 
-**Summit:**
-
-- Optimize Firestore queries for large datasets and add proper indexing
-- Implement real-time performance dashboard for weak topic analysis
-- Add quiz attempt history and trend analysis features
-- Connect quiz performance tracking to the frontend dashboard 
+**Sumit:**
+- Build progress chart components on the dashboard to visualize quiz performance over time
+- Create quiz history retrieval UI components for browsing past attempts
+- Add frontend integration for trend analysis and progress tracking endpoints
+- Implement knowledge gap analysis that maps weak topics across multiple quiz sessions
+- Add unit tests for quiz history API and trend analysis services
 
 **Lane:**
+- Refine the overall user interface for consistency and usability by standardizing component styling, improving layout responsiveness, and enhancing user flows across key views (dashboard, study rooms, document cards). Focus on cleaner visual hierarchy, smoother interactions, and reusable components to create a more polished and cohesive experience.
 
-- I will completely integrate the file upload system with the front end and firebase database.
-- I will be working with Sam to connect the file uploading system to the quiz generator so that the user will be able to directly create quizes from past notes uploads.
-- The user will also be able to have handwritten notes uploaded and processed into organized notes, similar to the pdf processing
+- Extend the existing file-upload system to support AI-generated summaries by processing uploaded documents and extracting key insights. Integrate a summary service that analyzes document content and attaches structured notes (highlights, topics, key takeaways) to each file, making study materials more accessible within the app.
 
 **Angel:**
 
-- I will focus on creating one unified backend that integrates all the existing features into a single, cohesive system. This will improve overall functionality and make the application easier to manage and scale.
-- Work on the frontend to ensure that all features are properly connected through the navigation bar and that the user experience feels smooth and intuitive.
-- I will improve the Notes Generator feature to produce better-formatted, well-structured, and clearly displayed notes so that users can easily read and understand the generated content.
 
 **Chris:**
-- Study rooms feature:
-- Wire the study room UI to real Firestore data
-- Integrate Lane's file upload pipeline into the room context
-- Build the invite code join flow end-to-end
+- Add an in-app preview modal to DocumentCard that renders PDFs inline and displays file metadata (upload date, size, status), falling back to a download button for non-PDF types. One new DocumentPreviewModal.jsx component, no backend work required.
+
+- New Flask endpoint at backend/features/room_brief/ that aggregates recent chat messages and shared document metadata from a room, sends the context to OpenAI, and returns a structured summary with conversation highlights, document topics, and suggested next steps. Mirrors the existing SCRUM-82 study brief architecture with a new roomBriefService.js on the frontend to call it.
+
+- A RoomStudyBrief.jsx card inside the study room view that consumes the room brief endpoint, displaying the conversation summary, shared documents with detected topics, and a refresh button for regeneration. Includes loading skeleton, error state with retry, and useEffect guards for uid race conditions and StrictMode double-mount.
+
+- A StudyCommandCenter.jsx component at the top of the dashboard that surfaces the user's least-recently-accessed document as a study nudge, renders contextual quick-launch actions based on user state, and shows a teammate activity pulse with recent room messages. All data sourced from existing Firestore fields and listeners — no new backend endpoints or collections required.
 
 **Sam:**
-
-- Improve Quiz Generation by ensuring the AI is giving an appropiate response from the user's input.
-- Connect with the pdf-uploader feature implementation
-- Add the quiz performance tracker.
+- Enhance the Quiz Generator by implementing a dynamic option to allow users to select the number of questions generated per quiz session.
+- Integrate an ML model into the existing integrity service to improve quiz quality assurance and response validation.
+- Implement a performance-based quiz suggestion system that recommends new quizzes based on the user's past quiz results and weak topics.
+- Build a profile settings page allowing users to view and edit their personal information (name, major, academic level) after onboarding.
 
 ## User Stories
 - **AI Knowledge Gap Analysis:** As a student, I would like the system to analyze my quiz performance and study activity so that I can identify my weak topics and improve efficiently. *(i, j)*
@@ -198,8 +278,11 @@ Features to be implemented:<br>
 ## Setup
 1) Install Node.js (verify install: 'node -v'): https://nodejs.org/en/download
 2) Install Node.js dependencies (package.json): 'npm install'
-3) Install Python dependencies (requirements.txt): 'install -r requirements.txt'
-4) Start React app locally using Vite: 'npm run dev'
+3) Go to backend directory: 'cd backend/'
+4) Start venv: 'source venv/bin/activate'
+5) Install Python dependencies (requirements.txt): 'pip3 install -r requirements.txt'
+6) Run backned locally: 'python3 app.py'
+6) Run React app frontent locally (using Vite) from main project directory in seperate terminal: 'npm run dev'
 
 
 
@@ -213,50 +296,6 @@ To be determined
 Project is: _in progress_ 
 
 <!-- /_complete_ / _no longer being worked on_. If you are no longer working on it, provide reasons why.-->
-
-
-## Sprint 1 Contributions
-
-### Sumit Sah
-
-**Tasks Completed:**
-- [SCRUM-60: Firebase Quiz Performance](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-60) - [Commits](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-60)
-- [SCRUM-18: Session Performance Tracking](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-18) - [Commits](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-18)
-
-**Work Summary:**
-- Implemented Firestore integration for quiz performance tracking and study session logging
-- Created Flask API endpoints for quiz submission, weak topic analysis, and session management
-- Developed performance analysis service with weak topic detection (70% threshold)
-- Created comprehensive documentation for quiz module with API endpoint specifications and database schema
-
-**Related Files:**
-- [backend/quiz/app.py](backend/quiz/app.py) - Flask API routes
-- [backend/quiz/services.py](backend/quiz/services.py) - Business logic and utilities
-- [backend/quiz/README.md](backend/quiz/README.md) - Module documentation
-
-**Next Sprint:**
-- Optimize Firestore queries for large datasets and add indexing
-- Implement real-time performance dashboard
-- Add quiz attempt history and trend analysis
-
----
-
-
-## Room for Improvement
-
-To be added 
-<!-- 
-To be determined
-
-Room for improvement:
-- Improvement to be done 1
-- Improvement to be done 2
-
-To do:
-- Feature to be added 1
-- Feature to be added 2
--->
-
 
 ## Acknowledgements
 Give credit here.
