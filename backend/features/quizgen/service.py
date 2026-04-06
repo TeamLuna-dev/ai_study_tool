@@ -40,6 +40,11 @@ def build_mcq_schema(question_count: int) -> dict:
 def generate_adaptive_quiz(notes: str, model: str = "gpt-4.1", academic_level: str = "undergraduate", major: str = "", question_count: int = 5) -> dict:
     if not isinstance(notes, str) or not notes.strip():
         raise ValueError("notes must be a non-empty string")
+    
+    # validate question_count is within accepted values
+    # accepted: 3, 5, 10, 15 —> matches the options shown in the frontend selector and validated in the route handler
+    if question_count not in (3, 5, 10, 15):
+        raise ValueError("question_count must be one of: 3, 5, 10, 15")
 
     load_dotenv()
     api_key = os.getenv("OPENAI_API_KEY")
