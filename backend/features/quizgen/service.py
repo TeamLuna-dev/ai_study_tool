@@ -46,7 +46,7 @@ def _extract_output_text(response) -> str:
                     chunks.append(getattr(c, "text", ""))
     return "\n".join(chunks).strip()
 
-def generate_quiz_from_notes(notes: str, model: str = "gpt-4.1", academic_level: str = "undergraduate", major: str = "") -> dict:
+def generate_adaptive_quiz(notes: str, model: str = "gpt-4.1", academic_level: str = "undergraduate", major: str = "") -> dict:
     if not isinstance(notes, str) or not notes.strip():
         raise ValueError("notes must be a non-empty string")
 

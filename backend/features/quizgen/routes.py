@@ -15,7 +15,7 @@ from qdrant_client.models import Filter, FieldCondition, MatchValue, PayloadSche
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "embeddings")))
 
 from embeddings.qdrant_store import get_client, COLLECTION_NAME
-from .service import generate_quiz_from_notes
+from .service import generate_adaptive_quiz
 
 quiz_bp = Blueprint("quiz_bp", __name__)
 
@@ -89,7 +89,7 @@ def generate_quiz():
             if not notes.strip():
                 return jsonify({"error": "Document chunks were found, but no text was available."}), 400
 
-        quiz_obj = generate_quiz_from_notes(notes)
+        quiz_obj = generate_adaptive_quiz(notes)
         validate_quiz(quiz_obj)
 
         rule_result = run_integrity_checks(quiz_obj, notes)
