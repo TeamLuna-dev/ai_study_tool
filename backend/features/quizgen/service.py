@@ -3,38 +3,39 @@ import json
 from dotenv import load_dotenv
 from openai import OpenAI
 
-# adapts code from quiz-gen.py and adds schema validation for the output
-
-fiveMCQ_schema = {
-    "name": "mcq_quiz_5",
-    "schema": {
-        "type": "object",
-        "additionalProperties": False,
-        "properties": {
-            "questions": {
-                "type": "array",
-                "minItems": 5,
-                "maxItems": 5,
-                "items": {
-                    "type": "object",
-                    "additionalProperties": False,
-                    "properties": {
-                        "question": {"type": "string"},
-                        "choices": {
-                            "type": "array",
-                            "minItems": 4,
-                            "maxItems": 4,
-                            "items": {"type": "string"},
+# Switched to a function that dynamically builds the schema based on the question count, to allow for future flexibility if we want to generate quizzes with different numbers of questions. 
+# For now, it still defaults to 5 questions and 4 choices each.
+def build_mcq_schema(question_count: int) -> dict:
+    return {
+        "name": f"mcq_quiz_{question_count}",
+        "schema": {
+            "type": "object",
+            "additionalProperties": False,
+            "properties": {
+                "questions": {
+                    "type": "array",
+                    "minItems": 5,
+                    "maxItems": 5,
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": False,
+                        "properties": {
+                            "question": {"type": "string"},
+                            "choices": {
+                                "type": "array",
+                                "minItems": question_count,
+                                "maxItems": question_count,
+                                "items": {"type": "string"},
+                            },
+                            "correct_index": {"type": "integer", "minimum": 0, "maximum": 3},
                         },
-                        "correct_index": {"type": "integer", "minimum": 0, "maximum": 3},
+                        "required": ["question", "choices", "correct_index"],
                     },
-                    "required": ["question", "choices", "correct_index"],
-                },
-            }
+                }
+            },
+            "required": ["questions"],
         },
-        "required": ["questions"],
-    },
-}
+    }
 
 def _extract_output_text(response) -> str:
     chunks = []
