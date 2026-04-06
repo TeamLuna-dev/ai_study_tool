@@ -38,6 +38,9 @@ export default function QuizGenerator({
   loadingGen,
   error,
   handleGenerate,
+  // question count
+  questionCount,     
+  setQuestionCount, 
 }) {
   return (
     <div style={layoutStyle}>
@@ -112,6 +115,43 @@ export default function QuizGenerator({
             style={{ width: "100%", padding: 12, borderRadius: 8 }}
           />
         )}
+
+        {/* Question count selector — options match backend accepted values (3, 5, 10, 15).
+            Defaults to 5. Changing this updates questionCount in QuizPage state. */}
+        <div style={{ marginBottom: "12px" }}>
+        <label style={{
+            display: "block",
+            fontSize: "13px",
+            fontWeight: 500,
+            color: "#6b7280",
+            marginBottom: "6px",
+        }}>
+            Number of questions
+        </label>
+        <div style={{ display: "flex", gap: "8px" }}>
+            {[3, 5, 10, 15].map((count) => (
+            <button
+                key={count}
+                type="button"
+                onClick={() => setQuestionCount(count)}
+                style={{
+                flex: 1,
+                padding: "10px",
+                borderRadius: "8px",
+                border: "1px solid #d1d5db",
+                background: questionCount === count ? BRAND_BLUE : "white",
+                color: questionCount === count ? "white" : "#374151",
+                fontWeight: 500,
+                fontSize: "14px",
+                cursor: "pointer",
+                transition: "all 0.15s",
+                }}
+            >
+                {count}
+            </button>
+            ))}
+        </div>
+        </div>
 
         {/* Topic selector */}
         <select

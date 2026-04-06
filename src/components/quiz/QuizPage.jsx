@@ -171,6 +171,7 @@ export function QuizPage() {
     setTopic(""); // reset topic selection as well
     setWeakTopics([]);
     setLoadingAnalysis(false);
+    setQuestionCount(5); // reset to default
   }
 
   // --- UI states ---
