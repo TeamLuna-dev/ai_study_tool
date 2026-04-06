@@ -37,15 +37,6 @@ def build_mcq_schema(question_count: int) -> dict:
         },
     }
 
-def _extract_output_text(response) -> str:
-    chunks = []
-    for item in getattr(response, "output", []) or []:
-        if getattr(item, "type", None) == "message":
-            for c in getattr(item, "content", []) or []:
-                if getattr(c, "type", None) == "output_text":
-                    chunks.append(getattr(c, "text", ""))
-    return "\n".join(chunks).strip()
-
 def generate_adaptive_quiz(notes: str, model: str = "gpt-4.1", academic_level: str = "undergraduate", major: str = "", question_count: int = 5) -> dict:
     if not isinstance(notes, str) or not notes.strip():
         raise ValueError("notes must be a non-empty string")
