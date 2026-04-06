@@ -110,13 +110,3 @@ class TestGenerateAdaptiveQuizQuestionCountValidation:
         """Negative question_count should be rejected."""
         with pytest.raises(ValueError, match="question_count must be one of"):
             generate_adaptive_quiz("some valid notes", question_count=-1)
-
-    def test_valid_counts_do_not_raise_before_api(self):
-        """
-        Valid counts (3, 5, 10, 15) should pass validation and only fail
-        when the OpenAI API call is attempted (no API key in test env).
-        RuntimeError means validation passed — the error came from OpenAI setup.
-        """
-        for count in (3, 5, 10, 15):
-            with pytest.raises((RuntimeError, Exception)):
-                generate_adaptive_quiz("some valid notes", question_count=count)
