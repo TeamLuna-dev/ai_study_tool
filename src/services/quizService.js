@@ -23,12 +23,12 @@ export async function getSessionSummary(userId) {
   return data;
 }
 
-export async function generateQuiz({ notes, docId } = {}) {
+export async function generateQuiz({ notes, docId, questionCount = 5 } = {}) {
   if (!notes && !docId) {
     throw new Error("Provide either notes or docId.");
   }
 
-  const body = docId ? { doc_id: docId } : { notes };
+  const body = docId ? { doc_id: docId, question_count: questionCount } : { notes,  question_count: questionCount  };
 
   const res = await fetch(`${API_BASE}/api/quiz/generate`, {
     method: "POST",
