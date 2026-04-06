@@ -41,6 +41,8 @@ export function QuizPage() {
   const [selectedDocId, setSelectedDocId] = useState(""); // state to track which document the user has selected for quiz generation
   const [inputMode, setInputMode] = useState("docs"); // "docs" | "notes"
 
+  const [questionCount, setQuestionCount] = useState(5); // defaults to 5 — matches backend default
+
   useEffect(() => { // fetch user's uploaded documents on component mount, if user is logged in
   if (!user) return;
 
@@ -75,8 +77,8 @@ export function QuizPage() {
 
     try {
       const newQuiz = inputMode === "docs"
-        ? await generateQuiz({ docId: selectedDocId })
-        : await generateQuiz({ notes });
+        ? await generateQuiz({ docId: selectedDocId, questionCount })
+        : await generateQuiz({ notes, questionCount });
       // resets the quiz UI
 
       setQuiz(newQuiz);
@@ -189,6 +191,8 @@ export function QuizPage() {
         loadingGen={loadingGen}
         error={error}
         handleGenerate={handleGenerate}
+        questionCount={questionCount}
+        setQuestionCount={setQuestionCount}
       />
     );
   }
