@@ -14,8 +14,8 @@ def build_mcq_schema(question_count: int) -> dict:
             "properties": {
                 "questions": {
                     "type": "array",
-                    "minItems": 5,
-                    "maxItems": 5,
+                    "minItems": question_count,
+                    "maxItems": question_count,
                     "items": {
                         "type": "object",
                         "additionalProperties": False,
@@ -23,8 +23,8 @@ def build_mcq_schema(question_count: int) -> dict:
                             "question": {"type": "string"},
                             "choices": {
                                 "type": "array",
-                                "minItems": question_count,
-                                "maxItems": question_count,
+                                "minItems": 4,
+                                "maxItems": 4,
                                 "items": {"type": "string"},
                             },
                             "correct_index": {"type": "integer", "minimum": 0, "maximum": 3},
