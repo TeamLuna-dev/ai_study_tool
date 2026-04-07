@@ -17,9 +17,10 @@ import { useOcrTextReview, SAVE_STATUS } from "../../hooks/useOcrTextReview";
  *   extractedText: string,
  *   authToken?:    string|null,
  *   saveFn?:       Function,
+ *   ocrWarning?:   string|null,
  * }} props
  */
-export function OcrTextReview({ docId, extractedText, authToken, saveFn }) {
+export function OcrTextReview({ docId, extractedText, authToken, saveFn, ocrWarning }) {
   const { text, setText, handleSave, saveStatus, saveError } = useOcrTextReview({
     docId,
     initialText: extractedText,
@@ -51,6 +52,24 @@ export function OcrTextReview({ docId, extractedText, authToken, saveFn }) {
       <p style={{ margin: "0 0 10px", color: "#64748b" }}>
         Edit the text below if needed, then confirm to save.
       </p>
+
+      {ocrWarning && (
+        <div
+          role="alert"
+          data-testid="ocr-warning"
+          style={{
+            marginBottom: "12px",
+            padding: "8px 12px",
+            borderRadius: "6px",
+            background: "#fefce8",
+            border: "1px solid #fde047",
+            color: "#854d0e",
+            fontSize: "0.8rem",
+          }}
+        >
+          ⚠ {ocrWarning}
+        </div>
+      )}
 
       <textarea
         data-testid="ocr-textarea"
