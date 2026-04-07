@@ -203,3 +203,46 @@ export const backButtonStyle = {
   cursor: "pointer",
   transition: "all 0.2s",
 };
+
+export const summaryCardStyle = {
+  background: "#f7f8fa",
+  border: "1px solid #e8eaed",
+  borderRadius: "12px",
+  padding: "20px",
+  marginBottom: "24px",
+};
+
+export const summaryRowStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  padding: "8px 0",
+  borderBottom: "1px solid #e8eaed",
+};
+
+export const summaryLabelStyle = {
+  fontSize: "13px",
+  color: "#7a7a8c",
+  fontWeight: 500,
+};
+
+export const summaryValueStyle = {
+  fontSize: "13px",
+  color: "#1a1a2e",
+  fontWeight: 600,
+};
+
+export const generateButtonStyle = (disabled) => ({
+  width: "100%",
+  padding: "14px 24px",
+  background: disabled ? "#e8eaed" : "#2563eb",
+  border: "none",
+  borderRadius: "10px",
+  color: disabled ? "#9ca3af" : "#fff",
+  fontFamily: "'DM Sans', sans-serif",
+  fontSize: "15px",
+  fontWeight: 600,
+  cursor: disabled ? "not-allowed" : "pointer",
+  transition: "all 0.2s",
+  marginBottom: "12px",
+});
