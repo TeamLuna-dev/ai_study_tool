@@ -32,6 +32,11 @@ import {
   pillStyle,
   countPillStyle,
   backButtonStyle,
+  summaryCardStyle,
+  summaryRowStyle,
+  summaryLabelStyle,
+  summaryValueStyle,
+  generateButtonStyle,
 } from "./quizGeneratorStyles";
 
 import {
@@ -230,6 +235,57 @@ return (
                 Continue →
               </button>
             </div>
+          </div>
+        )}
+
+        {/* Step 3 — Confirm and generate */}
+        {step === 3 && (
+          <div>
+            <h2 style={stepTitleStyle}>Ready to generate</h2>
+            <p style={stepSubtitleStyle}>
+              Here's a summary of your quiz settings.
+            </p>
+
+            {/* Summary card */}
+            <div style={summaryCardStyle}>
+              <div style={summaryRowStyle}>
+                <span style={summaryLabelStyle}>Source</span>
+                <span style={summaryValueStyle}>
+                  {inputMode === "docs"
+                    ? userDocs.find((d) => d.id === selectedDocId)?.fileName || "Document"
+                    : "Pasted notes"}
+                </span>
+              </div>
+              <div style={summaryRowStyle}>
+                <span style={summaryLabelStyle}>Topic</span>
+                <span style={summaryValueStyle}>{topic}</span>
+              </div>
+              <div style={{ ...summaryRowStyle, borderBottom: "none" }}>
+                <span style={summaryLabelStyle}>Questions</span>
+                <span style={summaryValueStyle}>{questionCount}</span>
+              </div>
+            </div>
+
+            {/* Generate button */}
+            <button
+              type="button"
+              onClick={handleGenerate}
+              disabled={loadingGen}
+              style={generateButtonStyle(loadingGen)}
+            >
+              {loadingGen ? "Generating..." : "Generate Quiz 🚀"}
+            </button>
+
+            {/* Back button */}
+            <button
+              type="button"
+              onClick={() => setStep(2)}
+              style={backButtonStyle}
+            >
+              ← Back
+            </button>
+
+            {error && <p style={{ color: "red", marginTop: 12 }}>{error}</p>}
           </div>
         )}
 
