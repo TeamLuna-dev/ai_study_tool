@@ -47,6 +47,18 @@ from features.upload.firebase_storage import (
 
 IMAGE_MIME_TYPES = {"image/jpeg", "image/png"}
 
+LOW_CONFIDENCE_THRESHOLD = 0.70
+
+
+def _mean_confidence(chunks: list) -> float:
+    """Returns the average OCR confidence across all blocks, or 1.0 if unavailable."""
+    scores = [
+        c["metadata"]["confidence"]
+        for c in chunks
+        if isinstance(c.get("metadata"), dict) and "confidence" in c["metadata"]
+    ]
+    return sum(scores) / len(scores) if scores else 1.0
+
 def process_document(
     file_bytes: bytes,
     uid: str,
@@ -96,7 +108,17 @@ def process_document(
             # Embedding happens in process_confirmed_ocr_text() once confirmed.
             ocr_text = "\n\n".join(c["text"] for c in chunks)
             store_ocr_text(doc_id, ocr_text)
-            update_document_status(doc_id, "pending_review")
+
+            avg_conf = _mean_confidence(chunks)
+            extra = None
+            if avg_conf < LOW_CONFIDENCE_THRESHOLD:
+                extra = {
+                    "ocr_warning": (
+                        f"Low OCR confidence ({avg_conf:.0%}). "
+                        "The extracted text may contain errors — review carefully before confirming."
+                    )
+                }
+            update_document_status(doc_id, "pending_review", extra)
             print(f"[PIPELINE] OCR complete for '{file_name}' — awaiting user review.")
             return
 
