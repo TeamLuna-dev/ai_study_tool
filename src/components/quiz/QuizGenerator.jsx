@@ -28,6 +28,10 @@ import {
   docPickerStyle,
   notesTextareaStyle,
   continueButtonStyle,
+  pillsRowStyle,
+  pillStyle,
+  countPillStyle,
+  backButtonStyle,
 } from "./quizGeneratorStyles";
 
 import {
@@ -163,6 +167,69 @@ return (
             >
               Continue →
             </button>
+          </div>
+        )}
+
+        {/* Step 2 — Configure your quiz */}
+        {step === 2 && (
+          <div>
+            <h2 style={stepTitleStyle}>Configure your quiz</h2>
+            <p style={stepSubtitleStyle}>
+              Pick a topic and how many questions you want.
+            </p>
+
+            {/* Topic pills */}
+            <label style={{ ...stepSubtitleStyle, marginBottom: "8px", fontWeight: 600, color: "#1a1a2e" }}>
+              Topic
+            </label>
+            <div style={pillsRowStyle}>
+              {TOPIC_OPTIONS.map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => setTopic(t)}
+                  style={pillStyle(topic === t)}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+
+            {/* Question count pills */}
+            <label style={{ ...stepSubtitleStyle, marginBottom: "8px", fontWeight: 600, color: "#1a1a2e" }}>
+              Number of questions
+            </label>
+            <div style={{ display: "flex", gap: "8px", marginBottom: "24px" }}>
+              {[3, 5, 10, 15].map((count) => (
+                <button
+                  key={count}
+                  type="button"
+                  onClick={() => setQuestionCount(count)}
+                  style={countPillStyle(questionCount === count)}
+                >
+                  {count}
+                </button>
+              ))}
+            </div>
+
+            {/* Navigation */}
+            <div style={{ display: "flex", gap: "12px" }}>
+              <button
+                type="button"
+                onClick={() => setStep(1)}
+                style={backButtonStyle}
+              >
+                ← Back
+              </button>
+              <button
+                type="button"
+                onClick={() => setStep(3)}
+                disabled={!topic}
+                style={continueButtonStyle(!topic)}
+              >
+                Continue →
+              </button>
+            </div>
           </div>
         )}
 
