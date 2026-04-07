@@ -19,19 +19,22 @@ import { db } from "../config/firebase";
  * @returns {{
  *   pipelineStatus: string|null,  - "extracting" | "embedding" | "storing" | "ready" | "error"
  *   pipelineError:  { stage: string, message: string } | null,
- *   ocrText:        string|null   - extracted text for image uploads, null otherwise
+ *   ocrText:        string|null,  - extracted text for image uploads, null otherwise
+ *   ocrWarning:     string|null   - low-confidence warning message, null otherwise
  * }}
  */
 export function useDocumentStatus(docId) {
   const [pipelineStatus, setPipelineStatus] = useState(null);
   const [pipelineError, setPipelineError]   = useState(null);
   const [ocrText,       setOcrText]         = useState(null);
+  const [ocrWarning,    setOcrWarning]      = useState(null);
 
   useEffect(() => {
     // Reset immediately whenever docId changes (including when set to null)
     setPipelineStatus(null);
     setPipelineError(null);
     setOcrText(null);
+    setOcrWarning(null);
 
     if (!docId) return;
 
@@ -46,10 +49,11 @@ export function useDocumentStatus(docId) {
         data.status === "error" && data.error ? data.error : null
       );
       setOcrText(data.ocr_text ?? null);
+      setOcrWarning(data.ocr_warning ?? null);
     });
 
     return unsubscribe;
   }, [docId]);
 
-  return { pipelineStatus, pipelineError, ocrText };
+  return { pipelineStatus, pipelineError, ocrText, ocrWarning };
 }
