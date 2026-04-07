@@ -7,7 +7,29 @@
  * Has no state of its own — purely presentational.
  */
 
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { useState } from "react";
+import {
+  generatorRootStyle,
+  generatorCardStyle,
+  generatorInnerStyle,
+  progressTrackStyle,
+  progressFillStyle,
+  stepIndicatorRowStyle,
+  stepNumbersStyle,
+  stepCircleStyle,
+  stepLabelStyle,
+  sourceCardsRowStyle,
+  sourceCardStyle,
+  sourceCardIconStyle,
+  sourceCardLabelStyle,
+  sourceCardDescStyle,
+  stepTitleStyle,
+  stepSubtitleStyle,
+  docPickerStyle,
+  notesTextareaStyle,
+  continueButtonStyle,
+} from "./quizGeneratorStyles";
+
 import {
   BRAND_BLUE,
   baseButtonStyle,
@@ -42,156 +64,110 @@ export default function QuizGenerator({
   questionCount,     
   setQuestionCount, 
 }) {
-  return (
-    <div style={layoutStyle}>
-      <div style={{ padding: 28, maxWidth: 800, width: "100%" }}>
-        <h2>Generate Quiz</h2>
+  const [step, setStep] = useState(1);
+return (
+  <div style={generatorRootStyle}>
+    <style>{`
+      @keyframes fadeSlideUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+    `}</style>
 
-        {/* Mode toggle:  switches between document picker and notes input */}
-        <div style={{ display: "flex", gap: 8, marginBottom: 20, marginTop: 12 }}>
-          <button
-            type="button"
-            onClick={() => setInputMode("docs")}
-            style={{
-              ...baseButtonStyle,
-              ...(inputMode === "docs" ? primaryButtonStyle : secondaryButtonStyle),
-            }}
-          >
-            My Documents
-          </button>
-          <button
-            type="button"
-            onClick={() => setInputMode("notes")}
-            style={{
-              ...baseButtonStyle,
-              ...(inputMode === "notes" ? primaryButtonStyle : secondaryButtonStyle),
-            }}
-          >
-            Paste Notes
-          </button>
+    <div style={generatorCardStyle}>
+
+      {/* Progress bar */}
+      <div style={progressTrackStyle}>
+        <div style={progressFillStyle(step, 3)} />
+      </div>
+
+      <div style={generatorInnerStyle}>
+
+        {/* Step indicator */}
+        <div style={stepIndicatorRowStyle}>
+          <div style={stepNumbersStyle}>
+            {[1, 2, 3].map((s) => (
+              <div key={s} style={stepCircleStyle(s, step)}>
+                {s < step ? "✓" : s}
+              </div>
+            ))}
+          </div>
+          <span style={stepLabelStyle}>Step {step} of 3</span>
         </div>
 
-        {/* Document picker: shown when inputMode is "docs" */}
-        {inputMode === "docs" && (
+        {/* Step 1: Choose your source */}
+        {step === 1 && (
           <div>
-            <p style={{ color: "#6b7280", marginBottom: 12 }}>
-              Select a document you've already uploaded to generate a quiz from.
+            <h2 style={stepTitleStyle}>Choose your source</h2>
+            <p style={stepSubtitleStyle}>
+              Where should we pull your study material from?
             </p>
-            <select
-              value={selectedDocId}
-              onChange={(e) => setSelectedDocId(e.target.value)}
-              style={{
-                width: "100%",
-                padding: 12,
-                borderRadius: 8,
-                border: "1px solid #d1d5db",
-                marginBottom: 12,
-                backgroundColor: "white",
-              }}
-            >
-              <option value="">Select a document…</option>
-              {userDocs.map((doc) => (
-                <option key={doc.id} value={doc.id}>
-                  {doc.fileName}
-                </option>
-              ))}
-            </select>
 
-            {userDocs.length === 0 && (
-              <p style={{ color: "#9ca3af", fontSize: 14 }}>
-                No documents found. Upload a file first.
-              </p>
+            {/* Source cards */}
+            <div style={sourceCardsRowStyle}>
+              {[
+                { mode: "docs", icon: "📄", label: "My Documents", desc: "Use an uploaded PDF or image" },
+                { mode: "notes", icon: "✏️", label: "Paste Notes", desc: "Type or paste your own notes" },
+              ].map(({ mode, icon, label, desc }) => (
+                <button
+                  key={mode}
+                  type="button"
+                  onClick={() => setInputMode(mode)}
+                  style={sourceCardStyle(inputMode === mode)}
+                >
+                  <div style={sourceCardIconStyle}>{icon}</div>
+                  <div style={sourceCardLabelStyle}>{label}</div>
+                  <div style={sourceCardDescStyle}>{desc}</div>
+                </button>
+              ))}
+            </div>
+
+            {/* Doc picker */}
+            {inputMode === "docs" && (
+              <div>
+                <select
+                  value={selectedDocId}
+                  onChange={(e) => setSelectedDocId(e.target.value)}
+                  style={docPickerStyle}
+                >
+                  <option value="">Select a document…</option>
+                  {userDocs.map((doc) => (
+                    <option key={doc.id} value={doc.id}>{doc.fileName}</option>
+                  ))}
+                </select>
+                {userDocs.length === 0 && (
+                  <p style={{ color: "#9ca3af", fontSize: "13px" }}>
+                    No documents found. Upload a file first.
+                  </p>
+                )}
+              </div>
             )}
+
+            {/* Notes textarea */}
+            {inputMode === "notes" && (
+              <textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                rows={6}
+                placeholder="Paste your notes here..."
+                style={notesTextareaStyle}
+              />
+            )}
+
+            {/* Continue button */}
+            <button
+              type="button"
+              onClick={() => setStep(2)}
+              disabled={inputMode === "docs" ? !selectedDocId : !notes.trim()}
+              style={continueButtonStyle(inputMode === "docs" ? !selectedDocId : !notes.trim())}
+            >
+              Continue →
+            </button>
           </div>
         )}
 
-        {/* Notes textarea: shown when inputMode is "notes" */}
-        {inputMode === "notes" && (
-          <textarea
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            rows={8}
-            placeholder="Paste your notes here..."
-            style={{ width: "100%", padding: 12, borderRadius: 8 }}
-          />
-        )}
-
-        {/* Question count selector — options match backend accepted values (3, 5, 10, 15).
-            Defaults to 5. Changing this updates questionCount in QuizPage state. */}
-        <div style={{ marginBottom: "12px" }}>
-        <label style={{
-            display: "block",
-            fontSize: "13px",
-            fontWeight: 500,
-            color: "#6b7280",
-            marginBottom: "6px",
-        }}>
-            Number of questions
-        </label>
-        <div style={{ display: "flex", gap: "8px" }}>
-            {[3, 5, 10, 15].map((count) => (
-            <button
-                key={count}
-                type="button"
-                onClick={() => setQuestionCount(count)}
-                style={{
-                flex: 1,
-                padding: "10px",
-                borderRadius: "8px",
-                border: "1px solid #d1d5db",
-                background: questionCount === count ? BRAND_BLUE : "white",
-                color: questionCount === count ? "white" : "#374151",
-                fontWeight: 500,
-                fontSize: "14px",
-                cursor: "pointer",
-                transition: "all 0.15s",
-                }}
-            >
-                {count}
-            </button>
-            ))}
-        </div>
-        </div>
-
-        {/* Topic selector */}
-        <select
-          value={topic}
-          onChange={(e) => setTopic(e.target.value)}
-          style={{
-            width: "100%",
-            padding: 12,
-            borderRadius: 8,
-            border: "1px solid #d1d5db",
-            marginTop: 12,
-            marginBottom: 12,
-            backgroundColor: "white",
-          }}
-        >
-          <option value="">Select a topic</option>
-          {TOPIC_OPTIONS.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
-
-        {/* Generate button */}
-        <button
-          onClick={handleGenerate}
-          disabled={loadingGen || (!notes.trim() && !selectedDocId) || !topic}
-          style={{
-            ...primaryButtonStyle,
-            marginTop: 12,
-            ...(loadingGen || (!notes.trim() && !selectedDocId) || !topic
-              ? disabledButtonStyle
-              : {}),
-          }}
-        >
-          {loadingGen ? "Generating..." : "Generate"}
-        </button>
-
-        {error && <p style={{ color: "red", marginTop: 12 }}>{error}</p>}
       </div>
     </div>
-  );
+  </div>
+);
 }
