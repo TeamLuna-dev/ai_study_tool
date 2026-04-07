@@ -2,7 +2,7 @@
    // quizStyles.js
    // Note for Angel:
    // This file currently centralizes (by following SRP) all of the styling components
-   // of the quiz feature, but if you find that some styles are only used in one component and not shared across multiple components, feel free to move those styles into the component file itself. 
+   // of QuizPage.jsx but if you find that some styles are only used in one component and not shared across multiple components, feel free to move those styles into the component file itself. 
    // The goal is to keep styles organized and maintainable, so use your judgment on where they fit best.
    
    export const BRAND_BLUE = "#2563eb"; // consistent brand color for primary actions 
