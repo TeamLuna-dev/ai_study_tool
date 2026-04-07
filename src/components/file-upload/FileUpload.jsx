@@ -45,7 +45,7 @@ export function FileUpload({ onUploadSuccess, onUploadError, uploadFn, getAuthTo
   const isUploading = status === UPLOAD_STATUS.UPLOADING;
   const isSuccess   = status === UPLOAD_STATUS.SUCCESS;
 
-  const { pipelineStatus, pipelineError, ocrText } = useDocumentStatus(docId);
+  const { pipelineStatus, pipelineError, ocrText, ocrWarning } = useDocumentStatus(docId);
 
   const [authToken, setAuthToken] = React.useState(null);
   React.useEffect(() => {
@@ -98,6 +98,7 @@ export function FileUpload({ onUploadSuccess, onUploadError, uploadFn, getAuthTo
           docId={docId}
           extractedText={ocrText}
           authToken={authToken}
+          ocrWarning={ocrWarning}
         />
       )}
 
