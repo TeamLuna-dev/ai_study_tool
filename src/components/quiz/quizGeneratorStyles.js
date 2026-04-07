@@ -158,3 +158,48 @@ export const stepLabelStyle = {
   color: "#7a7a8c",
   fontWeight: 500,
 };
+
+export const pillsRowStyle = {
+  display: "flex",
+  flexWrap: "wrap",
+  gap: "8px",
+  marginBottom: "24px",
+};
+
+export const pillStyle = (isSelected) => ({
+  padding: "10px 18px",
+  borderRadius: "100px",
+  border: isSelected ? "2px solid #2563eb" : "1px solid #e8eaed",
+  background: isSelected ? "#eff6ff" : "#f7f8fa",
+  color: isSelected ? "#2563eb" : "#7a7a8c",
+  fontWeight: 500,
+  fontSize: "14px",
+  cursor: "pointer",
+  transition: "all 0.2s",
+});
+
+export const countPillStyle = (isSelected) => ({
+  flex: 1,
+  padding: "12px",
+  borderRadius: "10px",
+  border: isSelected ? "2px solid #2563eb" : "1px solid #e8eaed",
+  background: isSelected ? "#eff6ff" : "#f7f8fa",
+  color: isSelected ? "#2563eb" : "#7a7a8c",
+  fontWeight: 600,
+  fontSize: "15px",
+  cursor: "pointer",
+  textAlign: "center",
+  transition: "all 0.2s",
+});
+
+export const backButtonStyle = {
+  padding: "13px 18px",
+  background: "transparent",
+  border: "1px solid #e8eaed",
+  borderRadius: "10px",
+  color: "#7a7a8c",
+  fontFamily: "'DM Sans', sans-serif",
+  fontSize: "14px",
+  cursor: "pointer",
+  transition: "all 0.2s",
+};
