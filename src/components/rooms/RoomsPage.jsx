@@ -6,6 +6,7 @@
  */
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Users } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { useRooms } from "../../hooks/useRooms";
@@ -56,6 +57,7 @@ function EmptyState({ onCreateRoom, onJoinRoom }) {
 export function RoomsPage() {
   const { user, loading: authLoading } = useAuth();
   const { rooms, loading, error } = useRooms(user?.uid);
+  const navigate = useNavigate();
 
   const [showCreate, setShowCreate] = useState(false);
   const [showJoin, setShowJoin] = useState(false);
@@ -77,7 +79,8 @@ export function RoomsPage() {
 
   async function handleJoin(code) {
     const token = await user.getIdToken();
-    await joinRoom(token, code, user.displayName || user.email || "Anonymous");
+    const result = await joinRoom(token, code, user.displayName || user.email || "Anonymous");
+    navigate(`/rooms/${result.roomId}`);
   }
 
   return (
