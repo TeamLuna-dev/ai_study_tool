@@ -35,6 +35,7 @@ export default function QuizProgressChart() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selectedTopic, setSelectedTopic] = useState("all");
+  const [dateRange, setDateRange] = useState("all");
 
   useEffect(() => {
     async function fetchHistory() {
@@ -61,9 +62,19 @@ export default function QuizProgressChart() {
   const topics = [...new Set([...TOPIC_OPTIONS, ...historyTopics])];
 
   // Filter by selected topic
-  const filtered = selectedTopic === "all"
+  const topicFiltered = selectedTopic === "all"
     ? history
     : history.filter((h) => h.topic === selectedTopic);
+
+  // Filter by date range
+  const now = new Date();
+  const filtered = dateRange === "all"
+    ? topicFiltered
+    : topicFiltered.filter((h) => {
+        if (!h.timestamp) return false;
+        const diff = (now - new Date(h.timestamp)) / (1000 * 60 * 60 * 24);
+        return dateRange === "7" ? diff <= 7 : diff <= 30;
+      });
 
   // Prepare data for chart — convert raw score to percentage
   const sorted = [...filtered].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
@@ -104,18 +115,35 @@ export default function QuizProgressChart() {
     <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 mb-8">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-gray-900">Quiz Score Trend</h3>
-        {topics.length > 0 && (
-          <select
-            value={selectedTopic}
-            onChange={(e) => setSelectedTopic(e.target.value)}
-            className="text-sm border border-gray-300 rounded-lg px-3 py-1.5 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="all">All Subjects</option>
-            {topics.map((t) => (
-              <option key={t} value={t}>{t}</option>
+        <div className="flex items-center gap-2">
+          <div className="flex rounded-lg border border-gray-300 overflow-hidden text-sm">
+            {[["all", "All Time"], ["30", "30 Days"], ["7", "7 Days"]].map(([val, label]) => (
+              <button
+                key={val}
+                onClick={() => setDateRange(val)}
+                className={`px-3 py-1.5 transition-colors ${
+                  dateRange === val
+                    ? "bg-blue-600 text-white"
+                    : "bg-white text-gray-700 hover:bg-gray-50"
+                }`}
+              >
+                {label}
+              </button>
             ))}
-          </select>
-        )}
+          </div>
+          {topics.length > 0 && (
+            <select
+              value={selectedTopic}
+              onChange={(e) => setSelectedTopic(e.target.value)}
+              className="text-sm border border-gray-300 rounded-lg px-3 py-1.5 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="all">All Subjects</option>
+              {topics.map((t) => (
+                <option key={t} value={t}>{t}</option>
+              ))}
+            </select>
+          )}
+        </div>
       </div>
       {filtered.length === 0 ? (
         <p className="text-gray-400 text-center py-8">No attempts for {selectedTopic} yet.</p>
