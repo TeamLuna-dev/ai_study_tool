@@ -117,9 +117,13 @@ export default function QuizProgressChart() {
           </select>
         )}
       </div>
-      <div style={{ maxWidth: 700, margin: "0 auto" }}>
-        <Line data={data} options={options} />
-      </div>
+      {filtered.length === 0 ? (
+        <p className="text-gray-400 text-center py-8">No attempts for {selectedTopic} yet.</p>
+      ) : (
+        <div style={{ maxWidth: 700, margin: "0 auto" }}>
+          <Line data={data} options={options} />
+        </div>
+      )}
     </div>
   );
 }
