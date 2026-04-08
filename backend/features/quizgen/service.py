@@ -3,51 +3,48 @@ import json
 from dotenv import load_dotenv
 from openai import OpenAI
 
-# adapts code from quiz-gen.py and adds schema validation for the output
-
-fiveMCQ_schema = {
-    "name": "mcq_quiz_5",
-    "schema": {
-        "type": "object",
-        "additionalProperties": False,
-        "properties": {
-            "questions": {
-                "type": "array",
-                "minItems": 5,
-                "maxItems": 5,
-                "items": {
-                    "type": "object",
-                    "additionalProperties": False,
-                    "properties": {
-                        "question": {"type": "string"},
-                        "choices": {
-                            "type": "array",
-                            "minItems": 4,
-                            "maxItems": 4,
-                            "items": {"type": "string"},
+# Switched to a function that dynamically builds the schema based on the question count, to allow for future flexibility if we want to generate quizzes with different numbers of questions. 
+# For now, it still defaults to 5 questions and 4 choices each.
+def build_mcq_schema(question_count: int) -> dict:
+    return {
+        "name": f"mcq_quiz_{question_count}",
+        "schema": {
+            "type": "object",
+            "additionalProperties": False,
+            "properties": {
+                "questions": {
+                    "type": "array",
+                    "minItems": question_count,
+                    "maxItems": question_count,
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": False,
+                        "properties": {
+                            "question": {"type": "string"},
+                            "choices": {
+                                "type": "array",
+                                "minItems": 4,
+                                "maxItems": 4,
+                                "items": {"type": "string"},
+                            },
+                            "correct_index": {"type": "integer", "minimum": 0, "maximum": 3},
                         },
-                        "correct_index": {"type": "integer", "minimum": 0, "maximum": 3},
+                        "required": ["question", "choices", "correct_index"],
                     },
-                    "required": ["question", "choices", "correct_index"],
-                },
-            }
+                }
+            },
+            "required": ["questions"],
         },
-        "required": ["questions"],
-    },
-}
+    }
 
-def _extract_output_text(response) -> str:
-    chunks = []
-    for item in getattr(response, "output", []) or []:
-        if getattr(item, "type", None) == "message":
-            for c in getattr(item, "content", []) or []:
-                if getattr(c, "type", None) == "output_text":
-                    chunks.append(getattr(c, "text", ""))
-    return "\n".join(chunks).strip()
-
-def generate_quiz_from_notes(notes: str, model: str = "gpt-4.1", academic_level: str = "undergraduate", major: str = "") -> dict:
+def generate_adaptive_quiz(notes: str, model: str = "gpt-4.1", academic_level: str = "undergraduate", major: str = "", question_count: int = 5) -> dict:
     if not isinstance(notes, str) or not notes.strip():
         raise ValueError("notes must be a non-empty string")
+    
+    # validate question_count is within accepted values
+    # accepted: 3, 5, 10, 15 —> matches the options shown in the frontend selector and validated in the route handler
+    if question_count not in (3, 5, 10, 15):
+        raise ValueError("question_count must be one of: 3, 5, 10, 15")
 
     load_dotenv()
     api_key = os.getenv("OPENAI_API_KEY")
@@ -72,7 +69,7 @@ Student context:
 - {major_context}
 - Complexity guidance: {level_guidance}
 
-Create exactly 5 multiple-choice questions based ONLY on the notes below.
+Create exactly {question_count} multiple-choice questions based ONLY on the notes below.
 
 Rules:
 - Exactly 4 answer choices.
@@ -84,14 +81,16 @@ NOTES:
 {notes}
 """.strip()
 
+    schema = build_mcq_schema(question_count) # dynamically build schema based on question count, feat
+
     response = client.chat.completions.create(
         model=model,
         messages=[{"role": "user", "content": prompt}],
         response_format={
             "type": "json_schema",
             "json_schema": {
-                "name": fiveMCQ_schema["name"],
-                "schema": fiveMCQ_schema["schema"],
+                "name": schema["name"],
+                "schema": schema["schema"],
                 "strict": True,
             }
         },

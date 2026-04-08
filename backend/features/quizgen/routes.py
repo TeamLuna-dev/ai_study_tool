@@ -10,12 +10,11 @@ from .integrity_service import run_integrity_checks, run_llm_verification
 from .validators import validate_quiz, validate_answers, validate_topic
 import requests
 from qdrant_client.models import Filter, FieldCondition, MatchValue, PayloadSchemaType
+from embeddings.qdrant_store import get_client, COLLECTION_NAME
+from .service import generate_adaptive_quiz
 
 # Allow import from sibling embeddings folder
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "embeddings")))
-
-from embeddings.qdrant_store import get_client, COLLECTION_NAME
-from .service import generate_quiz_from_notes
 
 quiz_bp = Blueprint("quiz_bp", __name__)
 
@@ -45,8 +44,12 @@ def quiz_health():
 @quiz_bp.post("/generate")
 def generate_quiz():
     data = request.get_json(silent=True) or {}
+    # read notes and doc_id from request, stripping whitespace and defaulting to empty string if not provided
     notes = (data.get("notes") or "").strip()
     doc_id = (data.get("doc_id") or "").strip()
+    # read question_count from request, default to 5 if not provided
+    # accepted values: 3, 5, 10, 15 —> validated in generate_adaptive_quiz
+    question_count = int(data.get("question_count", 5))
 
     if not notes and not doc_id:
         return jsonify({"error": "Provide either 'notes' or 'doc_id'."}), 400
@@ -89,7 +92,7 @@ def generate_quiz():
             if not notes.strip():
                 return jsonify({"error": "Document chunks were found, but no text was available."}), 400
 
-        quiz_obj = generate_quiz_from_notes(notes)
+        quiz_obj = generate_adaptive_quiz(notes, question_count=question_count)
         validate_quiz(quiz_obj)
 
         rule_result = run_integrity_checks(quiz_obj, notes)
