@@ -12,8 +12,12 @@ def create_app():
     cors_origins = [
         "http://localhost:3000",
         "http://127.0.0.1:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3001",
         "http://localhost:5173",
         "http://127.0.0.1:5173",
+        "http://localhost:5174",
+        "http://127.0.0.1:5174",
     ]
     frontend_url = os.environ.get("FRONTEND_URL")
     if frontend_url:
@@ -23,21 +27,12 @@ def create_app():
         app,
         resources={
             r"/api/*": {
-                "origins": [
-                    "http://localhost:3000",
-                    "http://127.0.0.1:3000",
-                    "http://localhost:3001",
-                    "http://127.0.0.1:3001",
-                    "http://localhost:5173",
-                    "http://127.0.0.1:5173",
-                    "http://localhost:5174",
-                    "http://127.0.0.1:5174",
-                ],
+                "origins": cors_origins,
                 "allow_headers": ["Authorization", "Content-Type"],
                 "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
             }
         },
-        supports_credentials=True
+        supports_credentials=True,
     )
     
     # Import feature routes
