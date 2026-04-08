@@ -61,7 +61,7 @@ def join_room():
         return jsonify({"error": "userId must match authenticated user"}), 403
 
     try:
-        result = room_service.join_room(body.inviteCode, uid)
+        result = room_service.join_room(body.invite_code, uid, body.display_name)
         return jsonify(result), 200
     except ValueError as exc:
         return jsonify({"error": str(exc)}), 404
@@ -91,8 +91,10 @@ def get_members(room_id):
         return jsonify({"error": error[0]}), error[1]
 
     try:
-        members = room_service.get_members(room_id)
+        members = room_service.get_members(room_id, uid)
         return jsonify({"members": members}), 200
+    except PermissionError as exc:
+        return jsonify({"error": str(exc)}), 403
     except ValueError as exc:
         return jsonify({"error": str(exc)}), 404
     except Exception as exc:

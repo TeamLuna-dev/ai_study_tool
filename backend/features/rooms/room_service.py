@@ -67,7 +67,7 @@ def _ts(value) -> str:
 
 # ── Public service functions ──────────────────────────────────────────────────
 
-def create_room(name: str, description: str, creator_uid: str) -> dict:
+def create_room(name: str, description: str, creator_uid: str, display_name: str = None) -> dict:
     """
     Creates a new room document and registers the creator as owner
     in the members subcollection.
@@ -87,11 +87,12 @@ def create_room(name: str, description: str, creator_uid: str) -> dict:
         "members": [creator_uid],
     })
 
-    try:
-        user_record = firebase_auth.get_user(creator_uid)
-        display_name = user_record.display_name or user_record.email or creator_uid
-    except Exception:
-        display_name = creator_uid  
+    if not display_name:
+        try:
+            user_record = firebase_auth.get_user(creator_uid)
+            display_name = user_record.display_name or user_record.email or creator_uid
+        except Exception:
+            display_name = creator_uid
 
     room_ref.collection("members").document(creator_uid).set({
         "role":        "owner",
@@ -109,7 +110,7 @@ def create_room(name: str, description: str, creator_uid: str) -> dict:
     }
 
 
-def join_room(invite_code: str, user_uid: str) -> dict:
+def join_room(invite_code: str, user_uid: str, display_name: str = None) -> dict:
     """
     Finds a room by invite code and adds the user as a member.
     Raises ValueError if the code is invalid or the user is already a member.
@@ -126,11 +127,12 @@ def join_room(invite_code: str, user_uid: str) -> dict:
         raise ValueError(f"Already a member of this room with role: {existing_role}")
 
     now = datetime.now(timezone.utc)
-    try:
-        user_record = firebase_auth.get_user(user_uid)
-        display_name = user_record.display_name or user_record.email or user_uid
-    except Exception:
-        display_name = user_uid
+    if not display_name:
+        try:
+            user_record = firebase_auth.get_user(user_uid)
+            display_name = user_record.display_name or user_record.email or user_uid
+        except Exception:
+            display_name = user_uid
 
     room_doc.reference.collection("members").document(user_uid).set({
         "role":        "member",
@@ -151,8 +153,12 @@ def join_room(invite_code: str, user_uid: str) -> dict:
         "joinedAt": now.isoformat(),
     }
 
-def get_room(room_id: str) -> dict:
-    """Returns the room document fields."""
+def get_room(room_id: str, uid: str) -> dict:
+    """Returns the room document fields. Requires uid to be a member."""
+    role = _get_member_role(room_id, uid)
+    if role is None:
+        raise PermissionError("Not a member of this room")
+
     room_ref = db.collection("rooms").document(room_id)
     doc = room_ref.get()
     if not doc.exists:
@@ -167,8 +173,12 @@ def get_room(room_id: str) -> dict:
         "createdAt":   _ts(data.get("createdAt")),
     }
 
-def get_members(room_id: str) -> List[dict]:
-    """Returns all members of the room with their roles and join timestamps."""
+def get_members(room_id: str, uid: str) -> List[dict]:
+    """Returns all members of the room. Requires uid to be a member."""
+    role = _get_member_role(room_id, uid)
+    if role is None:
+        raise PermissionError("Not a member of this room")
+
     room_ref = db.collection("rooms").document(room_id)
     if not room_ref.get().exists:
         raise ValueError("Room not found")
@@ -211,6 +221,7 @@ def remove_member(room_id: str, target_uid: str, requesting_uid: str) -> dict:
         raise PermissionError("Only the room owner can remove other members")
 
     room_ref.collection("members").document(target_uid).delete()
+    room_ref.update({"members": firebase_firestore.ArrayRemove([target_uid])})
     return {"removed": target_uid, "roomId": room_id}
 
 

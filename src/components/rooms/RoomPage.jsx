@@ -4,10 +4,12 @@
  * Loads real Firestore data via hooks; no mock data.
  */
 
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { useRoomDetail } from "../../hooks/useRoomDetail";
+import { deleteRoom, leaveRoom, removeMember } from "../../services/roomService";
 import { RoomLobby } from "./RoomLobby";
 import { SharedDocumentPanel } from "./SharedDocumentPanel";
 import { ChatArea } from "./ChatArea";
@@ -18,7 +20,46 @@ export function RoomPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const { room, members, messages, sharedDocuments, sendMessage, loading, error } = useRoomDetail(roomId);
+  const { room, members, messages, sendMessage, sharedDocuments, loading, error } = useRoomDetail(roomId);
+  const [deleting, setDeleting] = useState(false);
+  const [leaving, setLeaving] = useState(false);
+
+  const isOwner = members.some((m) => m.id === user?.uid && m.isHost);
+
+  async function handleDeleteRoom() {
+    if (!window.confirm('Delete this room? This cannot be undone.')) return;
+    setDeleting(true);
+    try {
+      const token = await user.getIdToken();
+      await deleteRoom(token, roomId);
+      navigate('/rooms');
+    } catch (err) {
+      alert(err.message);
+      setDeleting(false);
+    }
+  }
+
+  async function handleLeaveRoom() {
+    if (!window.confirm('Leave this room?')) return;
+    setLeaving(true);
+    try {
+      const token = await user.getIdToken();
+      await leaveRoom(token, roomId, user.uid);
+      navigate('/rooms');
+    } catch (err) {
+      alert(err.message);
+      setLeaving(false);
+    }
+  }
+
+  async function handleRemoveMember(targetId) {
+    try {
+      const token = await user.getIdToken();
+      await removeMember(token, roomId, targetId);
+    } catch (err) {
+      alert(err.message);
+    }
+  }
 
   if (loading) return <LoadingSpinner />;
 
@@ -54,9 +95,26 @@ export function RoomPage() {
             >
               <ArrowLeft className="h-5 w-5" />
             </button>
-            <span className="text-lg font-semibold text-gray-900 truncate">
+            <span className="text-lg font-semibold text-gray-900 truncate flex-1">
               {room.name}
             </span>
+            {isOwner ? (
+              <button
+                onClick={handleDeleteRoom}
+                disabled={deleting}
+                className="text-red-500 hover:text-red-700 text-sm font-medium"
+              >
+                {deleting ? 'Deleting…' : 'Delete Room'}
+              </button>
+            ) : (
+              <button
+                onClick={handleLeaveRoom}
+                disabled={leaving}
+                className="text-gray-500 hover:text-gray-700 text-sm font-medium"
+              >
+                {leaving ? 'Leaving…' : 'Leave Room'}
+              </button>
+            )}
           </div>
         </div>
       </header>
@@ -66,7 +124,12 @@ export function RoomPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Left Sidebar — Room Lobby */}
           <div className="lg:col-span-3">
-            <RoomLobby room={room} members={members} />
+            <RoomLobby
+              room={room}
+              members={members}
+              currentUserId={user?.uid}
+              onRemoveMember={handleRemoveMember}
+            />
           </div>
 
           {/* Center — Shared Documents */}

@@ -5,7 +5,7 @@
  */
 
 import { useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate, useLocation } from "react-router-dom";
 import { signInWithGoogle } from "../../services/authService";
 import { useAuth } from "../../hooks/useAuth";
 import LoadingSpinner from "../common/LoadingSpinner";
@@ -57,6 +57,7 @@ function getErrorMessage(code) {
 export default function LoginPage() {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const { state } = useLocation();
   const [signingIn, setSigningIn] = useState(false);
   const [error, setError] = useState("");
 
@@ -68,7 +69,7 @@ export default function LoginPage() {
     setError("");
     try {
       await signInWithGoogle();
-      navigate("/dashboard", { replace: true });
+      navigate(state?.from?.pathname || "/dashboard", { replace: true });
     } catch (err) {
       const message = getErrorMessage(err.code);
       if (message !== null) {

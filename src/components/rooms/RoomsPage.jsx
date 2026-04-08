@@ -1,30 +1,28 @@
 /**
  * RoomsPage.jsx
- * Orchestrator component for the /rooms route.
+ * Orchestrator for the /rooms route.
  * Single Responsibility: compose the rooms listing page — no data fetching,
- * no direct Firestore access.
+ * no direct Firestore access, no modal form logic.
  */
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Users } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { useRooms } from "../../hooks/useRooms";
-import { createRoom } from "../../services/roomService";
+import { createRoom, joinRoom } from "../../services/roomService";
 import { RoomCard } from "./RoomCard";
-import { CreateRoomForm } from "./CreateRoomForm";
-import Modal from "../common/Modal";
+import { CreateRoomModal } from "./CreateRoomModal";
+import { JoinRoomModal } from "./JoinRoomModal";
 import LoadingSpinner from "../common/LoadingSpinner";
 
-/**
- * Header action buttons. onCreateRoom enables the "+ Create Room" button;
- * omitting it (or passing null) keeps it disabled (e.g. empty-state fallback).
- */
-function RoomActions({ onCreateRoom }) {
+function RoomActions({ onCreateRoom, onJoinRoom }) {
   return (
     <div className="flex gap-3">
       <button
-        disabled
-        className="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg opacity-50 cursor-not-allowed"
+        onClick={onJoinRoom ?? undefined}
+        disabled={!onJoinRoom}
+        className="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         Join with Code
       </button>
@@ -39,7 +37,7 @@ function RoomActions({ onCreateRoom }) {
   );
 }
 
-function EmptyState({ onCreateRoom }) {
+function EmptyState({ onCreateRoom, onJoinRoom }) {
   return (
     <div className="flex flex-col items-center justify-center py-20 text-center">
       <div className="w-16 h-16 bg-primary-50 rounded-full flex items-center justify-center mb-4">
@@ -51,7 +49,7 @@ function EmptyState({ onCreateRoom }) {
       <p className="text-sm text-gray-500 mb-6 max-w-xs">
         Create a room or join one with an invite code.
       </p>
-      <RoomActions onCreateRoom={onCreateRoom} />
+      <RoomActions onCreateRoom={onCreateRoom} onJoinRoom={onJoinRoom} />
     </div>
   );
 }
@@ -59,10 +57,10 @@ function EmptyState({ onCreateRoom }) {
 export function RoomsPage() {
   const { user, loading: authLoading } = useAuth();
   const { rooms, loading, error } = useRooms(user?.uid);
+  const navigate = useNavigate();
 
   const [showCreate, setShowCreate] = useState(false);
-  const [creating, setCreating] = useState(false);
-  const [createError, setCreateError] = useState(null);
+  const [showJoin, setShowJoin] = useState(false);
 
   if (authLoading) return <LoadingSpinner />;
 
@@ -70,28 +68,19 @@ export function RoomsPage() {
   const isOffline = error?.code === "unavailable";
   const showRooms = !loading && rooms.length > 0 && (!error || isOffline);
 
-  function openModal() {
-    setCreateError(null);
-    setShowCreate(true);
-  }
-
-  function closeModal() {
-    if (creating) return; // don't close while request is in-flight
-    setShowCreate(false);
-  }
-
   async function handleCreate({ name, description }) {
-    setCreating(true);
-    setCreateError(null);
-    try {
-      const token = await user.getIdToken();
-      await createRoom(token, { name, description });
-      setShowCreate(false);
-    } catch (err) {
-      setCreateError(err.message);
-    } finally {
-      setCreating(false);
-    }
+    const token = await user.getIdToken();
+    await createRoom(token, {
+      name,
+      description,
+      displayName: user.displayName || user.email || "Anonymous",
+    });
+  }
+
+  async function handleJoin(code) {
+    const token = await user.getIdToken();
+    const result = await joinRoom(token, code, user.displayName || user.email || "Anonymous");
+    navigate(`/rooms/${result.roomId}`);
   }
 
   return (
@@ -100,7 +89,10 @@ export function RoomsPage() {
         {/* Page header */}
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-2xl font-bold text-gray-900">Study Rooms</h1>
-          <RoomActions onCreateRoom={openModal} />
+          <RoomActions
+            onCreateRoom={() => setShowCreate(true)}
+            onJoinRoom={() => setShowJoin(true)}
+          />
         </div>
 
         {/* Loading */}
@@ -127,7 +119,10 @@ export function RoomsPage() {
 
         {/* Empty state */}
         {!loading && !error && rooms.length === 0 && (
-          <EmptyState onCreateRoom={openModal} />
+          <EmptyState
+            onCreateRoom={() => setShowCreate(true)}
+            onJoinRoom={() => setShowJoin(true)}
+          />
         )}
 
         {/* Room grid */}
@@ -140,15 +135,17 @@ export function RoomsPage() {
         )}
       </div>
 
-      {/* Create Room modal */}
-      <Modal open={showCreate} onClose={closeModal}>
-        <CreateRoomForm
-          onCreateRoom={handleCreate}
-          onCancel={closeModal}
-          loading={creating}
-          error={createError}
-        />
-      </Modal>
+      <CreateRoomModal
+        open={showCreate}
+        onClose={() => setShowCreate(false)}
+        onCreateRoom={handleCreate}
+      />
+
+      <JoinRoomModal
+        open={showJoin}
+        onClose={() => setShowJoin(false)}
+        onJoin={handleJoin}
+      />
     </div>
   );
 }
