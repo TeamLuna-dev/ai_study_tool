@@ -27,7 +27,7 @@ const ACCEPTED_MIME_TYPES = {
 
 const MAX_ROOM_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:5000";
+const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "";
 
 /**
  * Subscribes to all rooms where `uid` is present in the top-level `members`
@@ -133,20 +133,112 @@ export async function uploadRoomDocument(roomId, file, user) {
 /**
  * Creates a room through the unified backend.
  */
-export async function createRoom(idToken, { name, description }) {
-  const res = await fetch(`${API_BASE}/api/rooms/`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${idToken}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ name, description, displayName }),
-  });
+export async function createRoom(idToken, { name, description, displayName }) {
+  let res;
+  try {
+    res = await fetch(`${API_BASE}/api/rooms/`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${idToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name, description, displayName }),
+    });
+  } catch {
+    throw new Error(
+      "Could not reach the server. Make sure the Flask backend is running (python3 app.py) on port 5000."
+    );
+  }
 
   const data = await res.json().catch(() => ({}));
 
   if (!res.ok) {
     throw new Error(data.detail || data.error || `Failed to create room (${res.status})`);
+  }
+
+  return data;
+}
+
+/**
+ * Joins a room by invite code.
+ * @returns {Promise<{ roomId: string, userId: string, role: string, joinedAt: string }>}
+ */
+export async function joinRoom(idToken, inviteCode, displayName) {
+  let res;
+  try {
+    res = await fetch(`${API_BASE}/api/rooms/join`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${idToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ invite_code: inviteCode, display_name: displayName }),
+    });
+  } catch {
+    throw new Error(
+      "Could not reach the server. Make sure the Flask backend is running (python3 app.py) on port 5000."
+    );
+  }
+
+  const data = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    throw new Error(data.detail || data.error || `Failed to join room (${res.status})`);
+  }
+
+  return data;
+}
+
+/**
+ * Removes a member from a room (leave or kick).
+ * Both leaveRoom and removeMember call the same endpoint with a different targetUid.
+ */
+export async function leaveRoom(idToken, roomId, uid) {
+  const res = await fetch(`${API_BASE}/api/rooms/${roomId}/members/${uid}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${idToken}` },
+  });
+
+  const data = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    throw new Error(data.detail || data.error || `Failed to leave room (${res.status})`);
+  }
+
+  return data;
+}
+
+/**
+ * Removes a specific member from a room (owner only).
+ */
+export async function removeMember(idToken, roomId, targetUid) {
+  const res = await fetch(`${API_BASE}/api/rooms/${roomId}/members/${targetUid}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${idToken}` },
+  });
+
+  const data = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    throw new Error(data.detail || data.error || `Failed to remove member (${res.status})`);
+  }
+
+  return data;
+}
+
+/**
+ * Deletes a room (owner only).
+ */
+export async function deleteRoom(idToken, roomId) {
+  const res = await fetch(`${API_BASE}/api/rooms/${roomId}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${idToken}` },
+  });
+
+  const data = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    throw new Error(data.detail || data.error || `Failed to delete room (${res.status})`);
   }
 
   return data;
