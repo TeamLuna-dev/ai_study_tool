@@ -2,6 +2,7 @@ import React from "react";
 import { FileUpload } from "./FileUpload";
 import { AuthGate } from "./AuthGate";
 import { useAuth } from "../../hooks/useAuth";
+import DocumentCard from "./DocumentCard";
 
 export default function FileUploadPage() {
   const { user } = useAuth();
@@ -31,6 +32,20 @@ export default function FileUploadPage() {
               onUploadError={(msg) => console.error("Upload error:", msg)}
             />
           </AuthGate>
+          
+{/* Example of a document card below — in real usage, you'd map over the user's uploaded documents from Firestore */}
+        <div className="mt-6">
+          <DocumentCard
+            doc={{
+              fileName: "Biology Notes.pdf",
+              fileType: "pdf",
+              fileSize: 4200000,
+              status: "ready",
+              uploadedAt: { seconds: 1712000000 },
+            }}
+            onDelete={(doc) => console.log("delete clicked", doc)}
+          />
+        </div>
         </div>
       </div>
     </main>
