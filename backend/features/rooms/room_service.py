@@ -153,8 +153,12 @@ def join_room(invite_code: str, user_uid: str, display_name: str = None) -> dict
         "joinedAt": now.isoformat(),
     }
 
-def get_room(room_id: str) -> dict:
-    """Returns the room document fields."""
+def get_room(room_id: str, uid: str) -> dict:
+    """Returns the room document fields. Requires uid to be a member."""
+    role = _get_member_role(room_id, uid)
+    if role is None:
+        raise PermissionError("Not a member of this room")
+
     room_ref = db.collection("rooms").document(room_id)
     doc = room_ref.get()
     if not doc.exists:
@@ -169,8 +173,12 @@ def get_room(room_id: str) -> dict:
         "createdAt":   _ts(data.get("createdAt")),
     }
 
-def get_members(room_id: str) -> List[dict]:
-    """Returns all members of the room with their roles and join timestamps."""
+def get_members(room_id: str, uid: str) -> List[dict]:
+    """Returns all members of the room. Requires uid to be a member."""
+    role = _get_member_role(room_id, uid)
+    if role is None:
+        raise PermissionError("Not a member of this room")
+
     room_ref = db.collection("rooms").document(room_id)
     if not room_ref.get().exists:
         raise ValueError("Room not found")
@@ -213,6 +221,7 @@ def remove_member(room_id: str, target_uid: str, requesting_uid: str) -> dict:
         raise PermissionError("Only the room owner can remove other members")
 
     room_ref.collection("members").document(target_uid).delete()
+    room_ref.update({"members": firebase_firestore.ArrayRemove([target_uid])})
     return {"removed": target_uid, "roomId": room_id}
 
 
