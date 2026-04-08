@@ -120,9 +120,25 @@ export default function QuizProgressChart() {
       {filtered.length === 0 ? (
         <p className="text-gray-400 text-center py-8">No attempts for {selectedTopic} yet.</p>
       ) : (
-        <div style={{ maxWidth: 700, margin: "0 auto" }}>
-          <Line data={data} options={options} />
-        </div>
+        <>
+          <div className="flex gap-4 mb-4">
+            <div className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-2">
+              <span className="text-xs text-blue-500 font-medium">Average</span>
+              <p className="text-xl font-bold text-blue-600">{Math.round(scores.reduce((a, b) => a + b, 0) / scores.length)}%</p>
+            </div>
+            <div className="bg-green-50 border border-green-100 rounded-xl px-4 py-2">
+              <span className="text-xs text-green-500 font-medium">Best</span>
+              <p className="text-xl font-bold text-green-600">{Math.max(...scores)}%</p>
+            </div>
+            <div className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-2">
+              <span className="text-xs text-gray-500 font-medium">Attempts</span>
+              <p className="text-xl font-bold text-gray-700">{scores.length}</p>
+            </div>
+          </div>
+          <div style={{ maxWidth: 700, margin: "0 auto" }}>
+            <Line data={data} options={options} />
+          </div>
+        </>
       )}
     </div>
   );
