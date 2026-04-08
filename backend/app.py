@@ -9,8 +9,20 @@ def create_app():
 
     app = Flask(__name__)
 
+    cors_origins = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ]
+    frontend_url = os.environ.get("FRONTEND_URL")
+    if frontend_url:
+        cors_origins.append(frontend_url)
+
     CORS(
         app,
+        resources={r"/api/*": {"origins": cors_origins}},
+        supports_credentials=True,
         resources={
             r"/api/*": {
                 "origins": [
@@ -82,4 +94,5 @@ def create_app():
 app = create_app()
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    debug = os.environ.get("DEV_MODE", "true").lower() == "true"
+    app.run(debug=debug)
