@@ -16,6 +16,19 @@ import {
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
+const TOPIC_OPTIONS = [
+  "Calculus",
+  "Biology",
+  "Chemistry",
+  "Physics",
+  "History",
+  "Computer Science",
+  "Psychology",
+  "English",
+  "Economics",
+  "Other",
+];
+
 export default function QuizProgressChart() {
   const { user } = useAuth();
   const [history, setHistory] = useState([]);
@@ -43,8 +56,9 @@ export default function QuizProgressChart() {
   if (error) return <div className="text-red-500 text-center py-8">{error}</div>;
   if (!history.length) return <div className="text-gray-400 text-center py-8">No quiz attempts yet.</div>;
 
-  // Collect unique topics for filter
-  const topics = [...new Set(history.map((h) => h.topic).filter(Boolean))];
+  // Merge predefined topics with any additional topics from history
+  const historyTopics = history.map((h) => h.topic).filter(Boolean);
+  const topics = [...new Set([...TOPIC_OPTIONS, ...historyTopics])];
 
   // Filter by selected topic
   const filtered = selectedTopic === "all"
