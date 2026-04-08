@@ -7,7 +7,7 @@
  */
 
 import { useState, useEffect } from "react";
-import { getUserDocs } from "../services/libraryService";
+import { getUserDocs, deleteDoc } from "../services/libraryService";
 
 /**
  * Fetches and manages the current user's uploaded documents.
@@ -42,3 +42,23 @@ export function useDocuments(uid) {
 
   return { docs, loading, error };
 }
+
+/**
+   * Deletes a document and removes it from local state immediately.
+   * Optimistic removal: the card disappears without waiting for a refetch.
+   * If deletion fails, the error is surfaced via the error state.
+   *
+   * @param {object} doc - document object from Firestore (must have id and storagePath)
+   */
+  async function handleDelete(doc) {
+    try {
+      await deleteDoc(doc);
+      // remove from local state without a full refetch — faster UX
+      setDocs((prev) => prev.filter((d) => d.id !== doc.id));
+    } catch (err) {
+      console.error("[useDocuments] Failed to delete doc:", err);
+      setError("Failed to delete document. Please try again.");
+    }
+     return { docs, loading, error, handleDelete };
+
+  }
