@@ -15,8 +15,12 @@ import {
   query,
   where,
   getDocs,
+  doc,
+  deleteDoc as firestoreDelete,
 } from "firebase/firestore";
-import { db } from "../config/firebase";
+import { ref, deleteObject } from "firebase/storage";
+import { db, storage } from "../config/firebase";
+
 
 /**
  * Fetches all documents uploaded by a user from Firestore.
@@ -40,4 +44,25 @@ export async function getUserDocs(uid) {
     return bTime - aTime;
   });
 }
-window.__libraryService = { getUserDocs }; // for testing purposes only, not used by components directly
+/**
+ * Deletes a document from both Firebase Storage and Firestore.
+ * Storage deletion is attempted first: if it fails (e.g. file already gone),
+ * we log but still proceed to delete the Firestore record.
+ *
+ * @param {object} document -> must include id and storagePath
+ * @returns {Promise<void>}
+ */
+export async function deleteDoc(document) {
+  // Step 1 —> delete file from Firebase Storage
+  if (document.storagePath) {
+    try {
+      const storageRef = ref(storage, document.storagePath);
+      await deleteObject(storageRef);
+    } catch (err) {
+      console.warn("[libraryService] Storage delete failed:", err.message);
+    }
+  }
+
+  // Step 2 —> delete Firestore document record
+  await firestoreDelete(doc(db, "documents", document.id));
+}
