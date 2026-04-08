@@ -8,7 +8,7 @@
  *   3. user exists       → render children
  */
 
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import LoadingSpinner from "../common/LoadingSpinner";
 import { useEffect, useState } from "react";
@@ -16,6 +16,7 @@ import { hasCompletedOnboarding } from "../../services/userService";
 
 export default function ProtectedRoute({ children, exempt = false }) {
   const { user, loading } = useAuth();
+  const location = useLocation();
   const [onboardingDone, setOnboardingDone] = useState(null);
 
   useEffect(() => {
@@ -35,7 +36,7 @@ export default function ProtectedRoute({ children, exempt = false }) {
   }, [user, exempt]);
 
   if (loading) return <LoadingSpinner />;
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) return <Navigate to="/login" state={{ from: location }} replace />;
   if (onboardingDone === null) return <LoadingSpinner />;
   if (!onboardingDone) return <Navigate to="/onboarding" replace />;
 
