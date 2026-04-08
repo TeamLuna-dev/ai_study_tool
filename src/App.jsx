@@ -30,6 +30,11 @@ const RoomsPage = lazy(() =>
     default: m.RoomsPage,
   }))
 );
+const JoinRoomPage = lazy(() =>
+  import("./components/rooms/JoinRoomPage").then((m) => ({
+    default: m.JoinRoomPage,
+  }))
+);
 const UploadPage = lazy(() =>
   import("./components/file-upload/FileUploadPage").then((m) => ({
     default: m.default,
@@ -143,6 +148,15 @@ function AppLayout() {
             element={
               <ProtectedRoute>
                 <RoomPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/join/:code"
+            element={
+              <ProtectedRoute>
+                <JoinRoomPage />
               </ProtectedRoute>
             }
           />
