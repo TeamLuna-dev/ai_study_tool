@@ -8,6 +8,8 @@
  *   onDelete - handler called when user confirms delete
  */
 
+import { useState } from "react";
+
 // maps file type to a label and Tailwind color classes
 function getFileTypeBadge(fileType) {
   if (fileType === "pdf") return { label: "PDF", color: "bg-red-50 text-red-700" };
@@ -45,6 +47,24 @@ export default function DocumentCard({ doc, onDelete }) {
   const fileType = getFileTypeBadge(doc.fileType);
   const status = getStatusBadge(doc.status);
 
+  // Local state for delete confirmation and loading state during deletion
+  const [confirming, setConfirming] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  // two-click delete: first click asks for confirmation, second executes
+  async function handleDeleteClick() {
+    if (!confirming) {
+      setConfirming(true);
+      // auto-reset confirmation after 3 seconds if user doesn't follow through
+      setTimeout(() => setConfirming(false), 3000);
+      return;
+    }
+    setDeleting(true);
+    await onDelete(doc);
+    setDeleting(false);
+    setConfirming(false);
+  }
+
   return (
     <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-4 flex flex-col gap-3 hover:border-gray-200 transition-colors">
 
@@ -70,10 +90,15 @@ export default function DocumentCard({ doc, onDelete }) {
           {status.label}
         </span>
         <button
-          onClick={() => onDelete(doc)}
-          className="text-xs text-gray-400 hover:text-red-500 hover:bg-red-50 px-3 py-1 rounded-lg transition-colors cursor-pointer"
+          onClick={handleDeleteClick}
+          disabled={deleting}
+          className={`text-xs px-3 py-1 rounded-lg transition-colors ${
+            confirming
+              ? "bg-red-50 text-red-600 hover:bg-red-100"
+              : "text-gray-400 hover:text-red-500 hover:bg-red-50"
+          } ${deleting ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
         >
-          Delete
+          {deleting ? "Deleting..." : confirming ? "Confirm delete?" : "Delete"}
         </button>
       </div>
 
