@@ -9,7 +9,7 @@
  */
 
 import { useState } from "react";
-
+import Modal from "../common/Modal";
 // maps file type to a label and Tailwind color classes
 function getFileTypeBadge(fileType) {
   if (fileType === "pdf") return { label: "PDF", color: "bg-red-50 text-red-700" };
