@@ -57,7 +57,6 @@ export default function DocumentCard({ doc, onDelete }) {
   }
 
   return (
-    <div className="relative bg-white border border-gray-100 rounded-2xl shadow-sm p-4 flex flex-col gap-3 hover:border-gray-200 transition-colors">
     <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-4 flex flex-col gap-3 hover:border-gray-200 transition-colors">
 
       {/* Header — file type badge + filename */}
@@ -121,6 +120,5 @@ export default function DocumentCard({ doc, onDelete }) {
         </div>
       )}
     </div>
-</div>
   );
 }
