@@ -88,13 +88,15 @@ export default function DocumentCard({ doc, onDelete }) {
         </button>
       </div>
 
-            {/* Delete confirmation overlay — shown when confirming is true */}
-      {confirming && (
-        <div className="absolute inset-0 bg-white rounded-2xl border border-red-100 flex flex-col items-center justify-center gap-3 p-4">
-          <p className="text-sm font-medium text-gray-900 text-center">
-            Delete this document?
-          </p>
-          <p className="text-xs text-gray-400 text-center">
+      {/* Delete confirmation modal — centered on screen with frosted backdrop */}
+      <Modal
+        open={confirming}
+        onClose={() => { if (!deleting) setConfirming(false); }}
+        cardClassName="max-w-xs"
+      >
+        <div className="flex flex-col gap-3 p-5">
+          <p className="text-sm font-semibold text-gray-900">Delete this document?</p>
+          <p className="text-xs text-gray-400">
             This removes the file permanently from storage.
           </p>
           <div className="flex gap-2 pt-1">
