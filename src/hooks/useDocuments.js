@@ -40,9 +40,6 @@ export function useDocuments(uid) {
     fetchDocs();
   }, [uid]);
 
-  return { docs, loading, error };
-}
-
 /**
    * Deletes a document and removes it from local state immediately.
    * Optimistic removal: the card disappears without waiting for a refetch.
@@ -59,6 +56,6 @@ export function useDocuments(uid) {
       console.error("[useDocuments] Failed to delete doc:", err);
       setError("Failed to delete document. Please try again.");
     }
-     return { docs, loading, error, handleDelete };
-
   }
+  return { docs, loading, error, handleDelete };
+}

@@ -36,6 +36,7 @@ export default function FileUploadPage() {
               onUploadError={(msg) => console.error("Upload error:", msg)}
             />
           </AuthGate>
+        </div>
           
         {/* Document library section */}
         <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
@@ -57,7 +58,6 @@ export default function FileUploadPage() {
             error={error}
             onDelete={handleDelete}
           />
-        </div>
         </div>
       </div>
     </main>
