@@ -10,6 +10,7 @@ import { DashboardWelcome } from "./DashboardWelcome";
 import { DashboardStats } from "./DashboardStats";
 import { RecentDocuments } from "./RecentDocuments";
 import { StudyBriefCard } from "./StudyBriefCard";
+import QuizProgressChart from "../quiz/QuizProgressChart";
 import { useEffect, useState } from "react";
 import { getUserProfile } from "../../services/userService";
 import { fetchStudyBrief } from "../../services/studyBriefService";
@@ -68,6 +69,8 @@ export function DashboardPage() {
         <DashboardWelcome />
 
         <DashboardStats />
+
+        <QuizProgressChart />
 
         <RecentDocuments />
 
