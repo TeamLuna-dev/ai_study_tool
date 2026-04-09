@@ -64,94 +64,80 @@ export function FileUpload({ onUploadSuccess, onUploadError, uploadFn, getAuthTo
   }, [status, message, onUploadError]);
 
   return (
-    <section
-      aria-label="File upload"
-      style={{
-        maxWidth: "480px",
-        fontFamily: "system-ui, sans-serif",
-        color: "#1e293b",
-        margin: "0 auto",
-      }}
-    >
-      {/* File picker — disabled while an upload is in progress */}
-      <DropZone onFileSelect={handleFileSelect} disabled={isUploading} />
+    <section aria-label="File upload" className="max-w-2xl mx-auto text-slate-800">
+      <div className="rounded-3xl border-2 border-dashed border-blue-200 bg-blue-50/40 p-8 text-center hover:border-blue-400 hover:bg-blue-100/40 transition">
+        <DropZone onFileSelect={handleFileSelect} disabled={isUploading} />
+      </div>
 
-      {/* Show the selected file name and size once a file is chosen */}
       {selectedFile && !isSuccess && (
-        <p style={{ margin: "10px 0 0", fontSize: "0.85rem", color: "#475569" }}>
-          📄 {selectedFile.name} ({formatFileSize(selectedFile.size)})
-        </p>
+        <div className="mt-4 flex items-center gap-2 text-sm text-slate-600">
+          <span className="text-base">📄</span>
+          <span className="truncate font-medium">{selectedFile.name}</span>
+          <span className="text-slate-400">
+            ({formatFileSize(selectedFile.size)})
+          </span>
+        </div>
       )}
 
-      {/* Animated progress bar — only visible during upload */}
-      <ProgressBar visible={isUploading} progress={progress} />
+      <div className="mt-4">
+        <ProgressBar visible={isUploading} progress={progress} />
+      </div>
 
-      {/* Success / error / info alert — driven by upload status */}
-      <StatusAlert status={status} message={message} />
+      <div className="mt-4">
+        <StatusAlert status={status} message={message} />
+      </div>
 
-      {/* Live pipeline progress — visible after upload succeeds */}
-      <ProcessingStatus pipelineStatus={pipelineStatus} pipelineError={pipelineError} />
-
-      {/* OCR text review — shown when an image finishes processing */}
-      {showOcrReview && (
-        <OcrTextReview
-          docId={docId}
-          extractedText={ocrText}
-          authToken={authToken}
-          ocrWarning={ocrWarning}
+      <div className="mt-4">
+        <ProcessingStatus
+          pipelineStatus={pipelineStatus}
+          pipelineError={pipelineError}
         />
+      </div>
+
+      {showOcrReview && (
+        <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+          <OcrTextReview
+            docId={docId}
+            extractedText={ocrText}
+            authToken={authToken}
+          />
+        </div>
       )}
 
-      {/* Action buttons — only one set is visible at a time */}
-      <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
-
-        {/* Upload button — shown when a file is ready but not yet uploading */}
+      <div className="mt-6 flex flex-wrap gap-3">
         {selectedFile && !isUploading && !isSuccess && (
           <button
+            type="button"
             onClick={handleUpload}
             data-testid="upload-button"
-            style={btnStyle("#6366f1", "#fff")}
+            className="rounded-xl bg-blue-600 px-5 py-2.5 font-semibold text-white shadow-sm hover:bg-blue-700 active:scale-95 transition"
           >
             Upload
           </button>
         )}
 
-        {/* Cancel button — shown only while uploading */}
         {isUploading && (
           <button
+            type="button"
             onClick={handleCancel}
             data-testid="cancel-button"
-            style={btnStyle("#ef4444", "#fff")}
+            className="rounded-xl bg-red-500 px-5 py-2.5 font-semibold text-white shadow-sm hover:bg-red-600 active:scale-95 transition"
           >
             Cancel
           </button>
         )}
 
-        {/* Reset button — shown after success or failure */}
         {(isSuccess || status === UPLOAD_STATUS.ERROR) && (
           <button
+            type="button"
             onClick={reset}
             data-testid="reset-button"
-            style={btnStyle("#64748b", "#fff")}
+            className="rounded-xl bg-slate-500 px-5 py-2.5 font-semibold text-white shadow-sm hover:bg-slate-600 active:scale-95 transition"
           >
-            {/* Label changes based on outcome */}
             {isSuccess ? "Upload Another" : "Try Again"}
           </button>
         )}
       </div>
     </section>
   );
-}
-
-function btnStyle(bg, color) {
-  return {
-    padding: "9px 20px",
-    borderRadius: "8px",
-    border: "none",
-    background: bg,
-    color,
-    fontWeight: 600,
-    fontSize: "0.875rem",
-    cursor: "pointer",
-  };
 }
