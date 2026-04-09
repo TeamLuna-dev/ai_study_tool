@@ -58,9 +58,19 @@ function formatRelativeTime(timestamp) {
 
 function RecentDocumentCard({ doc, onResume }) {
   return (
-    <div className="flex items-center justify-between gap-4 p-4 rounded-xl border border-gray-100 hover:border-gray-200 hover:bg-gray-50 transition-colors">
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-gray-900 truncate">{doc.fileName ?? "Untitled document"}</p>
+    <div className="flex items-center justify-between gap-4 p-4 rounded-2xl border border-gray-100 bg-white hover:shadow-md hover:-translate-y-[2px] transition-all duration-300">
+      <div className="flex items-center gap-4 flex-1 min-w-0">
+
+        {/* Icon */}
+        <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-xl">
+          📄
+        </div>
+
+        <div className="min-w-0">
+          <p className="text-sm font-semibold text-gray-900 truncate">
+            {doc.fileName ?? "Untitled document"}
+          </p>
+
         <div className="flex items-center gap-2 mt-1">
           <FileTypeBadge fileType={doc.fileType} />
           <span className="text-xs text-gray-400">
@@ -68,6 +78,8 @@ function RecentDocumentCard({ doc, onResume }) {
           </span>
         </div>
       </div>
+    </div>
+
       <button
         onClick={() => onResume(doc.id)}
         className="shrink-0 text-sm font-medium text-blue-600 hover:text-blue-700 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-colors"
@@ -82,11 +94,17 @@ function RecentDocumentCard({ doc, onResume }) {
 
 function EmptyRecentDocuments() {
   return (
-    <div className="flex flex-col items-center justify-center py-10 text-center">
-      <Upload className="w-10 h-10 text-gray-300 mb-3" />
-      <p className="text-sm font-medium text-gray-500">No recent activity yet.</p>
-      <p className="text-xs text-gray-400 mt-1">
-        Upload your first document to begin studying.
+    <div className="flex flex-col items-center justify-center py-12 text-center border-2 border-dashed border-gray-200 rounded-2xl">
+      <div className="w-20 h-20 rounded-2xl bg-blue-50 flex items-center justify-center text-4xl mb-4">
+        📚
+      </div>
+
+      <p className="text-lg font-semibold text-gray-700">
+        No recent activity yet
+      </p>
+
+      <p className="text-gray-500 mt-2 max-w-sm">
+        Upload your first document to start generating summaries and quizzes.
       </p>
     </div>
   );
@@ -104,13 +122,24 @@ export function RecentDocuments() {
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 mb-8">
-      <h2 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h2>
+    <div className="bg-white rounded-3xl border border-gray-200 shadow-sm p-6">
+      
+      {/* Header */}
+      <div className="flex items-center justify-between mb-5">
+        <h2 className="text-xl font-bold text-gray-900">
+          Recent Activity
+        </h2>
+      </div>
 
+      {/* Content */}
       {loading ? (
         <div className="space-y-3">
           {[1, 2, 3].map((n) => (
-            <div key={n} className="animate-pulse flex items-center gap-4 p-4 rounded-xl border border-gray-100">
+            <div
+              key={n}
+              className="animate-pulse flex items-center gap-4 p-4 rounded-2xl border border-gray-100"
+            >
+              <div className="w-12 h-12 bg-gray-200 rounded-xl" />
               <div className="flex-1 space-y-2">
                 <div className="h-4 bg-gray-200 rounded w-2/3" />
                 <div className="h-3 bg-gray-100 rounded w-1/3" />
@@ -122,7 +151,7 @@ export function RecentDocuments() {
       ) : documents.length === 0 ? (
         <EmptyRecentDocuments />
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-3">
           {documents.map((doc) => (
             <RecentDocumentCard key={doc.id} doc={doc} onResume={handleResume} />
           ))}
