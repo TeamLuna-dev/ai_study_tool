@@ -53,19 +53,11 @@ export default function DocumentCard({ doc, onDelete }) {
 
   // two-click delete: first click asks for confirmation, second executes
   async function handleDeleteClick() {
-    if (!confirming) {
-      setConfirming(true);
-      // auto-reset confirmation after 3 seconds if user doesn't follow through
-      setTimeout(() => setConfirming(false), 3000);
-      return;
-    }
-    setDeleting(true);
-    await onDelete(doc);
-    setDeleting(false);
-    setConfirming(false);
+    setConfirming(true);
   }
 
   return (
+    <div className="relative bg-white border border-gray-100 rounded-2xl shadow-sm p-4 flex flex-col gap-3 hover:border-gray-200 transition-colors">
     <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-4 flex flex-col gap-3 hover:border-gray-200 transition-colors">
 
       {/* Header — file type badge + filename */}
@@ -91,17 +83,44 @@ export default function DocumentCard({ doc, onDelete }) {
         </span>
         <button
           onClick={handleDeleteClick}
-          disabled={deleting}
-          className={`text-xs px-3 py-1 rounded-lg transition-colors ${
-            confirming
-              ? "bg-red-50 text-red-600 hover:bg-red-100"
-              : "text-gray-400 hover:text-red-500 hover:bg-red-50"
-          } ${deleting ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+          className="text-xs text-gray-400 hover:text-red-500 hover:bg-red-50 px-3 py-1 rounded-lg transition-colors cursor-pointer"
         >
-          {deleting ? "Deleting..." : confirming ? "Confirm delete?" : "Delete"}
+          Delete
         </button>
       </div>
 
+            {/* Delete confirmation overlay — shown when confirming is true */}
+      {confirming && (
+        <div className="absolute inset-0 bg-white rounded-2xl border border-red-100 flex flex-col items-center justify-center gap-3 p-4">
+          <p className="text-sm font-medium text-gray-900 text-center">
+            Delete this document?
+          </p>
+          <p className="text-xs text-gray-400 text-center">
+            This removes the file permanently from storage.
+          </p>
+          <div className="flex gap-2 w-full">
+            <button
+              onClick={() => setConfirming(false)}
+              className="flex-1 text-xs px-3 py-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors cursor-pointer"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={async () => {
+                setDeleting(true);
+                await onDelete(doc);
+                setDeleting(false);
+                setConfirming(false);
+              }}
+              disabled={deleting}
+              className="flex-1 text-xs px-3 py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors cursor-pointer"
+            >
+              {deleting ? "Deleting..." : "Yes, delete"}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
+</div>
   );
 }
