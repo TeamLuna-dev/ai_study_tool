@@ -148,6 +148,66 @@ export default function FileUploadPage() {
             </div>
           </div>
         </div>
+          
+        {/* Document library section */}
+        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
+          <div className="flex items-start gap-4 mb-6">
+            <div className="flex-none w-12 h-12 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7h18M3 12h18M3 17h18" />
+              </svg>
+            </div>
+
+            <div className="bg-white rounded-3xl border border-gray-200 shadow-sm p-6">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Recent Uploads
+              </h3>
+              <p className="mt-4 text-sm text-gray-400">
+                Your uploaded study materials will appear here.
+              </p>
+            </div>
+          </div>
+
+          {/* Right side */}
+          <div className="space-y-6">
+            <div className="bg-white rounded-3xl border border-gray-200 shadow-md p-6">
+              <h3 className="text-xl font-bold text-gray-900">How it works</h3>
+
+              <div className="mt-5 space-y-4">
+                <div className="rounded-2xl border border-gray-100 bg-gray-50/70 p-4">
+                  <p className="font-semibold text-gray-800">
+                    1. Upload a study file
+                  </p>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Add a PDF, JPG, or PNG from your device.
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-gray-100 bg-gray-50/70 p-4">
+                  <p className="font-semibold text-gray-800">
+                    2. We extract the content
+                  </p>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Your notes are prepared for summaries, quizzes, and AI tools.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-3xl border border-purple-100 shadow-sm p-6">
+              <h3 className="text-xl font-bold text-gray-900">
+                Supported files
+              </h3>
+
+              <ul className="mt-4 space-y-2 text-sm text-gray-600">
+                <li>• PDF documents</li>
+                <li>• JPG and PNG images</li>
+                <li>• Max size: 20 MB</li>
+                <li>• Clean notes work best</li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </main>
     </div>
   );

@@ -79,7 +79,6 @@ export function DashboardPage() {
             />
 
             <QuizProgressChart />
-
             <RecentDocuments />
           </div>
 
