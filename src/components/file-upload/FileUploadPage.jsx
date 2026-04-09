@@ -2,11 +2,16 @@ import React from "react";
 import { FileUpload } from "./FileUpload";
 import { AuthGate } from "./AuthGate";
 import { useAuth } from "../../hooks/useAuth";
+import { useDocuments } from "../../hooks/useDocuments";
+import DocumentList from "./DocumentList";
 
 export default function FileUploadPage() {
   const { user } = useAuth();
   const is_authenticated = !!user;
   const get_auth_token = user ? () => user.getIdToken() : null;
+
+  // fetch and manage documents for the library section
+  const { docs, loading, error, handleDelete } = useDocuments(user?.uid);
 
   return (
     <main className="flex justify-center px-4 py-12">
@@ -31,6 +36,28 @@ export default function FileUploadPage() {
               onUploadError={(msg) => console.error("Upload error:", msg)}
             />
           </AuthGate>
+        </div>
+          
+        {/* Document library section */}
+        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
+          <div className="flex items-start gap-4 mb-6">
+            <div className="flex-none w-12 h-12 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7h18M3 12h18M3 17h18" />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <h2 className="text-lg font-semibold text-gray-900">My Documents</h2>
+              <p className="mt-1 text-sm text-gray-500">All your uploaded study materials in one place.</p>
+            </div>
+          </div>
+
+          <DocumentList
+            docs={docs}
+            loading={loading}
+            error={error}
+            onDelete={handleDelete}
+          />
         </div>
       </div>
     </main>
