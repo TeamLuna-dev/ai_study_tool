@@ -14,11 +14,11 @@ export function DashboardStats() {
   // All 4 still initializing — show full skeleton row.
   if (loading) {
     return (
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
         {STAT_CARDS.map(({ key }) => (
-          <div key={key} className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 animate-pulse">
-            <div className="h-5 w-5 bg-gray-200 rounded mb-3" />
-            <div className="h-8 bg-gray-200 rounded w-1/3 mb-2" />
+          <div key={key} className="bg-white rounded-3xl border border-gray-200 shadow-sm p-6 animate-pulse">
+            <div className="w-12 h-12 bg-gray-200 rounded-2xl mb-5" />
+            <div className="h-10 bg-gray-200 rounded w-1/3 mb-3" />
             <div className="h-4 bg-gray-100 rounded w-2/3" />
           </div>
         ))}
@@ -30,36 +30,43 @@ export function DashboardStats() {
 
   if (allUnavailable) {
     return (
-      <p className="text-sm text-gray-400 mb-6">Stats temporarily unavailable.</p>
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-4">
+        <p className="text-sm text-gray-400">Stats temporarily unavailable.</p>
+      </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-      {STAT_CARDS.map(({ key, label, icon: Icon, color }) => {
+    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+      {STAT_CARDS.map(({ key, label, icon: Icon, color, bg }) => {
         const stat = stats[key];
 
         // Per-card skeleton while this individual listener is still loading.
         if (stat.loading) {
           return (
-            <div key={key} className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 animate-pulse">
-              <div className="h-5 w-5 bg-gray-200 rounded mb-3" />
-              <div className="h-8 bg-gray-200 rounded w-1/3 mb-2" />
+            <div key={key} className="bg-white rounded-3xl border border-gray-200 shadow-sm p-6 animate-pulse">
+              <div className="w-12 h-12 bg-gray-200 rounded-2xl mb-5" />
+              <div className="h-10 bg-gray-200 rounded w-1/3 mb-3" />
               <div className="h-4 bg-gray-100 rounded w-2/3" />
             </div>
           );
         }
 
         return (
-          <div key={key} className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-            <Icon className={`w-5 h-5 ${color} mb-3`} />
+          <div key={key} className="bg-white rounded-3xl border border-gray-200 shadow-sm p-6 hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+            <div
+              className={`w-12 h-12 rounded-2xl flex items-center justify-center ${bg}`}
+            >
+            <Icon className={`w-5 h-5 ${color}`} />
+            </div>
+
             <p
-              className="text-3xl font-bold text-gray-900"
+              className="mt-5 text-4xl font-bold text-gray-900"
               title={stat.error ? "Not available yet" : undefined}
             >
               {stat.error ? "—" : stat.count}
             </p>
-            <p className="text-sm text-gray-500 mt-1">{label}</p>
+            <p className="text-sm text-gray-500 mt-2">{label}</p>
           </div>
         );
       })}
