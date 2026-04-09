@@ -118,7 +118,7 @@ export default function DocumentCard({ doc, onDelete }) {
             </button>
           </div>
         </div>
-      )}
+      </Modal>      
     </div>
   );
 }
