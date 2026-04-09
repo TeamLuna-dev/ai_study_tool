@@ -97,7 +97,7 @@ export default function DocumentCard({ doc, onDelete }) {
           <p className="text-xs text-gray-400 text-center">
             This removes the file permanently from storage.
           </p>
-          <div className="flex gap-2 w-full">
+          <div className="flex gap-2 pt-1">
             <button
               onClick={() => setConfirming(false)}
               disabled={deleting}
