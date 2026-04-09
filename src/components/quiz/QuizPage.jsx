@@ -175,28 +175,181 @@ export function QuizPage() {
   }
 
   // --- UI states ---
-
-    if (!quiz) {
+  if (!quiz) {
     return (
-      <QuizGenerator
-        user={user}
-        inputMode={inputMode}
-        setInputMode={setInputMode}
-        notes={notes}
-        setNotes={setNotes}
-        userDocs={userDocs}
-        selectedDocId={selectedDocId}
-        setSelectedDocId={setSelectedDocId}
-        topic={topic}
-        setTopic={setTopic}
-        loadingGen={loadingGen}
-        error={error}
-        handleGenerate={handleGenerate}
-        questionCount={questionCount}
-        setQuestionCount={setQuestionCount}
-      />
-    );
-  }
+    <div className="min-h-screen bg-[#f5f7fb]">
+
+      {/* HERO */}
+      <section className="relative">
+        <div
+          className="h-[240px] w-full bg-cover bg-center"
+          style={{
+            backgroundImage: `
+              linear-gradient(to right, rgba(37, 99, 235, 0.85), rgba(79, 70, 229, 0.75), rgba(147, 51, 234, 0.65)),
+              url("/AIWepapp.jpg")
+            `,
+          }}
+        />
+
+        <div className="absolute inset-0 flex items-center max-w-7xl mx-auto px-6">
+          <div className="text-white max-w-2xl">
+            <h1 className="text-4xl font-bold">
+              Turn your notes into a quiz
+            </h1>
+            <p className="mt-3 text-blue-100">
+              Choose one of your uploaded documents or paste notes to instantly generate practice questions.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* CONTENT */}
+      <main className="max-w-7xl mx-auto px-6 py-10">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+          {/* LEFT */}
+          <div className="lg:col-span-2 bg-white rounded-3xl shadow-md border border-gray-200 p-8">
+
+            <h2 className="text-2xl font-bold">Generate Quiz</h2>
+            <p className="text-gray-500 mt-2">
+              Select a source and topic to create a quiz.
+            </p>
+
+            {/* Tabs */}
+            <div className="mt-6 flex gap-3">
+              <button
+                onClick={() => setInputMode("docs")}
+                className={`px-5 py-2.5 rounded-xl font-medium ${
+                  inputMode === "docs"
+                    ? "bg-blue-600 text-white"
+                    : "border border-gray-200 bg-white text-gray-700"
+                }`}
+              >
+                My Documents
+              </button>
+
+              <button
+                onClick={() => setInputMode("notes")}
+                className={`px-5 py-2.5 rounded-xl font-medium ${
+                  inputMode === "notes"
+                    ? "bg-blue-600 text-white"
+                    : "border border-gray-200 bg-white text-gray-700"
+                }`}
+              >
+                Paste Notes
+              </button>
+            </div>
+
+            {/* FORM */}
+            <div className="mt-6 space-y-5">
+
+              {/* DOC MODE */}
+              {inputMode === "docs" && (
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Select a document
+                  </label>
+
+                  <select
+                    value={selectedDocId}
+                    onChange={(e) => setSelectedDocId(e.target.value)}
+                    className="w-full rounded-2xl border border-gray-200 px-4 py-3 focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Select a document…</option>
+                    {userDocs.map((doc) => (
+                      <option key={doc.id} value={doc.id}>
+                        {doc.fileName}
+                      </option>
+                    ))}
+                  </select>
+
+                  {userDocs.length === 0 && (
+                    <div className="mt-3">
+                      <p className="text-sm text-gray-400">
+                        No documents found.
+                      </p>
+
+                      <button
+                        onClick={() => navigate("/file-upload")}
+                        className="mt-2 text-sm font-medium text-blue-600"
+                      >
+                        Go to File Upload →
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* NOTES MODE */}
+              {inputMode === "notes" && (
+                <textarea
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  rows={8}
+                  placeholder="Paste your notes here..."
+                  className="w-full rounded-2xl border border-gray-200 p-4 focus:ring-2 focus:ring-blue-500"
+                />
+              )}
+
+              {/* TOPIC */}
+              <select
+                value={topic}
+                onChange={(e) => setTopic(e.target.value)}
+                className="w-full rounded-2xl border border-gray-200 px-4 py-3"
+              >
+                <option value="">Select a topic</option>
+                {TOPIC_OPTIONS.map((t) => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </select>
+
+              {/* BUTTON */}
+              <button
+                onClick={handleGenerate}
+                disabled={loadingGen || (!notes.trim() && !selectedDocId) || !topic}
+                className={`px-6 py-3 rounded-2xl font-semibold text-white ${
+                  loadingGen || (!notes.trim() && !selectedDocId) || !topic
+                    ? "bg-blue-300"
+                    : "bg-blue-600 hover:bg-blue-700"
+                }`}
+              >
+                {loadingGen ? "Generating..." : "Generate Quiz"}
+              </button>
+
+              {error && <p className="text-red-500">{error}</p>}
+            </div>
+          </div>
+
+          {/* RIGHT PANEL */}
+          <div className="space-y-6">
+
+            <div className="bg-white rounded-3xl p-6 shadow-md border">
+              <h3 className="text-xl font-bold">How it works</h3>
+
+              <div className="mt-4 space-y-3 text-sm text-gray-600">
+                <p>1. Upload a document</p>
+                <p>2. Choose a topic</p>
+                <p>3. Generate quiz instantly</p>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-3xl p-6 border">
+              <h3 className="text-xl font-bold">💡 Tips</h3>
+
+              <ul className="mt-3 space-y-2 text-sm text-gray-600">
+                <li>• Use clear notes</li>
+                <li>• Pick focused topics</li>
+                <li>• Upload documents first</li>
+              </ul>
+            </div>
+
+          </div>
+
+        </div>
+      </main>
+    </div>
+  );
+}
 
   if (result) {
     return (
