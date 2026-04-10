@@ -8,6 +8,7 @@ import LoadingSpinner from "./components/common/LoadingSpinner";
 import NavBar from "./components/Navbar";
 import OnboardingPage from "./components/onboarding/OnboardingPage";
 import { SummarizerPage } from "./components/summarizer/SummarizerPage";
+import FloatingThemeToggle from "./components/FloatingThemeToggle";
 
 // Protected route components are lazy-loaded so the login bundle stays small.
 // DashboardPage is a named export — unwrap it from the module object.
@@ -68,7 +69,7 @@ function AppLayout() {
   const shouldShowNavbar = !hideNavbarRoutes.includes(location.pathname);
 
   return (
-    <>
+    <div className="min-h-screen bg-white text-black dark:bg-gray-950 dark:text-white transition-colors duration-300">
       {shouldShowNavbar && <NavBar />}
 
       <Suspense fallback={<LoadingSpinner />}>
@@ -179,7 +180,8 @@ function AppLayout() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
-    </>
+      <FloatingThemeToggle />
+    </div>
   );
 }
 
