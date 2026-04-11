@@ -25,6 +25,7 @@ import {
   incorrectAnswerStyle,
 } from "./quizStyles";
 
+
 export default function QuizResults({
   result,
   quiz,
@@ -38,13 +39,14 @@ export default function QuizResults({
   const [showAnswers, setShowAnswers] = useState(false);
 
   return (
-    <div style={layoutStyle}>
-      <div style={resultCardStyle}>
-
+    <div className="min-h-screen bg-[#f5f7fb] dark:bg-gray-950 text-gray-900 dark:text-white transition-colors duration-300 flex items-center justify-center px-4 py-10">
+      <div className="w-full max-w-4xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-3xl shadow-md p-8 transition-colors">
         {/* Header */}
-        <div style={resultHeaderStyle}>
-          <h2 style={{ fontSize: 28, marginBottom: 8 }}>Quiz Completed</h2>
-          <p style={{ color: "#6b7280" }}>
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            Quiz Completed
+          </h2>
+          <p className="text-gray-500 dark:text-gray-400">
             Here's how you did and what to focus on next
           </p>
         </div>
@@ -108,29 +110,52 @@ export default function QuizResults({
           </div>
         )}
 
-        {/* Weak topic analysis — loading state */}
+        {/* Weak topic analysis — loading */}
         {loadingAnalysis && (
-          <div style={resultSectionStyle}>
-            <p>Loading quiz analysis...</p>
+          <div className="mb-8 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60 p-5">
+            <p className="text-gray-600 dark:text-gray-300">
+              Loading quiz analysis...
+            </p>
           </div>
         )}
 
         {/* Weak topic analysis — results */}
         {!loadingAnalysis && weakTopics.length > 0 && (
-          <div style={resultSectionStyle}>
-            <h3 style={resultSectionTitleStyle}>Topic Performance</h3>
-            <ul>
-              {weakTopics.map((item) => (
-                <li key={item.topic}>
-                  {item.topic}: {item.average_score}%{" "}
-                  {item.is_weak ? "(Weak)" : "(Strong)"}
-                </li>
-              ))}
-            </ul>
+          <div className="mb-8">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+              Topic Performance
+            </h3>
+
+            <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60 p-5">
+              <ul className="space-y-3">
+                {weakTopics.map((item) => (
+                  <li
+                    key={item.topic}
+                    className="flex items-center justify-between gap-4 border-b border-gray-200 dark:border-gray-700 pb-3 last:border-b-0 last:pb-0"
+                  >
+                    <span className="text-gray-800 dark:text-gray-200 font-medium">
+                      {item.topic}
+                    </span>
+
+                    <span
+                      className={
+                        item.is_weak
+                          ? "text-red-600 dark:text-red-400 text-sm font-semibold"
+                          : "text-green-600 dark:text-green-400 text-sm font-semibold"
+                      }
+                    >
+                      {item.average_score}% {item.is_weak ? "(Weak)" : "(Strong)"}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         )}
 
-        {error && <p style={{ color: "red", marginTop: 12 }}>{error}</p>}
+        {error && (
+          <p className="text-red-500 dark:text-red-400 mt-3 mb-6">{error}</p>
+        )}
 
         <div style={restartButtonWrapperStyle}>
           {handleRetake && (
