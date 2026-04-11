@@ -22,14 +22,25 @@ function RoomActions({ onCreateRoom, onJoinRoom }) {
       <button
         onClick={onJoinRoom ?? undefined}
         disabled={!onJoinRoom}
-        className="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="
+          rounded-xl border px-4 py-2 text-sm font-medium
+          border-gray-300 text-gray-700
+          hover:bg-gray-50
+          dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800
+          transition disabled:cursor-not-allowed disabled:opacity-50
+        "
       >
         Join with Code
       </button>
       <button
         onClick={onCreateRoom ?? undefined}
         disabled={!onCreateRoom}
-        className="px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="
+          rounded-xl px-4 py-2 text-sm font-medium text-white
+          bg-blue-600 hover:bg-blue-700
+          dark:bg-blue-500 dark:hover:bg-blue-400
+          shadow-sm transition disabled:cursor-not-allowed disabled:opacity-50
+        "
       >
         + Create Room
       </button>
@@ -40,13 +51,16 @@ function RoomActions({ onCreateRoom, onJoinRoom }) {
 function EmptyState({ onCreateRoom, onJoinRoom }) {
   return (
     <div className="flex flex-col items-center justify-center py-20 text-center">
-      <div className="w-16 h-16 bg-primary-50 rounded-full flex items-center justify-center mb-4">
-        <Users className="h-8 w-8 text-primary-400" />
+      <div className="
+          mb-4 flex h-16 w-16 items-center justify-center rounded-full
+          bg-blue-50 dark:bg-blue-900/20
+        ">
+        <Users className="h-8 w-8 text-blue-400 dark:text-blue-300" />
       </div>
-      <h2 className="text-xl font-semibold text-gray-900 mb-2">
+      <h2 className="mb-2 text-xl font-semibold text-gray-900 dark:text-gray-100">
         No study rooms yet
       </h2>
-      <p className="text-sm text-gray-500 mb-6 max-w-xs">
+      <p className="mb-6 max-w-xs text-sm text-gray-500 dark:text-gray-400">
         Create a room or join one with an invite code.
       </p>
       <RoomActions onCreateRoom={onCreateRoom} onJoinRoom={onJoinRoom} />
@@ -84,11 +98,11 @@ export function RoomsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 text-gray-900 transition-colors dark:bg-gray-950 dark:text-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page header */}
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Study Rooms</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Study Rooms</h1>
           <RoomActions
             onCreateRoom={() => setShowCreate(true)}
             onJoinRoom={() => setShowJoin(true)}
@@ -101,10 +115,10 @@ export function RoomsPage() {
         {/* Error banners */}
         {!loading && error && (
           <div
-            className={`rounded-xl border p-4 text-sm mb-4 ${
+            className={`mb-4 rounded-2xl border p-4 text-sm transition-colors ${
               isOffline
-                ? "border-yellow-200 bg-yellow-50 text-yellow-800"
-                : "border-red-200 bg-red-50 text-red-700"
+                ? "border-yellow-200 bg-yellow-50 text-yellow-800 dark:border-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300"
+                : "border-red-200 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-300"
             }`}
           >
             {isPermissionDenied
@@ -119,10 +133,20 @@ export function RoomsPage() {
 
         {/* Empty state */}
         {!loading && !error && rooms.length === 0 && (
+          <div
+            className="
+              rounded-3xl border border-dashed
+              border-gray-300 bg-white
+              p-6 shadow-sm
+              dark:border-gray-700 dark:bg-gray-900
+              transition-colors
+            "
+          >
           <EmptyState
             onCreateRoom={() => setShowCreate(true)}
             onJoinRoom={() => setShowJoin(true)}
           />
+        </div>
         )}
 
         {/* Room grid */}

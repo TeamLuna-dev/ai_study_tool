@@ -53,14 +53,22 @@ export function JoinRoomPage() {
   const alreadyMember = error?.toLowerCase().includes("already a member");
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="w-full max-w-sm bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-        <h1 className="text-xl font-semibold text-gray-900 mb-1">Join a Study Room</h1>
-        <p className="text-sm text-gray-500 mb-6">Enter or confirm the invite code below.</p>
+    <div className="
+        min-h-screen flex items-center justify-center px-4
+        bg-gray-50 dark:bg-gray-950
+        transition-colors
+      ">
+      <div className="
+          w-full max-w-sm rounded-2xl border p-8 shadow-sm
+          border-gray-200 bg-white
+          dark:border-gray-700 dark:bg-gray-900
+        ">
+        <h1 className="mb-1 text-xl font-semibold text-gray-900 dark:text-gray-100">Join a Study Room</h1>
+        <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">Enter or confirm the invite code below.</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="inviteCode" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="inviteCode" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Invite Code
             </label>
             <input
@@ -71,12 +79,25 @@ export function JoinRoomPage() {
               maxLength={6}
               placeholder="XXXXXX"
               disabled={joining}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 font-mono tracking-widest text-center text-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-50 disabled:text-gray-400"
+              className="
+                w-full rounded-xl border px-3 py-2 text-center text-lg font-mono tracking-widest
+                border-gray-300 bg-white text-gray-900
+                focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500
+                disabled:bg-gray-50 disabled:text-gray-400
+                dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100
+                dark:disabled:bg-gray-800 dark:disabled:text-gray-500
+                dark:focus:border-blue-400 dark:focus:ring-blue-400/20
+                transition
+              "
             />
           </div>
 
           {error && (
-            <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+            <div className="
+                rounded-xl border px-3 py-2 text-sm
+                border-red-200 bg-red-50 text-red-700
+                dark:border-red-800 dark:bg-red-900/20 dark:text-red-300
+              ">
               {error}
               {alreadyMember && (
                 <span>
@@ -92,14 +113,25 @@ export function JoinRoomPage() {
           <button
             type="submit"
             disabled={joining || loading || !code.trim()}
-            className="w-full px-4 py-2.5 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="
+              w-full rounded-xl px-4 py-2.5 text-sm font-medium text-white
+              bg-blue-600 hover:bg-blue-700
+              dark:bg-blue-500 dark:hover:bg-blue-400
+              disabled:cursor-not-allowed disabled:opacity-50
+              transition
+            "
           >
             {joining ? "Joining…" : "Join Room"}
           </button>
 
           <Link
             to="/rooms"
-            className="block text-center text-sm text-gray-500 hover:text-gray-700"
+            className="
+              block text-center text-sm
+              text-gray-500 hover:text-gray-700
+              dark:text-gray-400 dark:hover:text-gray-200
+              transition
+            "
           >
             Back to Rooms
           </Link>

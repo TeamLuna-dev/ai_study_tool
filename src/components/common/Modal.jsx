@@ -30,12 +30,20 @@ export default function Modal({ open, onClose, children, cardClassName = "" }) {
   return (
     // Backdrop — click outside the card to close
     <div
-      className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      className="
+        fixed inset-0 z-50 flex items-center justify-center p-4
+        bg-black/30 backdrop-blur-sm
+        dark:bg-black/60
+      "
       onClick={onClose}
     >
       {/* Card — stop propagation so clicks inside don't close the modal */}
       <div
-        className={`bg-white rounded-2xl shadow-xl w-full max-w-md ${cardClassName}`}
+        className={`
+          w-full max-w-md rounded-2xl border shadow-xl
+          border-gray-200 bg-white
+          dark:border-gray-700 dark:bg-gray-900
+          text-gray-900 dark:text-gray-100 ${cardClassName}`}
         onClick={(e) => e.stopPropagation()}
       >
         {children}
