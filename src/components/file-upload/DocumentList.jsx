@@ -16,7 +16,7 @@ export default function DocumentList({ docs, loading, error, onDelete }) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12 text-sm text-gray-400">
+      <div className="flex items-center justify-center py-12 text-sm text-gray-400 dark:text-gray-500">
         Loading your documents...
       </div>
     );
@@ -24,7 +24,7 @@ export default function DocumentList({ docs, loading, error, onDelete }) {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center py-12 text-sm text-red-500">
+      <div className="flex items-center justify-center py-12 text-sm text-red-500 dark:text-red-400">
         {error}
       </div>
     );
@@ -33,8 +33,8 @@ export default function DocumentList({ docs, loading, error, onDelete }) {
   if (docs.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12 gap-2">
-        <p className="text-sm font-medium text-gray-500">No documents yet</p>
-        <p className="text-xs text-gray-400">Upload a file above to get started.</p>
+        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">No documents yet</p>
+        <p className="text-xs text-gray-400 dark:text-gray-500">Upload a file above to get started.</p>
       </div>
     );
   }

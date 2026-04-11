@@ -32,24 +32,24 @@ export function OcrTextReview({ docId, extractedText, authToken, saveFn, ocrWarn
   const isSaved  = saveStatus === SAVE_STATUS.SAVED;
 
   if (!extractedText) return null;
-
+ 
   return (
     <div
       data-testid="ocr-text-review"
-      style={{
-        marginTop: "16px",
-        padding: "14px 16px",
-        borderRadius: "10px",
-        border: "1px solid #e2e8f0",
-        background: "#f8fafc",
-        fontSize: "0.875rem",
-        color: "#334155",
-      }}
+      className="
+        mt-4 rounded-2xl border
+        border-slate-200 dark:border-slate-700
+        bg-slate-50 dark:bg-slate-900
+        p-4 text-sm
+        text-slate-700 dark:text-slate-200
+        transition-colors
+      "
     >
-      <p style={{ margin: "0 0 6px", fontWeight: 600, color: "#1e293b" }}>
+      <p className="mb-1 font-semibold text-slate-800 dark:text-slate-100">
         Review Extracted Text
       </p>
-      <p style={{ margin: "0 0 10px", color: "#64748b" }}>
+
+      <p className="mb-3 text-slate-500 dark:text-slate-400">
         Edit the text below if needed, then confirm to save.
       </p>
 
@@ -57,15 +57,13 @@ export function OcrTextReview({ docId, extractedText, authToken, saveFn, ocrWarn
         <div
           role="alert"
           data-testid="ocr-warning"
-          style={{
-            marginBottom: "12px",
-            padding: "8px 12px",
-            borderRadius: "6px",
-            background: "#fefce8",
-            border: "1px solid #fde047",
-            color: "#854d0e",
-            fontSize: "0.8rem",
-          }}
+          className="
+            mb-3 rounded-lg border
+            border-yellow-300 dark:border-yellow-700
+            bg-yellow-50 dark:bg-yellow-900/20
+            px-3 py-2 text-xs
+            text-yellow-800 dark:text-yellow-300
+          "
         >
           ⚠ {ocrWarning}
         </div>
@@ -77,38 +75,36 @@ export function OcrTextReview({ docId, extractedText, authToken, saveFn, ocrWarn
         onChange={(e) => setText(e.target.value)}
         rows={10}
         disabled={isSaving || isSaved}
-        style={{
-          width: "100%",
-          padding: "10px 12px",
-          borderRadius: "8px",
-          border: "1px solid #cbd5e1",
-          fontSize: "0.875rem",
-          fontFamily: "system-ui, sans-serif",
-          lineHeight: "1.6",
-          resize: "vertical",
-          boxSizing: "border-box",
-          background: isSaved ? "#f1f5f9" : "#fff",
-          color: "#1e293b",
-          outline: "none",
-        }}
+        className={`
+          w-full resize-y rounded-xl border px-3 py-2 text-sm leading-6
+          font-sans box-border outline-none transition-colors
+          ${
+            isSaved
+              ? "bg-slate-100 dark:bg-slate-800"
+              : "bg-white dark:bg-slate-950"
+          }
+          border-slate-300 dark:border-slate-600
+          text-slate-800 dark:text-slate-100
+          disabled:cursor-default disabled:opacity-90
+          focus:border-blue-500 dark:focus:border-blue-400
+        `}
       />
 
-      <div style={{ marginTop: "10px", display: "flex", alignItems: "center", gap: "12px" }}>
+      <div className="mt-3 flex flex-wrap items-center gap-3">
         <button
           data-testid="confirm-save-button"
           onClick={handleSave}
           disabled={isSaving || isSaved}
-          style={{
-            padding: "9px 20px",
-            borderRadius: "8px",
-            border: "none",
-            background: isSaved ? "#16a34a" : "#6366f1",
-            color: "#fff",
-            fontWeight: 600,
-            fontSize: "0.875rem",
-            cursor: isSaving || isSaved ? "default" : "pointer",
-            opacity: isSaving ? 0.7 : 1,
-          }}
+          className={`
+            rounded-xl px-5 py-2.5 text-sm font-semibold text-white
+            shadow-sm transition active:scale-95
+            ${
+              isSaved
+                ? "bg-green-600 dark:bg-green-500"
+                : "bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400"
+            }
+            disabled:cursor-default disabled:opacity-70 disabled:active:scale-100
+          `}
         >
           {isSaving ? "Saving…" : isSaved ? "Saved ✓" : "Confirm & Save"}
         </button>
@@ -117,7 +113,7 @@ export function OcrTextReview({ docId, extractedText, authToken, saveFn, ocrWarn
           <p
             role="alert"
             data-testid="save-error"
-            style={{ margin: 0, color: "#dc2626", fontSize: "0.8rem" }}
+            className="m-0 text-xs text-red-600 dark:text-red-400"
           >
             {saveError}
           </p>

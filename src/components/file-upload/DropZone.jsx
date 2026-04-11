@@ -53,46 +53,45 @@ export function DropZone({ onFileSelect, disabled = false }) {
   // Handle file selection via the hidden input
   const onInputChange = (e) => handleFiles(e.target.files);
 
-  const baseStyle = {
-    border: `2px dashed ${isDragging ? "#6366f1" : "#cbd5e1"}`,
-    borderRadius: "12px",
-    padding: "40px 24px",
-    textAlign: "center",
-    // Show not-allowed cursor when disabled (e.g. mid-upload)
-    cursor: disabled ? "not-allowed" : "pointer",
-    background: isDragging ? "#eef2ff" : "#f8fafc",
-    transition: "all 0.2s ease",
-    opacity: disabled ? 0.6 : 1,
-  };
-
   return (
     <div
       role="region"
       aria-label="File drop zone"
-      style={baseStyle}
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
       onDrop={onDrop}
-      // Clicking the div opens the hidden file picker
       onClick={() => !disabled && inputRef.current?.click()}
+      className={`
+        border-2 border-dashed rounded-2xl
+        p-10 text-center transition-all duration-200
+        ${
+          isDragging
+            ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20"
+            : "border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900"
+        }
+        ${disabled ? "opacity-60 cursor-not-allowed" : "cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"}
+      `}
     >
-      {/* Hidden input — the actual mechanism for file selection */}
+      {/* Hidden input */}
       <input
         ref={inputRef}
         data-testid="file-input"
         type="file"
         accept={acceptAttr}
-        style={{ display: "none" }}
+        className="hidden"
         onChange={onInputChange}
         aria-label="File upload input"
       />
-      {/* Hint text — updates automatically if ALLOWED_TYPES changes */}
-      <p style={{ margin: 0, fontSize: "1rem", color: "#475569" }}>
+
+      {/* Main text */}
+      <p className="text-base text-gray-700 dark:text-gray-200">
         {isDragging
           ? "Drop your file here…"
           : "Drag & drop or click to browse"}
       </p>
-      <p style={{ margin: "8px 0 0", fontSize: "0.8rem", color: "#94a3b8" }}>
+
+      {/* Sub text */}
+      <p className="mt-2 text-sm text-gray-400 dark:text-gray-500">
         Accepts {allowedExtensions.toUpperCase()} · Max {MAX_FILE_SIZE_MB} MB
       </p>
     </div>
