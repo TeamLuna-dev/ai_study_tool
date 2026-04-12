@@ -34,6 +34,63 @@ def save_quiz_attempt(user_id, topic, score, total_questions):
     return response_attempt
 
 
+def get_quiz_attempts(user_id, topic=None, start_date=None, end_date=None,
+                      sort_by="timestamp", order="desc", page=1, per_page=10):
+    query = db.collection("quiz_attempts").where("user_id", "==", user_id)
+
+    if topic:
+        query = query.where("topic", "==", topic)
+
+    if start_date:
+        query = query.where("timestamp", ">=", start_date)
+
+    if end_date:
+        query = query.where("timestamp", "<=", end_date)
+
+    # Fetch all matching docs to get total count (Firestore has no native count+paginate)
+    all_docs = list(query.stream())
+
+    # Sort in Python (Firestore compound queries with inequality filters are limited)
+    reverse = order == "desc"
+    if sort_by in ("score", "percentage", "timestamp"):
+        all_docs.sort(key=lambda d: d.to_dict().get(sort_by, 0) or 0, reverse=reverse)
+    else:
+        all_docs.sort(key=lambda d: d.to_dict().get("timestamp", 0) or 0, reverse=reverse)
+
+    total = len(all_docs)
+    start = (page - 1) * per_page
+    end = start + per_page
+    page_docs = all_docs[start:end]
+
+    results = []
+    for doc in page_docs:
+        attempt = doc.to_dict()
+        attempt["id"] = doc.id
+        # Convert Firestore timestamp to ISO string for JSON serialization
+        if attempt.get("timestamp") and hasattr(attempt["timestamp"], "isoformat"):
+            attempt["timestamp"] = attempt["timestamp"].isoformat()
+        results.append(attempt)
+
+    return {
+        "attempts": results,
+        "total": total,
+        "page": page,
+        "per_page": per_page,
+        "total_pages": (total + per_page - 1) // per_page if per_page else 1,
+    }
+
+
+def get_quiz_attempt_by_id(attempt_id):
+    doc = db.collection("quiz_attempts").document(attempt_id).get()
+    if not doc.exists:
+        return None
+    attempt = doc.to_dict()
+    attempt["id"] = doc.id
+    if attempt.get("timestamp") and hasattr(attempt["timestamp"], "isoformat"):
+        attempt["timestamp"] = attempt["timestamp"].isoformat()
+    return attempt
+
+
 def analyze_performance(attempts):
     topic_scores = {}
 
