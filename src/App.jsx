@@ -41,7 +41,11 @@ const UploadPage = lazy(() =>
     default: m.default,
   }))
 );
-
+const QuizHistoryPage = lazy(() =>
+  import("./components/quiz/QuizHistoryPage").then((m) => ({
+    default: m.QuizHistoryPage,
+  }))
+);
 const ToolPlaceholderPage = lazy(() => import("./pages/ToolPlaceholderPage"));
 
 /**
@@ -96,6 +100,15 @@ function AppLayout() {
             element={
               <ProtectedRoute>
                 <UploadPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/quiz-history"
+            element={
+              <ProtectedRoute>
+                <QuizHistoryPage />
               </ProtectedRoute>
             }
           />
