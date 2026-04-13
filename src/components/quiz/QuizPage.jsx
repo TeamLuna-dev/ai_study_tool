@@ -175,28 +175,27 @@ export function QuizPage() {
   }
 
   // --- UI states ---
-
-    if (!quiz) {
-    return (
-      <QuizGenerator
-        user={user}
-        inputMode={inputMode}
-        setInputMode={setInputMode}
-        notes={notes}
-        setNotes={setNotes}
-        userDocs={userDocs}
-        selectedDocId={selectedDocId}
-        setSelectedDocId={setSelectedDocId}
-        topic={topic}
-        setTopic={setTopic}
-        loadingGen={loadingGen}
-        error={error}
-        handleGenerate={handleGenerate}
-        questionCount={questionCount}
-        setQuestionCount={setQuestionCount}
-      />
-    );
-  }
+  if (!quiz) {
+  return (
+    <QuizGenerator
+      user={user}
+      inputMode={inputMode}
+      setInputMode={setInputMode}
+      notes={notes}
+      setNotes={setNotes}
+      userDocs={userDocs}
+      selectedDocId={selectedDocId}
+      setSelectedDocId={setSelectedDocId}
+      topic={topic}
+      setTopic={setTopic}
+      loadingGen={loadingGen}
+      error={error}
+      handleGenerate={handleGenerate}
+      questionCount={questionCount}
+      setQuestionCount={setQuestionCount}
+    />
+  );
+}
 
   if (result) {
     return (

@@ -22,7 +22,7 @@ export default function Navbar() {
           </Link>
 
           <Link
-            to="/summaries"
+            to="/summarizer"
             className="px-3 py-1 rounded hover:bg-blue-500 hover:text-white transition duration-300"
           >
             AI Notes Summary

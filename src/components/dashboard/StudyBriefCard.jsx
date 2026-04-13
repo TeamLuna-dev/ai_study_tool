@@ -28,56 +28,92 @@ export function StudyBriefCard({ brief, isLoading, error, generatedAt }) {
   // ── Loading state ─────────────────────────────────────────────────────────
   if (isLoading) {
     return (
-      <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border-l-4 border-indigo-400 rounded-2xl p-6 mb-8 shadow-sm animate-pulse">
-        <div className="flex items-center gap-2 mb-3">
-          <div className="w-5 h-5 bg-indigo-200 rounded-full" />
-          <div className="h-4 w-36 bg-indigo-200 rounded" />
+      <div className="overflow-hidden rounded-3xl bg-white border border-gray-200 shadow-sm">
+        <div className="bg-gradient-to-r from-purple-100 via-blue-50 to-pink-50 px-6 py-5 animate-pulse">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-white/70" />
+            <div className="flex-1">
+              <div className="h-4 w-36 bg-white/70 rounded mb-3" />
+              <div className="h-4 w-3/4 bg-white/60 rounded mb-2" />
+              <div className="h-4 w-2/3 bg-white/60 rounded" />
+            </div>
+          </div>
         </div>
-        <div className="space-y-2">
-          <div className="h-3 bg-indigo-100 rounded w-full" />
-          <div className="h-3 bg-indigo-100 rounded w-5/6" />
-          <div className="h-3 bg-indigo-100 rounded w-4/6" />
+
+        <div className="px-6 py-4 border-t border-gray-100">
+          <div className="h-4 w-2/3 bg-gray-100 rounded animate-pulse" />
         </div>
       </div>
     );
   }
-
   // ── Error state ───────────────────────────────────────────────────────────
   if (error) {
     return (
-      <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border-l-4 border-indigo-400 rounded-2xl p-6 mb-8 shadow-sm">
-        <div className="flex items-center gap-2 mb-2">
-          <Sparkles className="w-5 h-5 text-indigo-500 shrink-0" />
-          <h2 className="text-sm font-semibold text-indigo-700 uppercase tracking-wide">
-            Daily Study Brief
-          </h2>
+      <div className="overflow-hidden rounded-3xl bg-white border border-gray-200 shadow-sm">
+        <div className="bg-gradient-to-r from-purple-100 via-blue-50 to-pink-50 px-6 py-5">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center shadow-sm">
+              <Sparkles className="w-6 h-6 text-purple-500" />
+            </div>
+
+            <div>
+              <h2 className="text-lg font-bold text-gray-900">
+                Daily Study Brief
+              </h2>
+              <p className="mt-1 text-gray-600">
+                Your study brief is taking a moment to load. Check back soon!
+              </p>
+            </div>
+          </div>
         </div>
-        <p className="text-gray-600 text-sm">
-          Your study brief is taking a moment to load. Check back soon!
-        </p>
+
+        <div className="px-6 py-4 border-t border-gray-100">
+          <p className="text-sm text-gray-500">
+            💡 Tip: Upload notes to generate personalized study guidance.
+          </p>
+        </div>
       </div>
     );
   }
-
   // ── Loaded (including welcome fallback returned by the backend) ───────────
   const time = _formatTimestamp(generatedAt);
 
   return (
-    <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border-l-4 border-indigo-500 rounded-2xl p-6 mb-8 shadow-sm">
-      <div className="flex items-start justify-between gap-4 mb-3">
-        <div className="flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-indigo-500 shrink-0" />
-          <h2 className="text-sm font-semibold text-indigo-700 uppercase tracking-wide">
-            Daily Study Brief
-          </h2>
+    <div className="overflow-hidden rounded-3xl bg-white border border-gray-200 shadow-sm">
+      <div className="bg-gradient-to-r from-purple-100 via-blue-50 to-pink-50 px-6 py-5">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center shadow-sm shrink-0">
+              <Sparkles className="w-6 h-6 text-purple-500" />
+            </div>
+
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-700">
+                Daily Study Brief
+              </p>
+              <h2 className="mt-1 text-xl font-bold text-gray-900">
+                Your personalized study update
+              </h2>
+            </div>
+          </div>
+
+          {time && (
+            <span className="text-xs text-gray-500 shrink-0 mt-1">
+              {time}
+            </span>
+          )}
         </div>
-        {time && (
-          <span className="text-xs text-indigo-400 shrink-0">
-            Generated at {time}
-          </span>
-        )}
       </div>
-      <p className="text-gray-700 leading-relaxed">{brief}</p>
+
+      <div className="px-6 py-5">
+        <p className="text-gray-700 leading-7 text-[15px]">{brief}</p>
+      </div>
+
+      <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/70">
+        <p className="text-sm text-gray-600">
+          💡 Tip: Stay consistent by uploading notes regularly and reviewing a quiz after each summary.
+        </p>
+      </div>
     </div>
   );
 }

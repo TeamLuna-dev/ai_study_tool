@@ -7,6 +7,7 @@ import ProtectedRoute from "./components/auth/ProtectedRoute";
 import LoadingSpinner from "./components/common/LoadingSpinner";
 import NavBar from "./components/Navbar";
 import OnboardingPage from "./components/onboarding/OnboardingPage";
+import { SummarizerPage } from "./components/summarizer/SummarizerPage";
 
 // Protected route components are lazy-loaded so the login bundle stays small.
 // DashboardPage is a named export — unwrap it from the module object.
@@ -40,6 +41,7 @@ const UploadPage = lazy(() =>
     default: m.default,
   }))
 );
+
 const ToolPlaceholderPage = lazy(() => import("./pages/ToolPlaceholderPage"));
 
 /**
@@ -108,10 +110,10 @@ function AppLayout() {
           />
 
           <Route
-            path="/summaries"
+            path="/summarizer"
             element={
               <ProtectedRoute>
-                <ToolPlaceholderPage title="Summaries" />
+                <SummarizerPage />
               </ProtectedRoute>
             }
           />
