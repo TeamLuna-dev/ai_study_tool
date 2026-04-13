@@ -78,6 +78,8 @@ export function DashboardPage() {
               generatedAt={briefGeneratedAt}
             />
 
+            <QuizProgressChart />
+
             <RecentDocuments />
           </div>
 
