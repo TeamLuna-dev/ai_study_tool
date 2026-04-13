@@ -23,24 +23,6 @@ export async function getSessionSummary(userId) {
   return data;
 }
 
-export async function getQuizHistory(userId) {
-  if (!userId) {
-    return [];
-  }
-
-  const res = await fetch(`${API_BASE}/api/progress/quiz-attempts/${userId}`);
-  const data = await res.json().catch(() => ([]));
-
-  if (!res.ok) {
-    const errorMessage = typeof data?.error === "string"
-      ? data.error
-      : `Failed to fetch quiz history (${res.status})`;
-    throw new Error(errorMessage);
-  }
-
-  return Array.isArray(data) ? data : [];
-}
-
 export async function generateQuiz({ notes, docId, questionCount = 5 } = {}) {
   if (!notes && !docId) {
     throw new Error("Provide either notes or docId.");
