@@ -8,6 +8,7 @@
 
 import { useState, useEffect } from "react";
 import { generateQuiz, scoreQuiz, getWeakTopics } from "../../services/quizService";
+import { shuffleArray } from "../../utils/shuffleArray";
 import { useAuth } from "../../hooks/useAuth";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../../config/firebase";
@@ -175,16 +176,15 @@ export function QuizPage() {
     setQuestionCount(5); // reset to default
   }
 
-    async function handleRetake() {
+  function handleRetake() {
     setResult(null);
-    setQuiz(null);
     setCurrent(0);
     setSelected(null);
-    setAnswers([]);
+    setAnswers(new Array(quiz.questions.length).fill(null));
     setError("");
     setWeakTopics([]);
     setLoadingAnalysis(false);
-    await handleGenerate();
+    setQuiz({ ...quiz, questions: shuffleArray(quiz.questions) });
   }
 
   if (loadingGen) {
