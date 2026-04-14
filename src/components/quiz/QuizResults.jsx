@@ -30,6 +30,7 @@ export default function QuizResults({
   loadingAnalysis,
   error,
   handleRestart,
+  handleRetake,
 }) {
   return (
     <div style={layoutStyle}>
@@ -100,12 +101,17 @@ export default function QuizResults({
 
         {error && <p style={{ color: "red", marginTop: 12 }}>{error}</p>}
 
-        {/* Restart button */}
         <div style={restartButtonWrapperStyle}>
+          {handleRetake && (
+            <button onClick={handleRetake} style={primaryButtonStyle}>
+              Retake Quiz
+            </button>
+          )}
           <button onClick={handleRestart} style={primaryButtonStyle}>
             Start New Quiz
           </button>
         </div>
+
 
       </div>
     </div>
