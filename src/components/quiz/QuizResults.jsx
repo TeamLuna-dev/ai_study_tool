@@ -7,6 +7,7 @@
  * Has no state of its own: purely presentational.
  */
 
+import { useState } from "react";
 import {
   layoutStyle,
   primaryButtonStyle,
@@ -33,6 +34,8 @@ export default function QuizResults({
   handleRetake,
   handleRegenerate,
 }) {
+  const [showAnswers, setShowAnswers] = useState(false);
+
   return (
     <div style={layoutStyle}>
       <div style={resultCardStyle}>
@@ -55,23 +58,35 @@ export default function QuizResults({
         {/* Incorrect answer review */}
         {result.incorrect?.length > 0 && (
           <div style={resultSectionStyle}>
-            <h3 style={resultSectionTitleStyle}>Review Incorrect Answers</h3>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+              <h3 style={{ ...resultSectionTitleStyle, marginBottom: 0 }}>Review Incorrect Answers</h3>
+              <button
+                onClick={() => setShowAnswers((prev) => !prev)}
+                style={{ fontSize: 13, color: "#2563eb", background: "none", border: "none", cursor: "pointer", fontWeight: 500 }}
+              >
+                {showAnswers ? "Hide answers" : "Show answers"}
+              </button>
+            </div>
             {result.incorrect.map((x) => (
               <div key={x.question_index} style={reviewCardStyle}>
                 <p style={reviewQuestionStyle}>
                   Question {x.question_index + 1}: {x.question}
                 </p>
-                <p style={{ margin: "6px 0" }}>
-                  <span style={reviewLabelStyle}>Correct Answer: </span>
-                  <span style={correctAnswerStyle}>{x.correct_choice}</span>
-                </p>
-                {x.your_index !== undefined && x.your_index >= 0 && (
-                  <p style={{ margin: "6px 0" }}>
-                    <span style={reviewLabelStyle}>Your Answer: </span>
-                    <span style={incorrectAnswerStyle}>
-                      {quiz?.questions?.[x.question_index]?.choices?.[x.your_index]}
-                    </span>
-                  </p>
+                {showAnswers && (
+                  <>
+                    <p style={{ margin: "6px 0" }}>
+                      <span style={reviewLabelStyle}>Correct Answer: </span>
+                      <span style={correctAnswerStyle}>{x.correct_choice}</span>
+                    </p>
+                    {x.your_index !== undefined && x.your_index >= 0 && (
+                      <p style={{ margin: "6px 0" }}>
+                        <span style={reviewLabelStyle}>Your Answer: </span>
+                        <span style={incorrectAnswerStyle}>
+                          {quiz?.questions?.[x.question_index]?.choices?.[x.your_index]}
+                        </span>
+                      </p>
+                    )}
+                  </>
                 )}
               </div>
             ))}
