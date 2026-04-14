@@ -134,16 +134,16 @@ export default function QuizResults({
 
         <div style={restartButtonWrapperStyle}>
           {handleRetake && (
-            <button onClick={handleRetake} style={secondaryButtonStyle}>
+            <button onClick={handleRetake} style={{ ...secondaryButtonStyle, flex: 1 }}>
               Retake Quiz
             </button>
           )}
           {handleRegenerate && (
-            <button onClick={handleRegenerate} style={secondaryButtonStyle}>
+            <button onClick={handleRegenerate} style={{ ...secondaryButtonStyle, flex: 1 }}>
               Regenerate
             </button>
           )}
-          <button onClick={handleRestart} style={primaryButtonStyle}>
+          <button onClick={handleRestart} style={{ ...primaryButtonStyle, flex: 1 }}>
             Start New Quiz
           </button>
         </div>
