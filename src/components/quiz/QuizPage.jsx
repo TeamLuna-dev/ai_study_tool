@@ -13,6 +13,7 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import QuizGenerator from "./QuizGenerator"
 import QuizResults from "./QuizResults";
+import QuizLoadingScreen from "./QuizLoadingScreen";
 import { BRAND_BLUE, primaryButtonStyle, secondaryButtonStyle, disabledButtonStyle, layoutStyle } from "./quizStyles";
 
 export function QuizPage() {
@@ -185,6 +186,11 @@ export function QuizPage() {
     setLoadingAnalysis(false);
     await handleGenerate();
   }
+
+  if (loadingGen) {
+  return <QuizLoadingScreen topic={topic} questionCount={questionCount} />;
+} // loading state while quiz is being generated
+
 
   // --- UI states ---
   if (!quiz) {
