@@ -17,6 +17,7 @@ import QuizGenerator from "./QuizGenerator"
 import QuizResults from "./QuizResults";
 import QuizLoadingScreen from "./QuizLoadingScreen";
 import { BRAND_BLUE, primaryButtonStyle, secondaryButtonStyle, disabledButtonStyle, layoutStyle } from "./quizStyles";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const TOPIC_OPTIONS = [
   "Math",
@@ -30,6 +31,8 @@ const TOPIC_OPTIONS = [
 ];
 
 export function QuizPage() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const { user } = useAuth(); // get current user for personalized analysis
   const navigate = useNavigate();
   
@@ -72,6 +75,20 @@ export function QuizPage() {
 
   fetchDocs();
 }, [user]);
+
+  // On mount, check for retake state
+  useEffect(() => {
+    if (location.state && location.state.questions) {
+      setQuiz({ questions: location.state.questions, topic: location.state.topic });
+      setTopic(location.state.topic || "");
+      setCurrent(0);
+      setSelected(null);
+      setAnswers(new Array(location.state.questions.length).fill(null));
+      // Clear state so back/forward doesn't keep reusing it
+      navigate("/quiz", { replace: true, state: {} });
+    }
+    // eslint-disable-next-line
+  }, []);
 
   const questions = quiz?.questions || [];
   const q = questions[current];
