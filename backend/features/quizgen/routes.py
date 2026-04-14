@@ -23,13 +23,20 @@ ANALYTICS_URL = "http://127.0.0.1:5000/api/progress/submit-quiz"
 DEV_USER_ID = "test-user-123"
 
 
-def persist_quiz_attempt(topic, score, total_questions, user_id=DEV_USER_ID):
+def persist_quiz_attempt(topic, score, total_questions, user_id=DEV_USER_ID,
+                         questions=None, answers=None, incorrect=None):
     payload = {
         "user_id": user_id,
         "topic": topic,
         "score": score,
         "total_questions": total_questions,
     }
+    if questions is not None:
+        payload["questions"] = questions
+    if answers is not None:
+        payload["answers"] = answers
+    if incorrect is not None:
+        payload["incorrect"] = incorrect
 
     response = requests.post(ANALYTICS_URL, json=payload, timeout=5)
     response.raise_for_status()
@@ -189,6 +196,9 @@ def score_quiz():
                 score=score,
                 total_questions=total,
                 user_id=user_id,
+                questions=[{"question": q["question"], "choices": q["choices"], "correct_index": q["correct_index"]} for q in questions],
+                answers=answers,
+                incorrect=incorrect,
             )
             analytics_saved = True
         except Exception as exc:
