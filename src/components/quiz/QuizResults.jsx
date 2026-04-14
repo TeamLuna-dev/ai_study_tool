@@ -11,6 +11,7 @@ import { useState } from "react";
 import {
   layoutStyle,
   primaryButtonStyle,
+  secondaryButtonStyle,
   resultCardStyle,
   resultHeaderStyle,
   scoreSummaryStyle,
@@ -49,11 +50,25 @@ export default function QuizResults({
         </div>
 
         {/* Score summary */}
-        <div style={scoreSummaryStyle}>
-          <p style={{ margin: 0, fontSize: 18, fontWeight: 600 }}>
-            Score: {result.score} / {result.total} ({result.percentage}%)
-          </p>
-        </div>
+        {(() => {
+          const pct = result.percentage;
+          const color = pct >= 80 ? "#16a34a" : pct >= 60 ? "#d97706" : "#dc2626";
+          const bg   = pct >= 80 ? "#f0fdf4" : pct >= 60 ? "#fffbeb" : "#fef2f2";
+          const border = pct >= 80 ? "#bbf7d0" : pct >= 60 ? "#fde68a" : "#fecaca";
+          return (
+            <div style={{ ...scoreSummaryStyle, backgroundColor: bg, borderColor: border }}>
+              <p style={{ margin: 0, fontSize: 52, fontWeight: 800, color, lineHeight: 1 }}>
+                {pct}%
+              </p>
+              <p style={{ margin: "6px 0 0", fontSize: 18, fontWeight: 600, color }}>
+                {pct >= 80 ? "Excellent!" : pct >= 60 ? "Good job!" : "Keep practicing!"}
+              </p>
+              <p style={{ margin: "4px 0 0", fontSize: 14, color: "#6b7280" }}>
+                {result.score} / {result.total} questions correct
+              </p>
+            </div>
+          );
+        })()}
 
         {/* Incorrect answer review */}
         {result.incorrect?.length > 0 && (
@@ -119,12 +134,12 @@ export default function QuizResults({
 
         <div style={restartButtonWrapperStyle}>
           {handleRetake && (
-            <button onClick={handleRetake} style={primaryButtonStyle}>
+            <button onClick={handleRetake} style={secondaryButtonStyle}>
               Retake Quiz
             </button>
           )}
           {handleRegenerate && (
-            <button onClick={handleRegenerate} style={primaryButtonStyle}>
+            <button onClick={handleRegenerate} style={secondaryButtonStyle}>
               Regenerate
             </button>
           )}
