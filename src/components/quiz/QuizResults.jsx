@@ -7,9 +7,11 @@
  * Has no state of its own: purely presentational.
  */
 
+import { useState } from "react";
 import {
   layoutStyle,
   primaryButtonStyle,
+  secondaryButtonStyle,
   resultCardStyle,
   resultHeaderStyle,
   scoreSummaryStyle,
@@ -30,7 +32,11 @@ export default function QuizResults({
   loadingAnalysis,
   error,
   handleRestart,
+  handleRetake,
+  handleRegenerate,
 }) {
+  const [showAnswers, setShowAnswers] = useState(false);
+
   return (
     <div style={layoutStyle}>
       <div style={resultCardStyle}>
@@ -44,32 +50,58 @@ export default function QuizResults({
         </div>
 
         {/* Score summary */}
-        <div style={scoreSummaryStyle}>
-          <p style={{ margin: 0, fontSize: 18, fontWeight: 600 }}>
-            Score: {result.score} / {result.total} ({result.percentage}%)
-          </p>
-        </div>
+        {(() => {
+          const pct = result.percentage;
+          const color = pct >= 80 ? "#16a34a" : pct >= 60 ? "#d97706" : "#dc2626";
+          const bg   = pct >= 80 ? "#f0fdf4" : pct >= 60 ? "#fffbeb" : "#fef2f2";
+          const border = pct >= 80 ? "#bbf7d0" : pct >= 60 ? "#fde68a" : "#fecaca";
+          return (
+            <div style={{ ...scoreSummaryStyle, backgroundColor: bg, borderColor: border }}>
+              <p style={{ margin: 0, fontSize: 52, fontWeight: 800, color, lineHeight: 1 }}>
+                {pct}%
+              </p>
+              <p style={{ margin: "6px 0 0", fontSize: 18, fontWeight: 600, color }}>
+                {pct >= 80 ? "Excellent!" : pct >= 60 ? "Good job!" : "Keep practicing!"}
+              </p>
+              <p style={{ margin: "4px 0 0", fontSize: 14, color: "#6b7280" }}>
+                {result.score} / {result.total} questions correct
+              </p>
+            </div>
+          );
+        })()}
 
         {/* Incorrect answer review */}
         {result.incorrect?.length > 0 && (
           <div style={resultSectionStyle}>
-            <h3 style={resultSectionTitleStyle}>Review Incorrect Answers</h3>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+              <h3 style={{ ...resultSectionTitleStyle, marginBottom: 0 }}>Review Incorrect Answers</h3>
+              <button
+                onClick={() => setShowAnswers((prev) => !prev)}
+                style={{ fontSize: 13, color: "#2563eb", background: "none", border: "none", cursor: "pointer", fontWeight: 500 }}
+              >
+                {showAnswers ? "Hide answers" : "Show answers"}
+              </button>
+            </div>
             {result.incorrect.map((x) => (
               <div key={x.question_index} style={reviewCardStyle}>
                 <p style={reviewQuestionStyle}>
                   Question {x.question_index + 1}: {x.question}
                 </p>
-                <p style={{ margin: "6px 0" }}>
-                  <span style={reviewLabelStyle}>Correct Answer: </span>
-                  <span style={correctAnswerStyle}>{x.correct_choice}</span>
-                </p>
-                {x.your_index !== undefined && x.your_index >= 0 && (
-                  <p style={{ margin: "6px 0" }}>
-                    <span style={reviewLabelStyle}>Your Answer: </span>
-                    <span style={incorrectAnswerStyle}>
-                      {quiz?.questions?.[x.question_index]?.choices?.[x.your_index]}
-                    </span>
-                  </p>
+                {showAnswers && (
+                  <>
+                    <p style={{ margin: "6px 0" }}>
+                      <span style={reviewLabelStyle}>Correct Answer: </span>
+                      <span style={correctAnswerStyle}>{x.correct_choice}</span>
+                    </p>
+                    {x.your_index !== undefined && x.your_index >= 0 && (
+                      <p style={{ margin: "6px 0" }}>
+                        <span style={reviewLabelStyle}>Your Answer: </span>
+                        <span style={incorrectAnswerStyle}>
+                          {quiz?.questions?.[x.question_index]?.choices?.[x.your_index]}
+                        </span>
+                      </p>
+                    )}
+                  </>
                 )}
               </div>
             ))}
@@ -100,12 +132,22 @@ export default function QuizResults({
 
         {error && <p style={{ color: "red", marginTop: 12 }}>{error}</p>}
 
-        {/* Restart button */}
         <div style={restartButtonWrapperStyle}>
-          <button onClick={handleRestart} style={primaryButtonStyle}>
+          {handleRetake && (
+            <button onClick={handleRetake} style={{ ...secondaryButtonStyle, flex: 1 }}>
+              Retake Quiz
+            </button>
+          )}
+          {handleRegenerate && (
+            <button onClick={handleRegenerate} style={{ ...secondaryButtonStyle, flex: 1 }}>
+              Regenerate
+            </button>
+          )}
+          <button onClick={handleRestart} style={{ ...primaryButtonStyle, flex: 1 }}>
             Start New Quiz
           </button>
         </div>
+
 
       </div>
     </div>

@@ -8,11 +8,13 @@
 
 import { useState, useEffect } from "react";
 import { generateQuiz, scoreQuiz, getWeakTopics } from "../../services/quizService";
+import { shuffleArray } from "../../utils/shuffleArray";
 import { useAuth } from "../../hooks/useAuth";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import QuizGenerator from "./QuizGenerator"
 import QuizResults from "./QuizResults";
+import QuizLoadingScreen from "./QuizLoadingScreen";
 import { BRAND_BLUE, primaryButtonStyle, secondaryButtonStyle, disabledButtonStyle, layoutStyle } from "./quizStyles";
 
 export function QuizPage() {
@@ -174,6 +176,34 @@ export function QuizPage() {
     setQuestionCount(5); // reset to default
   }
 
+  async function handleRegenerate() {
+    setResult(null);
+    setQuiz(null);
+    setCurrent(0);
+    setSelected(null);
+    setAnswers([]);
+    setError("");
+    setWeakTopics([]);
+    setLoadingAnalysis(false);
+    await handleGenerate();
+  }
+
+  function handleRetake() {
+    setResult(null);
+    setCurrent(0);
+    setSelected(null);
+    setAnswers(new Array(quiz.questions.length).fill(null));
+    setError("");
+    setWeakTopics([]);
+    setLoadingAnalysis(false);
+    setQuiz({ ...quiz, questions: shuffleArray(quiz.questions) });
+  }
+
+  if (loadingGen) {
+  return <QuizLoadingScreen topic={topic} questionCount={questionCount} />;
+} // loading state while quiz is being generated
+
+
   // --- UI states ---
   if (!quiz) {
   return (
@@ -206,6 +236,8 @@ export function QuizPage() {
         loadingAnalysis={loadingAnalysis}
         error={error}
         handleRestart={handleRestart}
+        handleRetake={handleRetake}
+        handleRegenerate={handleRegenerate}
       />
     );
   }
