@@ -42,8 +42,8 @@ export default function QuizProgressChart() {
       setLoading(true);
       setError("");
       try {
-        const data = await getQuizHistory(user?.uid);
-        setHistory(data);
+        const data = await getQuizHistory(user?.uid, { perPage: 100 });
+        setHistory(data.attempts || []);
       } catch (e) {
         setError(e.message);
       } finally {
