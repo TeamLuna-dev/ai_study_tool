@@ -23,11 +23,12 @@ def create_app():
     if frontend_url:
         cors_origins.append(frontend_url)
 
+    # SCRUM-103. Work was overscoped in separate SCRUM-99 task, investigate commit e4889c5 for 103's ticket work 
     CORS(
         app,
         resources={
             r"/api/*": {
-                "origins": cors_origins,
+                "origins": cors_origins,  # Allow CORS for these origins
                 "allow_headers": ["Authorization", "Content-Type"],
                 "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
             }

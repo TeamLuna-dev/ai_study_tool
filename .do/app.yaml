@@ -1,0 +1,76 @@
+name: aitutorproject
+region: sfo
+
+services:
+  - name: backend
+    bitbucket: 
+      repo: https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/src/main/
+      branch: main
+      deploy_on_push: true
+    source_dir: /backend
+    environment_slug: python
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    run_command: gunicorn app:app --bind 0.0.0.0:8080 --workers 2
+    http_port: 8080
+    routes:
+      - path: /api
+    envs:
+      - key: FIREBASE_SERVICE_ACCOUNT_JSON
+        scope: RUN_TIME
+        type: SECRET
+      - key: OPENAI_API_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: QDRANT_URL
+        scope: RUN_TIME
+        type: SECRET
+      - key: QDRANT_API_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: UNSTRUCTURED_API_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: FIREBASE_STORAGE_BUCKET
+        scope: RUN_TIME
+        value: aitutorproject-197c3.appspot.com
+      - key: FRONTEND_URL
+        scope: RUN_TIME
+        value: ${APP_URL}
+      - key: DEV_MODE
+        scope: RUN_TIME
+        value: "false"
+
+static_sites:
+  - name: frontend
+    bitbucket:
+      repo: https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/src/main/
+      branch: main
+      deploy_on_push: true
+    source_dir: /
+    build_command: npm install && npm run build
+    output_dir: dist
+    routes:
+      - path: /
+    envs:
+      - key: VITE_API_BASE_URL
+        scope: BUILD_TIME
+        value: ${backend.PUBLIC_URL}
+      - key: VITE_FIREBASE_API_KEY
+        scope: BUILD_TIME
+        type: SECRET
+      - key: VITE_FIREBASE_AUTH_DOMAIN
+        scope: BUILD_TIME
+        value: aitutorproject-197c3.firebaseapp.com
+      - key: VITE_FIREBASE_PROJECT_ID
+        scope: BUILD_TIME
+        value: aitutorproject-197c3
+      - key: VITE_FIREBASE_STORAGE_BUCKET
+        scope: BUILD_TIME
+        value: aitutorproject-197c3.appspot.com
+      - key: VITE_FIREBASE_MESSAGING_SENDER_ID
+        scope: BUILD_TIME
+        type: SECRET
+      - key: VITE_FIREBASE_APP_ID
+        scope: BUILD_TIME
+        type: SECRET
