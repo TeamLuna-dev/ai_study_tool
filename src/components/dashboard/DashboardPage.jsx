@@ -59,7 +59,7 @@ export function DashboardPage() {
   }, [user]);
 
   return (
-    <div className="min-h-screen bg-[#f5f7fb]">
+    <div className="min-h-screen bg-[#f5f7fb] text-gray-900 dark:bg-gray-950 dark:text-white transition-colors duration-300">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
         {/* Hero / Welcome */}
         <DashboardWelcome profile={profile} />
@@ -79,7 +79,6 @@ export function DashboardPage() {
             />
 
             <QuizProgressChart />
-
             <RecentDocuments />
           </div>
 
@@ -87,17 +86,17 @@ export function DashboardPage() {
           <div className="space-y-6">
             {/* Profile card */}
             {profile && (
-              <div className="bg-white rounded-3xl border border-gray-200 shadow-sm p-6">
+              <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm p-6 transition-colors duration-300">
                 <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center text-blue-700 text-2xl font-bold shrink-0">
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900 dark:to-indigo-800 flex items-center justify-center text-blue-700 dark:text-blue-200 text-2xl font-bold shrink-0">
                     {profile.displayName?.charAt(0).toUpperCase()}
                   </div>
 
                   <div className="min-w-0">
-                    <h2 className="text-xl font-bold text-gray-900 truncate">
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white truncate">
                       {profile.displayName}
                     </h2>
-                    <p className="text-sm text-gray-500 truncate">
+                    <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
                       {profile.email}
                     </p>
                   </div>
@@ -105,13 +104,13 @@ export function DashboardPage() {
 
                 <div className="flex gap-3 mt-5 flex-wrap">
                   {profile.major && (
-                    <span className="text-xs font-medium bg-blue-50 text-blue-600 border border-blue-100 rounded-full px-3 py-1">
+                    <span className="text-xs font-medium bg-blue-50 text-blue-600 border border-blue-100 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-800 rounded-full px-3 py-1">
                       {profile.major}
                     </span>
                   )}
 
                   {profile.academicLevel && (
-                    <span className="text-xs font-medium bg-gray-50 text-gray-600 border border-gray-200 rounded-full px-3 py-1">
+                    <span className="text-xs font-medium bg-gray-50 text-gray-600 border border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700 rounded-full px-3 py-1">
                       {{
                         high_school: "High School",
                         undergraduate: "Undergraduate",
@@ -124,31 +123,31 @@ export function DashboardPage() {
             )}
 
             {/* Progress card */}
-            <div className="bg-white rounded-3xl border border-gray-200 shadow-sm p-6">
-              <h2 className="text-xl font-bold text-gray-900">
+            <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm p-6 transition-colors duration-300">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                 Today’s Progress
               </h2>
 
-              <p className="mt-3 text-sm text-gray-500">
+              <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">
                 Daily Goal: 1 summary & 1 quiz
               </p>
 
               <div className="mt-4">
-                <div className="w-full bg-gray-200 h-3 rounded-full overflow-hidden">
-                  <div className="bg-gradient-to-r from-blue-500 to-indigo-500 h-3 rounded-full w-[10%]" />
+                <div className="w-full bg-gray-200 dark:bg-gray-700 h-3 rounded-full overflow-hidden">
+                  <div className="bg-gradient-to-r from-blue-500 to-indigo-500 h-3 rounded-full w-[10%]"/>
                 </div>
               </div>
 
-              <div className="flex justify-between text-sm text-gray-500 mt-2">
+              <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400 mt-2">
                 <span>0%</span>
                 <span>Goal progress</span>
               </div>
 
-              <div className="mt-5 inline-flex items-center rounded-full bg-orange-50 text-orange-600 px-3 py-1 text-sm font-medium">
+              <div className="mt-5 inline-flex items-center rounded-full bg-orange-50 text-orange-600 dark:bg-orange-900/30 dark:text-orange-300 px-3 py-1 text-sm font-medium">
                 🔥 0 day streak
               </div>
 
-              <p className="mt-5 text-gray-600 leading-7">
+              <p className="mt-5 text-gray-600 dark:text-gray-300 leading-7">
                 Review your notes and generate a quiz to make progress toward
                 your study goal.
               </p>

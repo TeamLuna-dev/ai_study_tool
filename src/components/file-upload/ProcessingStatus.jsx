@@ -33,25 +33,22 @@ function stageState(stageKey, pipelineStatus, errorStage) {
 }
 
 function StageIcon({ state }) {
-  if (state === "done")    return <span style={{ color: "#16a34a", fontWeight: 700 }}>✓</span>;
-  if (state === "error")   return <span style={{ color: "#dc2626", fontWeight: 700 }}>✕</span>;
+  if (state === "done")    return <span className="font-bold text-green-600 dark:text-green-400">✓</span>;
+  if (state === "error")   return <span className="font-bold text-red-600 dark:text-red-400">✕</span>;
   if (state === "active")  return <Spinner />;
-  return <span style={{ color: "#94a3b8" }}>○</span>;
+  return <span className="text-slate-400 dark:text-slate-500">○</span>;
 }
 
 function Spinner() {
   return (
     <span
-      style={{
-        display: "inline-block",
-        width: "14px",
-        height: "14px",
-        border: "2px solid #6366f1",
-        borderTopColor: "transparent",
-        borderRadius: "50%",
-        animation: "spin 0.7s linear infinite",
-        verticalAlign: "middle",
-      }}
+      className="
+        inline-block h-3.5 w-3.5 align-middle
+        rounded-full border-2
+        border-indigo-500 dark:border-indigo-400
+        border-t-transparent
+        animate-spin
+      "
     />
   );
 }
@@ -72,29 +69,34 @@ export function ProcessingStatus({ pipelineStatus, pipelineError }) {
   return (
     <div
       data-testid="processing-status"
-      style={{
-        marginTop: "16px",
-        padding: "14px 16px",
-        borderRadius: "10px",
-        border: "1px solid #e2e8f0",
-        background: "#f8fafc",
-        fontSize: "0.875rem",
-        color: "#334155",
-      }}
+      className="
+        mt-4 rounded-2xl border
+        border-slate-200 dark:border-slate-700
+        bg-slate-50 dark:bg-slate-900
+        p-4 text-sm
+        text-slate-700 dark:text-slate-200
+        transition-colors
+      "
     >
-      <p style={{ margin: "0 0 10px", fontWeight: 600, color: "#1e293b" }}>
+      <p  className="mb-3 font-semibold text-slate-800 dark:text-slate-100">
         {isDone          ? "Processing complete"      :
          isPendingReview ? "Text extracted — review below" :
                            "Processing…"}
       </p>
 
-      <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: "8px" }}>
+      <ul className="flex flex-col gap-2">
         {STAGES.map(({ key, label }) => {
           const state = stageState(key, pipelineStatus, errorStage);
           return (
-            <li key={key} style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <li key={key} className="flex items-center gap-3">
               <StageIcon state={state} />
-              <span style={{ color: state === "error" ? "#dc2626" : state === "pending" ? "#94a3b8" : "#1e293b" }}>
+              <span  className={
+                  state === "error"
+                    ? "text-red-600 dark:text-red-400"
+                    : state === "pending"
+                    ? "text-slate-400 dark:text-slate-500"
+                    : "text-slate-800 dark:text-slate-100"
+                }>
                 {label}
               </span>
             </li>
@@ -105,14 +107,13 @@ export function ProcessingStatus({ pipelineStatus, pipelineError }) {
       {pipelineError && (
         <p
           role="alert"
-          style={{
-            margin: "12px 0 0",
-            padding: "8px 12px",
-            borderRadius: "6px",
-            background: "#fef2f2",
-            border: "1px solid #fca5a5",
-            color: "#991b1b",
-          }}
+          className="
+            mt-3 rounded-lg border
+            border-red-300 dark:border-red-800
+            bg-red-50 dark:bg-red-900/20
+            px-3 py-2
+            text-red-800 dark:text-red-300
+          "
         >
           <strong>Error during {pipelineError.stage}:</strong> {pipelineError.message}
         </p>

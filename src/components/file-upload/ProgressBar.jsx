@@ -19,33 +19,29 @@ export function ProgressBar({ progress, visible }) {
       aria-valuemin={0}
       aria-valuemax={100}
       aria-label="Upload progress"
-      style={{
-        background: "#e2e8f0",    // track color
-        borderRadius: "999px",
-        height: "8px",
-        overflow: "hidden",
-        margin: "16px 0 8px",
-      }}
+      className="my-4"
+    >
+      {/* Track */}
+      <div
+        className="
+          h-2 w-full overflow-hidden rounded-full
+          bg-slate-200 dark:bg-slate-700
+        "
     >
       {/* The filled portion — width is driven by the progress prop */}
       <div
-        style={{
-          width: `${progress}%`,
-          height: "100%",
-          background: "linear-gradient(90deg, #6366f1, #8b5cf6)",
-          borderRadius: "999px",
-          transition: "width 0.3s ease",    // smooth fill animation
-        }}
-      />
-      {/* Percentage label beneath the bar */}
-      <p
-        style={{
-          margin: "4px 0 0",
-          fontSize: "0.78rem",
-          color: "#64748b",
-          textAlign: "right",
-        }}
-      >
+          className="
+            h-full rounded-full
+            bg-gradient-to-r from-indigo-500 to-purple-500
+            dark:from-indigo-400 dark:to-purple-400
+            transition-all duration-300 ease-out
+          "
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+
+      {/* Percentage */}
+      <p className="mt-1 text-right text-xs text-slate-500 dark:text-slate-400">
         {progress}%
       </p>
     </div>

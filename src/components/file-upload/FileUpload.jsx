@@ -64,16 +64,24 @@ export function FileUpload({ onUploadSuccess, onUploadError, uploadFn, getAuthTo
   }, [status, message, onUploadError]);
 
   return (
-    <section aria-label="File upload" className="max-w-2xl mx-auto text-slate-800">
-      <div className="rounded-3xl border-2 border-dashed border-blue-200 bg-blue-50/40 p-8 text-center hover:border-blue-400 hover:bg-blue-100/40 transition">
+    <section aria-label="File upload" className="max-w-2xl mx-auto text-gray-800 dark:text-gray-200 transition-colors">
+      <div className="
+        rounded-3xl border-2 border-dashed
+        border-blue-200 dark:border-blue-900/40
+        bg-blue-50/40 dark:bg-blue-900/10
+        p-8 text-center
+        hover:border-blue-400 dark:hover:border-blue-500
+        hover:bg-blue-100/40 dark:hover:bg-blue-900/20
+        transition
+      ">
         <DropZone onFileSelect={handleFileSelect} disabled={isUploading} />
       </div>
 
       {selectedFile && !isSuccess && (
-        <div className="mt-4 flex items-center gap-2 text-sm text-slate-600">
+        <div className="mt-4 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
           <span className="text-base">📄</span>
           <span className="truncate font-medium">{selectedFile.name}</span>
-          <span className="text-slate-400">
+          <span className="text-gray-400 dark:text-gray-500">
             ({formatFileSize(selectedFile.size)})
           </span>
         </div>
@@ -95,7 +103,12 @@ export function FileUpload({ onUploadSuccess, onUploadError, uploadFn, getAuthTo
       </div>
 
       {showOcrReview && (
-        <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="
+          mt-6 rounded-3xl
+          border border-gray-200 dark:border-gray-700
+          bg-white dark:bg-gray-900
+          p-5 shadow-sm transition-colors
+        ">
           <OcrTextReview
             docId={docId}
             extractedText={ocrText}
@@ -110,7 +123,12 @@ export function FileUpload({ onUploadSuccess, onUploadError, uploadFn, getAuthTo
             type="button"
             onClick={handleUpload}
             data-testid="upload-button"
-            className="rounded-xl bg-blue-600 px-5 py-2.5 font-semibold text-white shadow-sm hover:bg-blue-700 active:scale-95 transition"
+            className="
+              rounded-xl px-5 py-2.5 font-semibold text-white
+              bg-blue-600 hover:bg-blue-700
+              dark:bg-blue-500 dark:hover:bg-blue-400
+              shadow-sm active:scale-95 transition
+            "
           >
             Upload
           </button>
@@ -121,7 +139,12 @@ export function FileUpload({ onUploadSuccess, onUploadError, uploadFn, getAuthTo
             type="button"
             onClick={handleCancel}
             data-testid="cancel-button"
-            className="rounded-xl bg-red-500 px-5 py-2.5 font-semibold text-white shadow-sm hover:bg-red-600 active:scale-95 transition"
+            className="
+              rounded-xl px-5 py-2.5 font-semibold text-white
+              bg-red-500 hover:bg-red-600
+              dark:bg-red-500 dark:hover:bg-red-400
+              shadow-sm active:scale-95 transition
+            "
           >
             Cancel
           </button>
@@ -132,7 +155,12 @@ export function FileUpload({ onUploadSuccess, onUploadError, uploadFn, getAuthTo
             type="button"
             onClick={reset}
             data-testid="reset-button"
-            className="rounded-xl bg-slate-500 px-5 py-2.5 font-semibold text-white shadow-sm hover:bg-slate-600 active:scale-95 transition"
+            className="
+              rounded-xl px-5 py-2.5 font-semibold text-white
+              bg-gray-500 hover:bg-gray-600
+              dark:bg-gray-700 dark:hover:bg-gray-600
+              shadow-sm active:scale-95 transition
+            "
           >
             {isSuccess ? "Upload Another" : "Try Again"}
           </button>

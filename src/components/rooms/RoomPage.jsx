@@ -65,15 +65,20 @@ export function RoomPage() {
 
   if (error || !room) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center gap-4">
-        <p className="text-gray-600">
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-gray-50 dark:bg-gray-950 transition-colors">
+        <p className="text-gray-600 dark:text-gray-400">
           {error?.code === "permission-denied"
             ? "You don't have access to this room."
             : "Room not found."}
         </p>
         <button
           onClick={() => navigate("/rooms")}
-          className="flex items-center gap-2 text-primary-600 hover:text-primary-700 text-sm font-medium"
+          className="
+            flex items-center gap-2 text-sm font-medium
+            text-blue-600 hover:text-blue-700
+            dark:text-blue-400 dark:hover:text-blue-300
+            transition
+          "
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Rooms
@@ -83,26 +88,35 @@ export function RoomPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
+      <header className="sticky top-0 z-50 border-b bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3 h-16">
             <button
               onClick={() => navigate("/rooms")}
-              className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              className="
+                p-2 rounded-lg transition
+                text-gray-500 hover:text-gray-700 hover:bg-gray-100
+                dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-800
+              "
               aria-label="Back to rooms"
             >
               <ArrowLeft className="h-5 w-5" />
             </button>
-            <span className="text-lg font-semibold text-gray-900 truncate flex-1">
+            <span className="flex-1 truncate text-lg font-semibold text-gray-900 dark:text-gray-100">
               {room.name}
             </span>
             {isOwner ? (
               <button
                 onClick={handleDeleteRoom}
                 disabled={deleting}
-                className="text-red-500 hover:text-red-700 text-sm font-medium"
+                className="
+                  text-sm font-medium
+                  text-red-500 hover:text-red-700
+                  dark:text-red-400 dark:hover:text-red-300
+                  transition disabled:opacity-50
+                "
               >
                 {deleting ? 'Deleting…' : 'Delete Room'}
               </button>
@@ -110,7 +124,12 @@ export function RoomPage() {
               <button
                 onClick={handleLeaveRoom}
                 disabled={leaving}
-                className="text-gray-500 hover:text-gray-700 text-sm font-medium"
+                className="
+                  text-sm font-medium
+                  text-gray-500 hover:text-gray-700
+                  dark:text-gray-400 dark:hover:text-gray-200
+                  transition disabled:opacity-50
+                "
               >
                 {leaving ? 'Leaving…' : 'Leave Room'}
               </button>

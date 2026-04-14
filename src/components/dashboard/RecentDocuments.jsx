@@ -14,15 +14,15 @@ import { useRecentDocuments } from "../../hooks/useRecentDocuments";
 // ── File-type badge styles ──────────────────────────────────────────────────
 
 const FILE_TYPE_STYLES = {
-  pdf:  { bg: "bg-red-100",    text: "text-red-700"    },
-  pptx: { bg: "bg-orange-100", text: "text-orange-700" },
-  docx: { bg: "bg-blue-100",   text: "text-blue-700"   },
-  png:  { bg: "bg-green-100",  text: "text-green-700"  },
-  jpg:  { bg: "bg-green-100",  text: "text-green-700"  },
-  jpeg: { bg: "bg-green-100",  text: "text-green-700"  },
+  pdf:  { bg: "bg-red-100 dark:bg-red-900/30",    text: "text-red-700 dark:text-red-300" },
+  pptx: { bg: "bg-orange-100 dark:bg-orange-900/30", text: "text-orange-700 dark:text-orange-300" },
+  docx: { bg: "bg-blue-100 dark:bg-blue-900/30",   text: "text-blue-700 dark:text-blue-300" },
+  png:  { bg: "bg-green-100 dark:bg-green-900/30", text: "text-green-700 dark:text-green-300" },
+  jpg:  { bg: "bg-green-100 dark:bg-green-900/30", text: "text-green-700 dark:text-green-300" },
+  jpeg: { bg: "bg-green-100 dark:bg-green-900/30", text: "text-green-700 dark:text-green-300" },
 };
 
-const DEFAULT_BADGE = { bg: "bg-gray-100", text: "text-gray-700" };
+const DEFAULT_BADGE = { bg: "bg-gray-100 dark:bg-gray-800", text: "text-gray-700 dark:text-gray-300" };
 
 function FileTypeBadge({ fileType }) {
   const type = (fileType ?? "").toLowerCase();
@@ -58,22 +58,28 @@ function formatRelativeTime(timestamp) {
 
 function RecentDocumentCard({ doc, onResume }) {
   return (
-    <div className="flex items-center justify-between gap-4 p-4 rounded-2xl border border-gray-100 bg-white hover:shadow-md hover:-translate-y-[2px] transition-all duration-300">
+    <div className="
+      flex items-center justify-between gap-4 p-4 rounded-2xl
+      border border-gray-100 dark:border-gray-700
+      bg-white dark:bg-gray-900
+      hover:shadow-md hover:-translate-y-[2px]
+      transition-all duration-300
+    ">
       <div className="flex items-center gap-4 flex-1 min-w-0">
 
         {/* Icon */}
-        <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-xl">
+        <div className="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-xl">
           📄
         </div>
 
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-gray-900 truncate">
+          <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
             {doc.fileName ?? "Untitled document"}
           </p>
 
         <div className="flex items-center gap-2 mt-1">
           <FileTypeBadge fileType={doc.fileType} />
-          <span className="text-xs text-gray-400">
+          <span className="text-xs text-gray-400 dark:text-gray-500">
             {formatRelativeTime(doc.lastAccessed)}
           </span>
         </div>
@@ -82,7 +88,14 @@ function RecentDocumentCard({ doc, onResume }) {
 
       <button
         onClick={() => onResume(doc.id)}
-        className="shrink-0 text-sm font-medium text-blue-600 hover:text-blue-700 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-colors"
+        className="
+          shrink-0 text-sm font-medium
+          text-blue-600 dark:text-blue-400
+          hover:text-blue-700 dark:hover:text-blue-300
+          px-3 py-1.5 rounded-lg
+          hover:bg-blue-50 dark:hover:bg-blue-900/30
+          transition-colors
+        "
       >
         Resume
       </button>
@@ -94,16 +107,20 @@ function RecentDocumentCard({ doc, onResume }) {
 
 function EmptyRecentDocuments() {
   return (
-    <div className="flex flex-col items-center justify-center py-12 text-center border-2 border-dashed border-gray-200 rounded-2xl">
-      <div className="w-20 h-20 rounded-2xl bg-blue-50 flex items-center justify-center text-4xl mb-4">
+    <div className="
+      flex flex-col items-center justify-center py-12 text-center
+      border-2 border-dashed border-gray-200 dark:border-gray-700
+      rounded-2xl
+    ">
+      <div className="w-20 h-20 rounded-2xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-4xl mb-4">
         📚
       </div>
 
-      <p className="text-lg font-semibold text-gray-700">
+      <p className="text-lg font-semibold text-gray-700 dark:text-gray-200">
         No recent activity yet
       </p>
 
-      <p className="text-gray-500 mt-2 max-w-sm">
+      <p className="text-gray-500 dark:text-gray-400 mt-2 max-w-sm">
         Upload your first document to start generating summaries and quizzes.
       </p>
     </div>
@@ -122,11 +139,18 @@ export function RecentDocuments() {
   };
 
   return (
-    <div className="bg-white rounded-3xl border border-gray-200 shadow-sm p-6">
+    <div className="
+      bg-white dark:bg-gray-900
+      rounded-3xl
+      border border-gray-200 dark:border-gray-700
+      shadow-sm
+      p-6
+      transition-colors
+    ">
       
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
-        <h2 className="text-xl font-bold text-gray-900">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white">
           Recent Activity
         </h2>
       </div>
@@ -137,14 +161,14 @@ export function RecentDocuments() {
           {[1, 2, 3].map((n) => (
             <div
               key={n}
-              className="animate-pulse flex items-center gap-4 p-4 rounded-2xl border border-gray-100"
+              className="animate-pulse flex items-center gap-4 p-4 rounded-2xl border border-gray-100 dark:border-gray-700"
             >
-              <div className="w-12 h-12 bg-gray-200 rounded-xl" />
+              <div className="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-xl" />
               <div className="flex-1 space-y-2">
-                <div className="h-4 bg-gray-200 rounded w-2/3" />
-                <div className="h-3 bg-gray-100 rounded w-1/3" />
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3" />
+                <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded w-1/3" />
               </div>
-              <div className="h-8 w-16 bg-gray-100 rounded-lg" />
+              <div className="h-8 w-16 bg-gray-100 dark:bg-gray-800 rounded-lg" />
             </div>
           ))}
         </div>

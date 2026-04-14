@@ -16,25 +16,22 @@ import { UPLOAD_STATUS } from "../../hooks/useFileUpload";
 
 const ALERT_CONFIG = {
   [UPLOAD_STATUS.SUCCESS]: {
-    background: "#f0fdf4",    // green tint
-    border: "#86efac",
-    color: "#166534",
-    icon: "✓",
+   icon: "✓",
     role: "status",
+    container:
+      "border-green-300 bg-green-50 text-green-800 dark:border-green-800 dark:bg-green-900/20 dark:text-green-300",
   },
   [UPLOAD_STATUS.ERROR]: {
-    background: "#fef2f2",    // red tint
-    border: "#fca5a5",
-    color: "#991b1b",
     icon: "✕",
-    role: "alert",   // interrupts screen renders immediately
+    role: "alert",
+    container:
+      "border-red-300 bg-red-50 text-red-800 dark:border-red-800 dark:bg-red-900/20 dark:text-red-300",
   },
   [UPLOAD_STATUS.IDLE]: {
-    background: "#eff6ff",    // blue tint (used for info messages e.g. "cancelled")
-    border: "#93c5fd",
-    color: "#1e40af",
     icon: "ℹ",
     role: "status",
+    container:
+      "border-blue-300 bg-blue-50 text-blue-800 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-300",
   },
 };
 
@@ -52,21 +49,14 @@ export function StatusAlert({ status, message }) {
       role={config.role}
       aria-live="polite"
       data-testid={`alert-${status}`}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "10px",
-        marginTop: "14px",
-        padding: "10px 14px",
-        borderRadius: "8px",
-        border: `1px solid ${config.border}`,
-        background: config.background,
-        color: config.color,
-        fontSize: "0.875rem",
-      }}
+      className={`
+        mt-4 flex items-center gap-3 rounded-xl border px-4 py-2.5 text-sm
+        ${config.container}
+        transition-colors
+      `}
     >
-      <span style={{ fontWeight: 700, fontSize: "1rem" }}>{config.icon}</span>
-      <span>{message}</span>
+      <span className="text-base font-bold">{config.icon}</span>
+      <span className="leading-5">{message}</span>
     </div>
   );
 }

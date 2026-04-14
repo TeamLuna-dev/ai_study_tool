@@ -98,15 +98,27 @@ export function RoomCard({ room }) {
   return (
     <div
       onClick={() => navigate(`/rooms/${room.id}`)}
-      className="bg-white rounded-xl shadow-sm border border-gray-200 p-5 transition-all duration-200 cursor-pointer hover:shadow-md hover:border-primary-200"
+      className="
+        group cursor-pointer rounded-2xl border p-5
+        border-gray-200 bg-white
+        dark:border-gray-700 dark:bg-gray-900
+        shadow-sm transition-all duration-200
+        hover:shadow-md hover:border-blue-300 dark:hover:border-blue-500
+      "
     >
       {/* Room name */}
-      <h3 className="text-base font-semibold text-gray-900 truncate mb-3">
+      <h3 className="
+        mb-3 truncate text-base font-semibold
+        text-gray-900 dark:text-gray-100
+      ">
         {name}
       </h3>
 
       {/* Member count + created date */}
-      <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
+      <div className="
+        mb-4 flex items-center gap-4 text-sm
+        text-gray-500 dark:text-gray-400
+      ">
         <span className="flex items-center gap-1">
           <Users className="h-4 w-4" />
           {memberCount} {memberCount === 1 ? "member" : "members"}
@@ -119,7 +131,11 @@ export function RoomCard({ room }) {
 
       {/* Invite code + copy button */}
       <div className="flex items-center gap-2">
-        <span className="flex-1 px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs text-gray-600 font-mono truncate">
+        <span className="
+            flex-1 truncate rounded-lg border px-3 py-1.5 text-xs font-mono
+            border-gray-200 bg-gray-50 text-gray-600
+            dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300
+          ">
           {/* ?? renders "—" when inviteCode is null (missing field) */}
           {inviteCode ?? "—"}
         </span>
@@ -135,12 +151,18 @@ export function RoomCard({ room }) {
               ? "Copy failed"
               : "Copy invite code"
           }
-          className="shrink-0 p-1.5 rounded-lg text-gray-400 hover:text-primary-600 hover:bg-primary-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-gray-400"
+          className="
+            shrink-0 rounded-lg p-1.5 transition
+            text-gray-400 hover:text-blue-600 hover:bg-blue-50
+            dark:text-gray-500 dark:hover:text-blue-400 dark:hover:bg-blue-900/20
+            disabled:cursor-not-allowed disabled:opacity-40
+            disabled:hover:bg-transparent disabled:hover:text-gray-400
+          "
         >
           {copyState === "success" ? (
-            <Check className="h-4 w-4 text-green-500" />
+            <Check className="h-4 w-4 text-green-500 dark:text-green-400" />
           ) : copyState === "error" ? (
-            <X className="h-4 w-4 text-red-500" />
+            <X className="h-4 w-4 text-red-500 dark:text-red-400" />
           ) : (
             <Copy className="h-4 w-4" />
           )}

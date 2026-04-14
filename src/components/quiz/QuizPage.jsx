@@ -7,6 +7,7 @@
  */
 
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { generateQuiz, scoreQuiz, getWeakTopics } from "../../services/quizService";
 import { shuffleArray } from "../../utils/shuffleArray";
 import { useAuth } from "../../hooks/useAuth";
@@ -17,10 +18,20 @@ import QuizResults from "./QuizResults";
 import QuizLoadingScreen from "./QuizLoadingScreen";
 import { BRAND_BLUE, primaryButtonStyle, secondaryButtonStyle, disabledButtonStyle, layoutStyle } from "./quizStyles";
 
+const TOPIC_OPTIONS = [
+  "Math",
+  "Science",
+  "History",
+  "Programming",
+  "Biology",
+  "Chemistry",
+  "Physics",
+  "English",
+];
+
 export function QuizPage() {
   const { user } = useAuth(); // get current user for personalized analysis
-  console.log("Current user:", user); // debug log to verify user object
-  console.log("User UID:", user?.uid); 
+  const navigate = useNavigate();
   
   const analyticsUserId = user?.uid || "test-user-123"; // for  a temporary measure to connect to the backend
   const [notes, setNotes] = useState("");
@@ -245,57 +256,82 @@ export function QuizPage() {
 
   // quiz in progress...
   return (
-    <div style={layoutStyle}>
-      <div style={{ padding: 24, maxWidth: 700, width: "100%" }}>
-      <h2>
-        Question {current + 1} / {questions.length}
-      </h2>
+    <div className="min-h-screen bg-[#f5f7fb] dark:bg-gray-950 text-gray-900 dark:text-white transition-colors duration-300 flex items-center justify-center px-4 py-10">
+      <div className="w-full max-w-3xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-3xl shadow-md p-8 transition-colors">
+        <div className="flex items-center justify-between gap-4 mb-6">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Question {current + 1} / {questions.length}
+          </h2>
+          <span className="text-sm text-gray-500 dark:text-gray-400">
+            Topic: {topic || "General"}
+          </span>
+        </div>
 
-      <p style={{ fontSize: 18 }}>{q.question}</p>
+        <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden mb-8">
+          <div
+            className="h-full bg-blue-600 dark:bg-blue-500 rounded-full transition-all duration-300"
+            style={{ width: `${((current + 1) / questions.length) * 100}%` }}
+          />
+        </div>
 
-      <div style={{ display: "grid", gap: 10, marginTop: 12 }}>
-        {q.choices.map((choice, idx) => (
+        <p className="text-lg md:text-xl font-medium text-gray-900 dark:text-white">
+          {q.question}
+        </p>
+
+        <div className="grid gap-3 mt-6">
+          {q.choices.map((choice, idx) => (
+            <button
+              key={idx}
+              onClick={() => setSelected(idx)}
+              className={`p-4 rounded-2xl text-left border transition-all duration-200 ${
+                selected === idx
+                  ? "bg-blue-600 text-white border-blue-600 dark:bg-blue-500 dark:border-blue-500"
+                  : "bg-gray-100 text-gray-900 border-gray-200 hover:bg-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-700 dark:hover:bg-gray-700"
+              }`}
+            >
+              <span className="font-semibold mr-2">
+                {String.fromCharCode(65 + idx)}.
+              </span>
+              {choice}
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-5 text-sm text-gray-500 dark:text-gray-400">
+          Selected:{" "}
+          {selected === null ? "None" : String.fromCharCode(65 + selected)}
+        </div>
+
+        {error && (
+          <p className="text-red-500 dark:text-red-400 mt-4">{error}</p>
+        )}
+
+        <div className="flex gap-3 mt-8">
           <button
-            key={idx}
-            onClick={() => setSelected(idx)}
-            style={{
-              padding: "10px 12px",
-              borderRadius: 8,
-              border: "1px solid #ddd",
-              textAlign: "left",
-              backgroundColor: selected === idx ? BRAND_BLUE : "#f3f4f6",
-              color: selected === idx ? "white" : "black",
-              cursor: "pointer",
-            }}
+            onClick={handlePrevious}
+            disabled={isFirst || loadingScore}
+            className={`px-5 py-3 rounded-2xl font-semibold border transition ${
+              isFirst || loadingScore
+                ? "border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
+            }`}
           >
-            {choice}
+            Previous
           </button>
-        ))}
-      </div>
 
-      <div style={{ marginTop: 16, color: "#555" }}>
-        Selected: {selected === null ? "None" : `${String.fromCharCode(65 + selected)}`}
-      </div>
-
-      {error && <p style={{ color: "red", marginTop: 12 }}>{error}</p>}
-      <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
-        <button
-          onClick={handlePrevious}
-          disabled={isFirst || loadingScore}
-          style={{...secondaryButtonStyle, ...(isFirst || loadingScore ? disabledButtonStyle : {}),}}
-        >
-          Previous
-        </button>
-
-        <button
-          onClick={handleNext}
-          disabled={selected === null || loadingScore}
-          style={{...primaryButtonStyle, ...(selected === null || loadingScore ? disabledButtonStyle : {}),}}
-        >
-          {loadingScore ? "Scoring..." : isLast ? "Finish" : "Next"}
-        </button>
+          <button
+            onClick={handleNext}
+            disabled={selected === null || loadingScore}
+            className={`px-5 py-3 rounded-2xl font-semibold text-white transition ${
+              selected === null || loadingScore
+                ? "bg-blue-300 dark:bg-blue-800 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400"
+            }`}
+          >
+            {loadingScore ? "Scoring..." : isLast ? "Finish" : "Next"}
+          </button>
+        </div>
       </div>
     </div>
-  </div>
   );
 }
