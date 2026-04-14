@@ -176,6 +176,18 @@ export function QuizPage() {
     setQuestionCount(5); // reset to default
   }
 
+  async function handleRegenerate() {
+    setResult(null);
+    setQuiz(null);
+    setCurrent(0);
+    setSelected(null);
+    setAnswers([]);
+    setError("");
+    setWeakTopics([]);
+    setLoadingAnalysis(false);
+    await handleGenerate();
+  }
+
   function handleRetake() {
     setResult(null);
     setCurrent(0);
@@ -225,6 +237,7 @@ export function QuizPage() {
         error={error}
         handleRestart={handleRestart}
         handleRetake={handleRetake}
+        handleRegenerate={handleRegenerate}
       />
     );
   }

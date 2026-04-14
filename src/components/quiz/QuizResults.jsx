@@ -31,6 +31,7 @@ export default function QuizResults({
   error,
   handleRestart,
   handleRetake,
+  handleRegenerate,
 }) {
   return (
     <div style={layoutStyle}>
@@ -105,6 +106,11 @@ export default function QuizResults({
           {handleRetake && (
             <button onClick={handleRetake} style={primaryButtonStyle}>
               Retake Quiz
+            </button>
+          )}
+          {handleRegenerate && (
+            <button onClick={handleRegenerate} style={primaryButtonStyle}>
+              Regenerate
             </button>
           )}
           <button onClick={handleRestart} style={primaryButtonStyle}>
