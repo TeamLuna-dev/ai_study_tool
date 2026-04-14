@@ -53,6 +53,7 @@
     export const restartButtonWrapperStyle = {
         display: "flex",
         justifyContent: "center",
+        gap: 12,
         marginTop: 28,
     };
 
