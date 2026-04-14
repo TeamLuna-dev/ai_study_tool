@@ -43,35 +43,54 @@ export default function QuizAttemptDetail({ attempt, onBack }) {
         </div>
       </div>
 
-      {attempt.incorrect && attempt.incorrect.length > 0 && (
+      {Array.isArray(attempt.questions) && Array.isArray(attempt.answers) ? (
         <div>
-          <h2 className="text-xl font-bold text-white mb-3">Incorrect Answers</h2>
+          <h2 className="text-xl font-bold text-white mb-3">All Questions</h2>
           <div className="space-y-4">
-            {attempt.incorrect.map((item, idx) => (
-              <div
-                key={idx}
-                className="bg-gray-800 rounded-lg p-4 border-l-4 border-red-500"
-              >
-                <p className="text-gray-200 font-medium mb-2">
-                  Q{item.question_index + 1}: {item.question}
-                </p>
-                <p className="text-red-400 text-sm">
-                  Your answer: {item.your_answer || `Choice ${item.your_index + 1}`}
-                </p>
-                <p className="text-green-400 text-sm">
-                  Correct answer: {item.correct_choice}
-                </p>
-              </div>
-            ))}
+            {attempt.questions.map((q, idx) => {
+              const userIdx = Array.isArray(attempt.answers) ? attempt.answers[idx] : null;
+              const correctIdx = q.correct_index;
+              const isCorrect = userIdx === correctIdx;
+              return (
+                <div
+                  key={idx}
+                  className={`bg-gray-800 rounded-lg p-4 border-l-4 ${isCorrect ? 'border-green-500' : 'border-red-500'}`}
+                >
+                  <p className="text-gray-200 font-medium mb-2">
+                    Q{idx + 1}: {q.question}
+                  </p>
+                  <ul className="mb-2">
+                    {q.choices.map((choice, cidx) => (
+                      <li
+                        key={cidx}
+                        className={
+                          cidx === correctIdx
+                            ? 'text-green-400 font-semibold'
+                            : cidx === userIdx
+                            ? 'text-red-400'
+                            : 'text-gray-300'
+                        }
+                      >
+                        {String.fromCharCode(65 + cidx)}. {choice}
+                        {cidx === correctIdx ? ' (Correct)' : ''}
+                        {cidx === userIdx && cidx !== correctIdx ? ' (Your answer)' : ''}
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="text-sm">
+                    Your answer: {userIdx != null && userIdx >= 0 ? q.choices[userIdx] : <span className="text-gray-400">No answer</span>}
+                  </p>
+                  <p className="text-sm">
+                    Correct answer: {q.choices[correctIdx]}
+                  </p>
+                </div>
+              );
+            })}
           </div>
         </div>
-      )}
-
-      {(!attempt.incorrect || attempt.incorrect.length === 0) && (
+      ) : (
         <p className="text-gray-400">
-          {attempt.score === attempt.total_questions
-            ? "Perfect score! All answers were correct."
-            : "Detailed question data is not available for this attempt."}
+          Detailed question data is not available for this attempt.
         </p>
       )}
     </div>
