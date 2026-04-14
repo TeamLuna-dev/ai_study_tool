@@ -11,7 +11,7 @@ import { RecentDocuments } from "./RecentDocuments";
 import { StudyBriefCard } from "./StudyBriefCard";
 import QuizProgressChart from "../quiz/QuizProgressChart";
 import { useEffect, useState } from "react";
-import { getUserProfile } from "../../services/userService";
+import { getUserProfile, saveUserProfile } from "../../services/userService";
 import { fetchStudyBrief } from "../../services/studyBriefService";
 
 export function DashboardPage() {
@@ -20,6 +20,10 @@ export function DashboardPage() {
   const getAuthToken = user ? () => user.getIdToken() : null;
 
   const [profile, setProfile] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editForm, setEditForm] = useState({ displayName: "", major: "", academicLevel: "" });
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState(null);
   const [brief, setBrief] = useState(null);
   const [briefGeneratedAt, setBriefGeneratedAt] = useState(null);
   const [briefLoading, setBriefLoading] = useState(true);
