@@ -174,6 +174,18 @@ export function QuizPage() {
     setQuestionCount(5); // reset to default
   }
 
+    async function handleRetake() {
+    setResult(null);
+    setQuiz(null);
+    setCurrent(0);
+    setSelected(null);
+    setAnswers([]);
+    setError("");
+    setWeakTopics([]);
+    setLoadingAnalysis(false);
+    await handleGenerate();
+  }
+
   // --- UI states ---
   if (!quiz) {
   return (
@@ -206,6 +218,7 @@ export function QuizPage() {
         loadingAnalysis={loadingAnalysis}
         error={error}
         handleRestart={handleRestart}
+        handleRetake={handleRetake}
       />
     );
   }
