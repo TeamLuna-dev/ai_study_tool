@@ -97,9 +97,14 @@ export default function FileUploadPage() {
               <h3 className="text-lg font-semibold text-gray-900">
                 Recent Uploads
               </h3>
-              <p className="mt-4 text-sm text-gray-400">
-                Your uploaded study materials will appear here.
-              </p>
+              <div className="mt-4">
+                <DocumentList
+                  docs={docs}
+                  loading={loading}
+                  error={error}
+                  onDelete={handleDelete}
+                />
+              </div>
             </div>
           </div>
 
