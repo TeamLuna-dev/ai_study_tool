@@ -11,7 +11,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { ref, deleteObject } from "firebase/storage";
-import { db, storage } from "../config/firebase";
+import { db, storage, auth } from "../config/firebase";
 import { deleteRoom, leaveRoom } from "./roomService";
 
 /**
@@ -123,4 +123,26 @@ export async function deleteUserRooms(uid, idToken) {
       }
     })
   );
+}
+
+/**
+ * Fully deletes a user's account:
+ *   1. Deletes all owned documents (Firestore + Storage)
+ *   2. Deletes all quiz attempts
+ *   3. Leaves or deletes all rooms
+ *   4. Deletes the Firestore user profile
+ *   5. Deletes the Firebase Auth account
+ *
+ * Note: Firebase Auth may throw `auth/requires-recent-login` if the session
+ * is stale. The caller should catch this and prompt re-authentication.
+ *
+ * @param {string} uid
+ * @param {string} idToken  Firebase ID token for backend auth (needed for room cleanup)
+ */
+export async function deleteUserAccount(uid, idToken) {
+  await deleteUserDocuments(uid);
+  await deleteUserQuizAttempts(uid);
+  await deleteUserRooms(uid, idToken);
+  await deleteDoc(doc(db, "users", uid));
+  await auth.currentUser.delete();
 }
