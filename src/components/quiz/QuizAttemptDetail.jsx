@@ -11,13 +11,21 @@ export default function QuizAttemptDetail({ attempt, onBack }) {
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-6 py-8">
-      <div className="flex items-center justify-between mb-2">
-        <h1 className="text-3xl font-bold text-white">Quiz Attempt Details</h1>
+    <div className="min-h-screen bg-gray-50 px-6 py-8 text-gray-900 transition-colors dark:bg-gray-950 dark:text-white">
+      <div className="mx-auto max-w-3xl">
+       <div className="mb-2 flex items-center justify-between gap-4">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            Quiz Attempt Details
+          </h1>
+
         {Array.isArray(attempt.questions) && attempt.questions.length > 0 && (
           <button
             onClick={handleRetakeQuiz}
-            className="ml-4 px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow"
+            className="
+                ml-4 rounded-xl bg-blue-600 px-4 py-2 font-semibold text-white shadow
+                transition hover:bg-blue-700
+                dark:bg-blue-500 dark:hover:bg-blue-400
+              "
           >
             Retake Quiz
           </button>
@@ -25,35 +33,42 @@ export default function QuizAttemptDetail({ attempt, onBack }) {
       </div>
       <button
         onClick={onBack}
-        className="text-blue-400 hover:text-blue-300 mb-4 inline-block"
+        className="
+            mb-4 inline-block text-blue-600 transition hover:text-blue-700
+            dark:text-blue-400 dark:hover:text-blue-300
+          "
       >
         ← Back to Quiz History
       </button>
 
       <h1 className="text-3xl font-bold text-white mb-2">Quiz Attempt Details</h1>
 
-      <div className="bg-gray-800 rounded-lg p-6 mb-6 shadow">
-        <div className="grid grid-cols-2 gap-4 text-gray-200">
+      <div className="mb-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+        <div className="grid grid-cols-1 gap-4 text-gray-800 dark:text-gray-200 sm:grid-cols-2">
           <div>
-            <span className="text-gray-400 text-sm">Topic</span>
+            <span className="text-sm text-gray-500 dark:text-gray-400">Topic</span>
             <p className="text-lg font-semibold">{attempt.topic || "—"}</p>
           </div>
           <div>
-            <span className="text-gray-400 text-sm">Date</span>
+            <span className="text-sm text-gray-500 dark:text-gray-400">Date</span>
             <p className="text-lg font-semibold">
               {attempt.timestamp
                 ? new Date(attempt.timestamp).toLocaleString()
                 : "—"}
             </p>
           </div>
+
           <div>
-            <span className="text-gray-400 text-sm">Score</span>
+            <span className="text-sm text-gray-500 dark:text-gray-400">Score</span>
             <p className="text-lg font-semibold">
               {attempt.score}/{attempt.total_questions}
             </p>
           </div>
+
           <div>
-            <span className="text-gray-400 text-sm">Percentage</span>
+            <span className="text-sm text-gray-500 dark:text-gray-400">
+                Percentage
+              </span>
             <p className="text-lg font-semibold">
               {attempt.percentage != null
                 ? `${attempt.percentage.toFixed(1)}%`
@@ -65,30 +80,39 @@ export default function QuizAttemptDetail({ attempt, onBack }) {
 
       {Array.isArray(attempt.questions) && Array.isArray(attempt.answers) ? (
         <div>
-          <h2 className="text-xl font-bold text-white mb-3">All Questions</h2>
+
+          <h2 className="mb-3 text-xl font-bold text-gray-900 dark:text-white">
+              All Questions
+            </h2>
+
           <div className="space-y-4">
             {attempt.questions.map((q, idx) => {
               const userIdx = Array.isArray(attempt.answers) ? attempt.answers[idx] : null;
               const correctIdx = q.correct_index;
               const isCorrect = userIdx === correctIdx;
+
               return (
                 <div
                   key={idx}
-                  className={`bg-gray-800 rounded-lg p-4 border-l-4 ${isCorrect ? 'border-green-500' : 'border-red-500'}`}
+                  className={`rounded-2xl border-l-4 border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-900 ${
+                      isCorrect
+                        ? "border-l-green-500"
+                        : "border-l-red-500"
+                    }`}
                 >
-                  <p className="text-gray-200 font-medium mb-2">
+                  <p className="mb-2 font-medium text-gray-900 dark:text-gray-100">
                     Q{idx + 1}: {q.question}
                   </p>
-                  <ul className="mb-2">
+                  <ul className="mb-2 space-y-1">
                     {q.choices.map((choice, cidx) => (
                       <li
                         key={cidx}
                         className={
                           cidx === correctIdx
-                            ? 'text-green-400 font-semibold'
+                            ? "font-semibold text-green-600 dark:text-green-400"
                             : cidx === userIdx
-                            ? 'text-red-400'
-                            : 'text-gray-300'
+                            ? "text-red-600 dark:text-red-400"
+                            : "text-gray-700 dark:text-gray-300"
                         }
                       >
                         {String.fromCharCode(65 + cidx)}. {choice}
@@ -97,10 +121,18 @@ export default function QuizAttemptDetail({ attempt, onBack }) {
                       </li>
                     ))}
                   </ul>
-                  <p className="text-sm">
-                    Your answer: {userIdx != null && userIdx >= 0 ? q.choices[userIdx] : <span className="text-gray-400">No answer</span>}
-                  </p>
-                  <p className="text-sm">
+                  <p className="text-sm text-gray-700 dark:text-gray-300">
+                    Your answer:{" "}
+                      {userIdx != null && userIdx >= 0 ? (
+                        q.choices[userIdx]
+                      ) : (
+                        <span className="text-gray-400 dark:text-gray-500">
+                          No answer
+                        </span>
+                      )}
+                    </p>
+
+                  <p className="text-sm text-gray-700 dark:text-gray-300">
                     Correct answer: {q.choices[correctIdx]}
                   </p>
                 </div>
@@ -108,11 +140,14 @@ export default function QuizAttemptDetail({ attempt, onBack }) {
             })}
           </div>
         </div>
+          
+
       ) : (
-        <p className="text-gray-400">
+        <p className="text-gray-500 dark:text-gray-400">
           Detailed question data is not available for this attempt.
         </p>
       )}
+      </div>
     </div>
   );
 }
