@@ -32,7 +32,10 @@ def submit_quiz():
             user_id=user_id,
             topic=topic,
             score=score,
-            total_questions=total_questions
+            total_questions=total_questions,
+            questions=data.get("questions"),
+            answers=data.get("answers"),
+            incorrect=data.get("incorrect"),
         )
         return jsonify({
             "message": "Quiz saved successfully",

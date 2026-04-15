@@ -9,7 +9,8 @@ def calculate_percentage(score, total):
     return (score / total) * 100
 
 # function to save quiz attempts to Firestore, including percentage calculation and timestamp
-def save_quiz_attempt(user_id, topic, score, total_questions):
+def save_quiz_attempt(user_id, topic, score, total_questions,
+                      questions=None, answers=None, incorrect=None):
     percentage = calculate_percentage(score, total_questions)
 
     firestore_attempt = {
@@ -20,6 +21,13 @@ def save_quiz_attempt(user_id, topic, score, total_questions):
         "percentage": percentage,
         "timestamp": firestore.SERVER_TIMESTAMP
     }
+
+    if questions is not None:
+        firestore_attempt["questions"] = questions
+    if answers is not None:
+        firestore_attempt["answers"] = answers
+    if incorrect is not None:
+        firestore_attempt["incorrect"] = incorrect
 
     db.collection("quiz_attempts").add(firestore_attempt)
 
