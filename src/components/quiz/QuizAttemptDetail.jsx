@@ -1,8 +1,28 @@
+import { useNavigate } from "react-router-dom";
+
 export default function QuizAttemptDetail({ attempt, onBack }) {
+  const navigate = useNavigate();
   if (!attempt) return null;
+
+  function handleRetakeQuiz() {
+    if (Array.isArray(attempt.questions) && attempt.questions.length > 0) {
+      navigate("/quiz", { state: { questions: attempt.questions, topic: attempt.topic } });
+    }
+  }
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-8">
+      <div className="flex items-center justify-between mb-2">
+        <h1 className="text-3xl font-bold text-white">Quiz Attempt Details</h1>
+        {Array.isArray(attempt.questions) && attempt.questions.length > 0 && (
+          <button
+            onClick={handleRetakeQuiz}
+            className="ml-4 px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow"
+          >
+            Retake Quiz
+          </button>
+        )}
+      </div>
       <button
         onClick={onBack}
         className="text-blue-400 hover:text-blue-300 mb-4 inline-block"
