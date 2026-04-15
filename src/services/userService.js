@@ -1,5 +1,16 @@
-import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
-import { db } from "../config/firebase";
+import {
+  doc,
+  getDoc,
+  setDoc,
+  deleteDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+  serverTimestamp,
+} from "firebase/firestore";
+import { ref, deleteObject } from "firebase/storage";
+import { db, storage } from "../config/firebase";
 
 /**
  * Fetches the user profile from Firestore.
@@ -34,5 +45,32 @@ export async function saveUserProfile(uid, profileData) {
       updatedAt: serverTimestamp(),
     },
     { merge: true }
+  );
+}
+
+/**
+ * Deletes all documents owned by the user from both Firestore and Firebase Storage.
+ * Storage failures are logged but do not abort the Firestore cleanup.
+ *
+ * @param {string} uid
+ */
+export async function deleteUserDocuments(uid) {
+  const q = query(collection(db, "documents"), where("ownerId", "==", uid));
+  const snap = await getDocs(q);
+
+  await Promise.all(
+    snap.docs.map(async (docSnap) => {
+      const { storagePath } = docSnap.data();
+
+      if (storagePath) {
+        try {
+          await deleteObject(ref(storage, storagePath));
+        } catch (err) {
+          console.warn("[userService] Storage delete failed:", err.message);
+        }
+      }
+
+      await deleteDoc(doc(db, "documents", docSnap.id));
+    })
   );
 }
