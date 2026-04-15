@@ -11,6 +11,7 @@ import { Settings, LogOut } from "lucide-react";
 import Modal from "../common/Modal";
 import { saveUserProfile } from "../../services/userService";
 import { useAuth } from "../../hooks/useAuth";
+import { AdvancedSettingsModal } from "./AdvancedSettingsModal";
 
 export function ProfileCard({ profile, user, onProfileUpdate }) {
   const { logout } = useAuth();
@@ -19,6 +20,7 @@ export function ProfileCard({ profile, user, onProfileUpdate }) {
   const [editForm, setEditForm] = useState({ displayName: "", major: "", academicLevel: "" });
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState(null);
+  const [isAdvancedSettings, setIsAdvancedSettings] = useState(false);
 
   function handleEditOpen() {
     setEditForm({
@@ -71,6 +73,16 @@ export function ProfileCard({ profile, user, onProfileUpdate }) {
         >
           <Settings size={16} />
         </button>
+
+        <button onClick={() => setIsAdvancedSettings(true)}>
+        Advanced
+        </button>
+
+          <AdvancedSettingsModal
+          open={isAdvancedSettings}
+          onClose={() => setIsAdvancedSettings(false)}
+        />
+
 
         <button
           onClick={() => setIsConfirmingLogout(true)}
