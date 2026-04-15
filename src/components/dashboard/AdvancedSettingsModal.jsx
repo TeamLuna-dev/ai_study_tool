@@ -1,5 +1,11 @@
 import { useState } from "react";
 import Modal from "../common/Modal";
+import {
+  deleteUserDocuments,
+  deleteUserQuizAttempts,
+  deleteUserRooms,
+  deleteUserAccount,
+} from "../../services/userService";
 
 const actions = [
   {
@@ -32,18 +38,49 @@ const actions = [
   },
 ];
 
-export function AdvancedSettingsModal({ open, onClose, user }) {
-  const [confirming, setConfirming] = useState(null); // sstores the id of the action being pressed
+export function AdvancedSettingsModal({ open, onClose, user, onAccountDeleted }) {
+  const [confirming, setConfirming] = useState(null); // stores the id of the action being pressed
   const [emailInput, setEmailInput] = useState(""); // only used to confirm account deletion
+  const [loading, setLoading] = useState(false); // simple loading state to prevent multiple clicks and show progress
+  const [error, setError] = useState(null); // error message to display if action fails
 
   function handleOpenConfirm(id) {
     setConfirming(id);
     setEmailInput("");
+    setError(null);
   }
 
   function handleCancel() {
     setConfirming(null);
     setEmailInput("");
+    setError(null);
+  }
+
+  // handles all actions - documents, quizzes, rooms, and account deletion (IMPORTANT: account deletion also deletes all data, so it should be last to check)
+  async function handleAction(id) {
+    setLoading(true);
+    setError(null);
+    try {
+      const idToken = await user.getIdToken();
+      if (id === "documents") await deleteUserDocuments(user.uid);
+      if (id === "quizzes")   await deleteUserQuizAttempts(user.uid);
+      if (id === "rooms")     await deleteUserRooms(user.uid, idToken);
+      if (id === "account")   await deleteUserAccount(user.uid, idToken);
+      if (id === "account") {
+        onAccountDeleted();
+      } else {
+        setConfirming(null);
+        onClose();
+      }
+    } catch (e) {
+      if (e.code === "auth/requires-recent-login") {
+        setError("For security, please log out and sign in again before deleting your account.");
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -83,12 +120,16 @@ export function AdvancedSettingsModal({ open, onClose, user }) {
                     className="w-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
                   />
                 )}
+                {error && confirming === id && (
+                  <p className="text-xs text-red-500">{error}</p>
+                )}
                 <div className="flex gap-2">
                   <button
-                    disabled={id === "account" && emailInput !== user.email}
+                    onClick={() => handleAction(id)}
+                    disabled={loading || (id === "account" && emailInput !== user.email)}
                     className="flex-1 bg-red-600 text-white text-xs py-2 rounded-xl font-medium hover:bg-red-700 disabled:opacity-50 transition-colors"
                   >
-                    Confirm
+                    {loading ? "Processing..." : "Confirm"}
                   </button>
                   <button
                     onClick={handleCancel}
