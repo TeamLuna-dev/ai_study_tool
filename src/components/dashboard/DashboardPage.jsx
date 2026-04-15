@@ -11,6 +11,7 @@ import { RecentDocuments } from "./RecentDocuments";
 import { StudyBriefCard } from "./StudyBriefCard";
 import QuizProgressChart from "../quiz/QuizProgressChart";
 import { useEffect, useState } from "react";
+import { Settings } from "lucide-react";
 import { getUserProfile, saveUserProfile } from "../../services/userService";
 import { fetchStudyBrief } from "../../services/studyBriefService";
 
@@ -96,7 +97,7 @@ export function DashboardPage() {
                     {profile.displayName?.charAt(0).toUpperCase()}
                   </div>
 
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <h2 className="text-xl font-bold text-gray-900 dark:text-white truncate">
                       {profile.displayName}
                     </h2>
@@ -104,6 +105,10 @@ export function DashboardPage() {
                       {profile.email}
                     </p>
                   </div>
+
+                  <button className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-800 transition-colors shrink-0">
+                    <Settings size={16} />
+                  </button>
                 </div>
 
                 <div className="flex gap-3 mt-5 flex-wrap">
