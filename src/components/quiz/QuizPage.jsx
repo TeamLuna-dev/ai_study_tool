@@ -7,7 +7,6 @@
  */
 
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { generateQuiz, scoreQuiz, getWeakTopics } from "../../services/quizService";
 import { shuffleArray } from "../../utils/shuffleArray";
 import { useAuth } from "../../hooks/useAuth";
@@ -34,7 +33,7 @@ export function QuizPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth(); // get current user for personalized analysis
-  const navigate = useNavigate();
+ 
   
   const analyticsUserId = user?.uid || "test-user-123"; // for  a temporary measure to connect to the backend
   const [notes, setNotes] = useState("");
