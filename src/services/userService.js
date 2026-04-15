@@ -7,6 +7,7 @@ import {
   query,
   where,
   getDocs,
+  writeBatch,
   serverTimestamp,
 } from "firebase/firestore";
 import { ref, deleteObject } from "firebase/storage";
@@ -73,4 +74,21 @@ export async function deleteUserDocuments(uid) {
       await deleteDoc(doc(db, "documents", docSnap.id));
     })
   );
+}
+
+/**
+ * Deletes all quiz attempts belonging to the user from Firestore.
+ * Uses a batch write for efficiency.
+ *
+ * @param {string} uid
+ */
+export async function deleteUserQuizAttempts(uid) {
+  const q = query(collection(db, "quiz_attempts"), where("user_id", "==", uid));
+  const snap = await getDocs(q);
+
+  if (snap.empty) return;
+
+  const batch = writeBatch(db);
+  snap.docs.forEach((d) => batch.delete(d.ref));
+  await batch.commit();
 }
