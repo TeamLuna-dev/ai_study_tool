@@ -6,9 +6,13 @@
 
 export default function LoadingSpinner() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="
+        min-h-screen flex items-center justify-center
+        bg-gray-50 dark:bg-gray-950
+        transition-colors
+      ">
       <svg
-        className="animate-spin h-10 w-10 text-primary-600"
+        className="h-10 w-10 animate-spin text-blue-600 dark:text-blue-400"
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
