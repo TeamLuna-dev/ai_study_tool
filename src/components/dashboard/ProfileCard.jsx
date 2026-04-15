@@ -15,6 +15,7 @@ import { useAuth } from "../../hooks/useAuth";
 export function ProfileCard({ profile, user, onProfileUpdate }) {
   const { logout } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
+  const [isConfirmingLogout, setIsConfirmingLogout] = useState(false);
   const [editForm, setEditForm] = useState({ displayName: "", major: "", academicLevel: "" });
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState(null);
@@ -72,7 +73,7 @@ export function ProfileCard({ profile, user, onProfileUpdate }) {
         </button>
 
         <button
-          onClick={logout}
+          onClick={() => setIsConfirmingLogout(true)}
           className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:text-red-400 dark:hover:bg-red-900/20 transition-colors shrink-0"
         >
           <LogOut size={16} />
@@ -99,6 +100,29 @@ export function ProfileCard({ profile, user, onProfileUpdate }) {
         )}
       </div>
     </div>
+
+    <Modal open={isConfirmingLogout} onClose={() => setIsConfirmingLogout(false)}>
+      <div className="p-6 space-y-4">
+        <div>
+          <h2 className="text-base font-semibold text-gray-900 dark:text-white">Log out</h2>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Are you sure you want to log out?</p>
+        </div>
+        <div className="flex gap-2 pt-1">
+          <button
+            onClick={logout}
+            className="flex-1 bg-red-600 text-white text-sm py-2 rounded-xl font-medium hover:bg-red-700 transition-colors"
+          >
+            Log out
+          </button>
+          <button
+            onClick={() => setIsConfirmingLogout(false)}
+            className="flex-1 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 text-sm py-2 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </Modal>
 
     <Modal open={isEditing} onClose={() => setIsEditing(false)}>
       <div className="p-6 space-y-4">
