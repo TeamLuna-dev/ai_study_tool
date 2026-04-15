@@ -63,7 +63,7 @@ export function ProfileCard({ profile, user, onProfileUpdate }) {
         </div>
 
         <button
-          onClick={() => setIsEditing(true)}
+          onClick={handleEditOpen}
           className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-800 transition-colors shrink-0"
         >
           <Settings size={16} />
@@ -90,9 +90,71 @@ export function ProfileCard({ profile, user, onProfileUpdate }) {
     </div>
 
     <Modal open={isEditing} onClose={() => setIsEditing(false)}>
-      <div className="p-6">
-        <h2 className="text-base font-semibold text-gray-900 dark:text-white">Edit Profile</h2>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Update your profile information.</p>
+      <div className="p-6 space-y-4">
+        <div>
+          <h2 className="text-base font-semibold text-gray-900 dark:text-white">Edit Profile</h2>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Update your profile information.</p>
+        </div>
+
+        <div>
+          <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Name</label>
+          <input
+            className="mt-1 w-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={editForm.displayName}
+            onChange={(e) => setEditForm((f) => ({ ...f, displayName: e.target.value }))}
+          />
+        </div>
+
+        <div>
+          <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Subject / Major</label>
+          <select
+            className="mt-1 w-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={editForm.major}
+            onChange={(e) => setEditForm((f) => ({ ...f, major: e.target.value }))}
+          >
+            <option value="">Select...</option>
+            {["Biology", "Business", "Computer Science", "Economics", "Engineering", "Mathematics", "Psychology", "Philosophy", "Other"].map((m) => (
+              <option key={m} value={m}>{m}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Academic Level</label>
+          <div className="flex gap-2 mt-1">
+            {[["high_school", "High School"], ["undergraduate", "Undergraduate"], ["graduate", "Graduate"]].map(([val, label]) => (
+              <button
+                key={val}
+                onClick={() => setEditForm((f) => ({ ...f, academicLevel: val }))}
+                className={`flex-1 text-xs py-2 rounded-xl border font-medium transition-colors ${
+                  editForm.academicLevel === val
+                    ? "bg-blue-600 text-white border-blue-600"
+                    : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-blue-300"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {saveError && <p className="text-xs text-red-500">{saveError}</p>}
+
+        <div className="flex gap-2 pt-1">
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="flex-1 bg-blue-600 text-white text-sm py-2 rounded-xl font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors"
+          >
+            {saving ? "Saving..." : "Save"}
+          </button>
+          <button
+            onClick={() => setIsEditing(false)}
+            className="flex-1 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 text-sm py-2 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
       </div>
     </Modal>
     </>
