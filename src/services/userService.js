@@ -12,6 +12,7 @@ import {
 } from "firebase/firestore";
 import { ref, deleteObject } from "firebase/storage";
 import { db, storage } from "../config/firebase";
+import { deleteRoom, leaveRoom } from "./roomService";
 
 /**
  * Fetches the user profile from Firestore.
@@ -91,4 +92,35 @@ export async function deleteUserQuizAttempts(uid) {
   const batch = writeBatch(db);
   snap.docs.forEach((d) => batch.delete(d.ref));
   await batch.commit();
+}
+
+/**
+ * Removes the user from all rooms they belong to.
+ * - Owner (ownerId === uid): deletes the room via the backend.
+ * - Member: leaves the room via the backend.
+ * Failures on individual rooms are logged but do not abort the rest.
+ *
+ * @param {string} uid
+ * @param {string} idToken  Firebase ID token for backend auth
+ */
+export async function deleteUserRooms(uid, idToken) {
+  const q = query(collection(db, "rooms"), where("members", "array-contains", uid));
+  const snap = await getDocs(q);
+
+  await Promise.all(
+    snap.docs.map(async (roomSnap) => {
+      const roomId = roomSnap.id;
+      const { ownerId } = roomSnap.data();
+
+      try {
+        if (ownerId === uid) {
+          await deleteRoom(idToken, roomId);
+        } else {
+          await leaveRoom(idToken, roomId, uid);
+        }
+      } catch (err) {
+        console.warn(`[userService] Room ${roomId} cleanup failed:`, err.message);
+      }
+    })
+  );
 }
