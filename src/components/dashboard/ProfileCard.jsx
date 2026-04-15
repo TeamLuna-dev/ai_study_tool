@@ -1,6 +1,11 @@
 import { Settings } from "lucide-react";
+import { saveUserProfile } from "../../services/userService";
 
 export function ProfileCard({ profile, user, onProfileUpdate }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editForm, setEditForm] = useState({ displayName: "", major: "", academicLevel: "" });
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState(null);
   return (
     <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm p-6 transition-colors duration-300">
       <div className="flex items-center gap-4">
