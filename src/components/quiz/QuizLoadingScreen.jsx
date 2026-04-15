@@ -1,15 +1,26 @@
-import { layoutStyle } from "./quizStyles";
-
 export default function QuizLoadingScreen({ topic, questionCount }) {
   return (
-    <div style={layoutStyle}>
-      <div style={{ textAlign: "center" }}>
-        <div style={{ fontSize: 48, marginBottom: 16 }}>⚙️</div>
-        <h2 style={{ fontSize: 24, fontWeight: 700, color: "#111827", marginBottom: 8 }}>
+    <div className="
+        min-h-screen flex items-center justify-center px-4
+        bg-gray-50 dark:bg-gray-950
+        text-gray-900 dark:text-white
+        transition-colors
+      ">
+      <div className="text-center">
+        {/* Icon */}
+        <div className="mb-4 text-5xl animate-spin">⚙️</div>
+
+        {/* Title */}
+        <h2 className="mb-2 text-2xl font-bold text-gray-900 dark:text-white">
           Generating your quiz...
         </h2>
-        <p style={{ color: "#6b7280", fontSize: 15 }}>
-          {questionCount} questions on <strong>{topic}</strong>
+
+        {/* Subtitle */}
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          {questionCount} questions on{" "}
+          <span className="font-semibold text-gray-900 dark:text-gray-100">
+            {topic}
+          </span>
         </p>
       </div>
     </div>

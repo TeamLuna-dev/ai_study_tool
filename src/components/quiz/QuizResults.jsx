@@ -8,23 +8,6 @@
  */
 
 import { useState } from "react";
-import {
-  layoutStyle,
-  primaryButtonStyle,
-  secondaryButtonStyle,
-  resultCardStyle,
-  resultHeaderStyle,
-  scoreSummaryStyle,
-  resultSectionStyle,
-  resultSectionTitleStyle,
-  restartButtonWrapperStyle,
-  reviewCardStyle,
-  reviewQuestionStyle,
-  reviewLabelStyle,
-  correctAnswerStyle,
-  incorrectAnswerStyle,
-} from "./quizStyles";
-
 
 export default function QuizResults({
   result,
@@ -38,81 +21,92 @@ export default function QuizResults({
 }) {
   const [showAnswers, setShowAnswers] = useState(false);
 
+  const pct = result.percentage;
+
+  const scoreStyle =
+    pct >= 80
+      ? "bg-green-50 border-green-200 text-green-700 dark:bg-green-900/20 dark:border-green-800 dark:text-green-300"
+      : pct >= 60
+      ? "bg-yellow-50 border-yellow-200 text-yellow-700 dark:bg-yellow-900/20 dark:border-yellow-800 dark:text-yellow-300"
+      : "bg-red-50 border-red-200 text-red-700 dark:bg-red-900/20 dark:border-red-800 dark:text-red-300";
+
   return (
-    <div className="min-h-screen bg-[#f5f7fb] dark:bg-gray-950 text-gray-900 dark:text-white transition-colors duration-300 flex items-center justify-center px-4 py-10">
-      <div className="w-full max-w-4xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-3xl shadow-md p-8 transition-colors">
+    <div className="min-h-screen flex items-center justify-center px-4 py-10 bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-white transition-colors">
+      <div className="w-full max-w-4xl rounded-3xl border border-gray-200 bg-white p-8 shadow-md dark:border-gray-700 dark:bg-gray-900">
         {/* Header */}
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            Quiz Completed
-          </h2>
+          <h2 className="mb-2 text-3xl font-bold">Quiz Completed</h2>
           <p className="text-gray-500 dark:text-gray-400">
             Here's how you did and what to focus on next
           </p>
         </div>
 
         {/* Score summary */}
-        {(() => {
-          const pct = result.percentage;
-          const color = pct >= 80 ? "#16a34a" : pct >= 60 ? "#d97706" : "#dc2626";
-          const bg   = pct >= 80 ? "#f0fdf4" : pct >= 60 ? "#fffbeb" : "#fef2f2";
-          const border = pct >= 80 ? "#bbf7d0" : pct >= 60 ? "#fde68a" : "#fecaca";
-          return (
-            <div style={{ ...scoreSummaryStyle, backgroundColor: bg, borderColor: border }}>
-              <p style={{ margin: 0, fontSize: 52, fontWeight: 800, color, lineHeight: 1 }}>
-                {pct}%
-              </p>
-              <p style={{ margin: "6px 0 0", fontSize: 18, fontWeight: 600, color }}>
-                {pct >= 80 ? "Excellent!" : pct >= 60 ? "Good job!" : "Keep practicing!"}
-              </p>
-              <p style={{ margin: "4px 0 0", fontSize: 14, color: "#6b7280" }}>
-                {result.score} / {result.total} questions correct
-              </p>
-            </div>
-          );
-        })()}
+        <div
+          className={`mb-8 rounded-2xl border p-6 text-center ${scoreStyle}`}
+        >
+          <p className="text-5xl font-extrabold">{pct}%</p>
+          <p className="mt-2 text-lg font-semibold">
+            {pct >= 80
+              ? "Excellent!"
+              : pct >= 60
+              ? "Good job!"
+              : "Keep practicing!"}
+          </p>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            {result.score} / {result.total} correct
+          </p>
+        </div>
 
         {/* Incorrect answer review */}
         {result.incorrect?.length > 0 && (
-          <div style={resultSectionStyle}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-              <h3 style={{ ...resultSectionTitleStyle, marginBottom: 0 }}>Review Incorrect Answers</h3>
+          <div className="mb-8">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-xl font-bold">Review Incorrect Answers</h3>
               <button
                 onClick={() => setShowAnswers((prev) => !prev)}
-                style={{ fontSize: 13, color: "#2563eb", background: "none", border: "none", cursor: "pointer", fontWeight: 500 }}
+                className="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400"
               >
                 {showAnswers ? "Hide answers" : "Show answers"}
               </button>
             </div>
+
+            <div className="space-y-4">
             {result.incorrect.map((x) => (
-              <div key={x.question_index} style={reviewCardStyle}>
-                <p style={reviewQuestionStyle}>
+              <div key={x.question_index} className="rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800"
+                >
+                <p className="font-medium text-gray-900 dark:text-gray-100">
                   Question {x.question_index + 1}: {x.question}
                 </p>
+
                 {showAnswers && (
-                  <>
-                    <p style={{ margin: "6px 0" }}>
-                      <span style={reviewLabelStyle}>Correct Answer: </span>
-                      <span style={correctAnswerStyle}>{x.correct_choice}</span>
-                    </p>
-                    {x.your_index !== undefined && x.your_index >= 0 && (
-                      <p style={{ margin: "6px 0" }}>
-                        <span style={reviewLabelStyle}>Your Answer: </span>
-                        <span style={incorrectAnswerStyle}>
-                          {quiz?.questions?.[x.question_index]?.choices?.[x.your_index]}
+                  <div className="mt-2 text-sm">
+                      <p>
+                        <span className="font-medium">Correct: </span>
+                        <span className="text-green-600 dark:text-green-400">
+                          {x.correct_choice}
                         </span>
                       </p>
-                    )}
-                  </>
-                )}
-              </div>
-            ))}
+
+                    {x.your_index !== undefined && x.your_index >= 0 && (
+                      <p>
+                        <span className="font-medium">Your answer: </span>
+                        <span className="text-red-600 dark:text-red-400">
+                          {quiz?.questions?.[x.question_index]?.choices?.[x.your_index]}
+                        </span>
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
         {/* Weak topic analysis — loading */}
         {loadingAnalysis && (
-          <div className="mb-8 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60 p-5">
+          <div className="mb-8 rounded-2xl border border-gray-200 bg-gray-50 p-5 dark:border-gray-700 dark:bg-gray-800">
             <p className="text-gray-600 dark:text-gray-300">
               Loading quiz analysis...
             </p>
@@ -154,21 +148,21 @@ export default function QuizResults({
         )}
 
         {error && (
-          <p className="text-red-500 dark:text-red-400 mt-3 mb-6">{error}</p>
+          <p className="mb-6 text-red-600 dark:text-red-400">{error}</p>
         )}
 
-        <div style={restartButtonWrapperStyle}>
+        <div className="flex gap-3">
           {handleRetake && (
-            <button onClick={handleRetake} style={{ ...secondaryButtonStyle, flex: 1 }}>
+            <button onClick={handleRetake} className="flex-1 rounded-2xl border border-gray-300 px-5 py-3 font-semibold hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
               Retake Quiz
             </button>
           )}
           {handleRegenerate && (
-            <button onClick={handleRegenerate} style={{ ...secondaryButtonStyle, flex: 1 }}>
+            <button onClick={handleRegenerate} className="flex-1 rounded-2xl border border-gray-300 px-5 py-3 font-semibold hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
               Regenerate
             </button>
           )}
-          <button onClick={handleRestart} style={{ ...primaryButtonStyle, flex: 1 }}>
+          <button onClick={handleRestart} className="flex-1 rounded-2xl bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400">
             Start New Quiz
           </button>
         </div>

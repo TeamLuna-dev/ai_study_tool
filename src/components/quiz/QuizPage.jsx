@@ -7,7 +7,6 @@
  */
 
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { generateQuiz, scoreQuiz, getWeakTopics } from "../../services/quizService";
 import { shuffleArray } from "../../utils/shuffleArray";
 import { useAuth } from "../../hooks/useAuth";
@@ -34,7 +33,7 @@ export function QuizPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth(); // get current user for personalized analysis
-  const navigate = useNavigate();
+ 
   
   const analyticsUserId = user?.uid || "test-user-123"; // for  a temporary measure to connect to the backend
   const [notes, setNotes] = useState("");
@@ -273,16 +272,17 @@ export function QuizPage() {
 
   // quiz in progress...
   return (
-    <div className="min-h-screen bg-[#f5f7fb] dark:bg-gray-950 text-gray-900 dark:text-white transition-colors duration-300 flex items-center justify-center px-4 py-10">
-      <div className="w-full max-w-3xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-3xl shadow-md p-8 transition-colors">
-        <div className="flex items-center justify-between gap-4 mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Question {current + 1} / {questions.length}
-          </h2>
-          <span className="text-sm text-gray-500 dark:text-gray-400">
-            Topic: {topic || "General"}
-          </span>
-        </div>
+    <div className="min-h-screen bg-gray-50 px-4 py-10 text-gray-900 transition-colors duration-300 dark:bg-gray-950 dark:text-white">
+      <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-3xl items-center justify-center">
+        <div className="w-full rounded-3xl border border-gray-200 bg-white p-8 shadow-md transition-colors dark:border-gray-700 dark:bg-gray-900">
+          <div className="mb-6 flex items-center justify-between gap-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+              Question {current + 1} / {questions.length}
+            </h2>
+            <span className="text-sm text-gray-500 dark:text-gray-400">
+              Topic: {topic || "General"}
+            </span>
+          </div>
 
         <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden mb-8">
           <div
@@ -349,6 +349,7 @@ export function QuizPage() {
           </button>
         </div>
       </div>
+    </div>
     </div>
   );
 }
