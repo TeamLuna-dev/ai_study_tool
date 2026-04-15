@@ -8,6 +8,7 @@
 
 import { useState } from "react";
 import { Settings } from "lucide-react";
+import Modal from "../common/Modal";
 import { saveUserProfile } from "../../services/userService";
 
 export function ProfileCard({ profile, user, onProfileUpdate }) {
@@ -45,6 +46,7 @@ export function ProfileCard({ profile, user, onProfileUpdate }) {
   }
 
   return (
+    <>
     <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm p-6 transition-colors duration-300">
       <div className="flex items-center gap-4">
         <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900 dark:to-indigo-800 flex items-center justify-center text-blue-700 dark:text-blue-200 text-2xl font-bold shrink-0">
@@ -61,7 +63,7 @@ export function ProfileCard({ profile, user, onProfileUpdate }) {
         </div>
 
         <button
-          onClick={handleEditOpen}
+          onClick={() => setIsEditing(true)}
           className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-800 transition-colors shrink-0"
         >
           <Settings size={16} />
@@ -86,5 +88,13 @@ export function ProfileCard({ profile, user, onProfileUpdate }) {
         )}
       </div>
     </div>
+
+    <Modal open={isEditing} onClose={() => setIsEditing(false)}>
+      <div className="p-6">
+        <h2 className="text-base font-semibold text-gray-900 dark:text-white">Edit Profile</h2>
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Update your profile information.</p>
+      </div>
+    </Modal>
+    </>
   );
 }
