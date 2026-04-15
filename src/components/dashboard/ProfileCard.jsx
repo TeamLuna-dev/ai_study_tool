@@ -7,7 +7,7 @@
  */
 
 import { useState } from "react";
-import { Settings } from "lucide-react";
+import { Settings, LogOut } from "lucide-react";
 import Modal from "../common/Modal";
 import { saveUserProfile } from "../../services/userService";
 
@@ -68,6 +68,11 @@ export function ProfileCard({ profile, user, onProfileUpdate }) {
         >
           <Settings size={16} />
         </button>
+
+        <button className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:text-red-400 dark:hover:bg-red-900/20 transition-colors shrink-0">
+          <LogOut size={16} />
+        </button>
+
       </div>
 
       <div className="flex gap-3 mt-5 flex-wrap">
