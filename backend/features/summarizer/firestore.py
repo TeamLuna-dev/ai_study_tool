@@ -22,16 +22,16 @@ def _get_db():
     return db
 
 
-def get_document_text(doc_id: str, uid: str) -> str:
+def get_document_text(doc_id: str, uid: str) -> tuple[str, str]:
     """
-    Fetches the extracted text for a document from the Firestore documents collection.
+    Fetches the extracted text and original filename for a document.
 
     Arguments:
         doc_id: Firestore document ID.
         uid:    Firebase UID of the requesting user.
 
     Returns:
-        The stored ocr_text string.
+        (ocr_text, file_name) tuple.
 
     Raises:
         DocumentNotFoundError: If the document does not exist, is not owned by the
@@ -56,10 +56,16 @@ def get_document_text(doc_id: str, uid: str) -> str:
             "Only image uploads with completed OCR are supported."
         )
 
-    return text
+    file_name = data.get("fileName") or data.get("file_name") or ""
+    return text, file_name
 
 
-def save_summary(uid: str, doc_id: str | None, summary: str) -> None:
+def save_summary(
+    uid: str,
+    doc_id: str | None,
+    summary: str,
+    file_name: str | None = None,
+) -> None:
     """
     Persists a generated summary to Firestore under users/{uid}/summaries/.
 
@@ -67,10 +73,10 @@ def save_summary(uid: str, doc_id: str | None, summary: str) -> None:
     re-summarising the same document overwrites the previous result.
 
     Arguments:
-        uid:     Firebase UID of the authenticated user.
-        doc_id:  Firestore document ID the summary was generated from, or None
-                 for raw-text summaries.
-        summary: The generated summary text.
+        uid:       Firebase UID of the authenticated user.
+        doc_id:    Firestore document ID the summary was generated from, or None.
+        summary:   The generated summary text.
+        file_name: Original filename of the source document, or None.
     """
     from google.cloud.firestore_v1 import SERVER_TIMESTAMP
 
@@ -79,6 +85,7 @@ def save_summary(uid: str, doc_id: str | None, summary: str) -> None:
         "summary":      summary,
         "generated_at": SERVER_TIMESTAMP,
         "doc_id":       doc_id,
+        "file_name":    file_name,
     }
     col = db.collection("users").document(uid).collection("summaries")
 
@@ -86,3 +93,47 @@ def save_summary(uid: str, doc_id: str | None, summary: str) -> None:
         col.document(doc_id).set(entry)
     else:
         col.add(entry)
+
+
+def get_summaries(uid: str) -> list:
+    """
+    Returns the user's last 10 summaries ordered by generation time, newest first.
+
+    Serialises Firestore timestamps to ISO-8601 strings for JSON transport.
+
+    Arguments:
+        uid: Firebase UID of the authenticated user.
+
+    Returns:
+        List of dicts with keys: id, summary, generated_at, doc_id, file_name.
+    """
+    from google.cloud.firestore_v1 import Query
+
+    db = _get_db()
+    snaps = (
+        db.collection("users")
+          .document(uid)
+          .collection("summaries")
+          .order_by("generated_at", direction=Query.DESCENDING)
+          .limit(10)
+          .stream()
+    )
+
+    result = []
+    for snap in snaps:
+        data = snap.to_dict()
+        generated_at = data.get("generated_at")
+        if hasattr(generated_at, "isoformat"):
+            generated_at = generated_at.isoformat()
+        elif generated_at is not None:
+            generated_at = str(generated_at)
+
+        result.append({
+            "id":           snap.id,
+            "summary":      data.get("summary", ""),
+            "generated_at": generated_at,
+            "doc_id":       data.get("doc_id"),
+            "file_name":    data.get("file_name"),
+        })
+
+    return result
