@@ -110,10 +110,12 @@ export async function deleteUserRooms(uid, idToken) {
   await Promise.all(
     snap.docs.map(async (roomSnap) => {
       const roomId = roomSnap.id;
-      const { ownerId } = roomSnap.data();
 
       try {
-        if (ownerId === uid) {
+        const memberSnap = await getDoc(doc(db, "rooms", roomId, "members", uid));
+        const isOwner = memberSnap.exists() && memberSnap.data().role === "owner";
+
+        if (isOwner) {
           await deleteRoom(idToken, roomId);
         } else {
           await leaveRoom(idToken, roomId, uid);

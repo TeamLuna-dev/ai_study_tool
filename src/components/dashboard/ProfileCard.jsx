@@ -74,16 +74,6 @@ export function ProfileCard({ profile, user, onProfileUpdate }) {
           <Settings size={16} />
         </button>
 
-        <button onClick={() => setIsAdvancedSettings(true)}>
-        Advanced
-        </button>
-
-          <AdvancedSettingsModal
-          open={isAdvancedSettings}
-          onClose={() => setIsAdvancedSettings(false)}
-        />
-
-
         <button
           onClick={() => setIsConfirmingLogout(true)}
           className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:text-red-400 dark:hover:bg-red-900/20 transition-colors shrink-0"
@@ -202,8 +192,21 @@ export function ProfileCard({ profile, user, onProfileUpdate }) {
             Cancel
           </button>
         </div>
+
+        <button
+          onClick={() => { setIsEditing(false); setIsAdvancedSettings(true); }}
+          className="w-full text-xs text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 transition-colors pt-1"
+        >
+          Advanced Settings
+        </button>
       </div>
     </Modal>
+    <AdvancedSettingsModal
+      open={isAdvancedSettings}
+      onClose={() => setIsAdvancedSettings(false)}
+      user={user}
+      onAccountDeleted={logout}
+    />
     </>
   );
 }

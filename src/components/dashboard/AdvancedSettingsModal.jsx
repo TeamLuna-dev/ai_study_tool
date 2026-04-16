@@ -73,6 +73,7 @@ export function AdvancedSettingsModal({ open, onClose, user, onAccountDeleted })
         onClose();
       }
     } catch (e) {
+      console.error("[AdvancedSettings] Action failed:", e);
       if (e.code === "auth/requires-recent-login") {
         setError("For security, please log out and sign in again before deleting your account.");
       } else {
