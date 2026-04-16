@@ -54,10 +54,10 @@ def _mock_summarize(summary="Key points: A, B, C."):
         return_value={"summary": summary},
     )
 
-def _mock_get_text(text="Lecture notes content."):
+def _mock_get_text(text="Lecture notes content.", file_name="notes.jpg"):
     return patch(
         "features.summarizer.routes.get_document_text",
-        return_value=text,
+        return_value=(text, file_name),
     )
 
 def _mock_get_text_missing():
@@ -154,3 +154,54 @@ class TestDocIdPath:
                 json={"doc_id": "doc-abc", "text": "Ignored text."},
             )
         mock_get.assert_called_once()
+
+
+# ---------------------------------------------------------------------------
+# History endpoint
+# ---------------------------------------------------------------------------
+
+FAKE_SUMMARIES = [
+    {"id": "s1", "summary": "Summary one.", "generated_at": "2026-04-08T10:00:00", "doc_id": "doc-1", "file_name": "notes.jpg"},
+    {"id": "s2", "summary": "Summary two.", "generated_at": "2026-04-07T09:00:00", "doc_id": None,    "file_name": None},
+]
+
+def _mock_get_summaries(summaries=None):
+    return patch(
+        "features.summarizer.routes.get_summaries",
+        return_value=summaries if summaries is not None else FAKE_SUMMARIES,
+    )
+
+
+class TestHistoryEndpoint:
+
+    def test_missing_token_returns_401(self, client):
+        with _auth_fail():
+            res = client.get("/api/summarizer/history")
+        assert res.status_code == 401
+
+    def test_returns_200_with_summaries_list(self, client):
+        with _auth_ok(), _mock_get_summaries():
+            res = client.get("/api/summarizer/history")
+        assert res.status_code == 200
+        assert "summaries" in res.get_json()
+
+    def test_returns_correct_number_of_summaries(self, client):
+        with _auth_ok(), _mock_get_summaries():
+            res = client.get("/api/summarizer/history")
+        assert len(res.get_json()["summaries"]) == len(FAKE_SUMMARIES)
+
+    def test_returns_empty_list_when_no_history(self, client):
+        with _auth_ok(), _mock_get_summaries(summaries=[]):
+            res = client.get("/api/summarizer/history")
+        data = res.get_json()
+        assert res.status_code == 200
+        assert data["summaries"] == []
+
+    def test_firestore_error_returns_500(self, client):
+        with _auth_ok(), patch(
+            "features.summarizer.routes.get_summaries",
+            side_effect=RuntimeError("Firestore unavailable"),
+        ):
+            res = client.get("/api/summarizer/history")
+        assert res.status_code == 500
+        assert "error" in res.get_json()
