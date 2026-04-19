@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { FileUpload } from "./FileUpload";
 import { AuthGate } from "./AuthGate";
 import { useAuth } from "../../hooks/useAuth";
 import { useDocuments } from "../../hooks/useDocuments";
 import DocumentList from "./DocumentList";
+import SearchFilterBar from "./SearchFilterBar";
 
 export default function FileUploadPage() {
   const { user } = useAuth();
@@ -12,7 +13,13 @@ export default function FileUploadPage() {
 
   // fetch and manage documents for the library section
   const { docs, loading, error, handleDelete } = useDocuments(user?.uid);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
 
+  const filteredDocs = docs
+    .filter(d => d.fileName.toLowerCase().includes(searchTerm.toLowerCase()))
+    .filter(d => statusFilter === '' || d.status === statusFilter);
+    
   return (
     <div className="min-h-screen bg-[#f5f7fb] text-gray-900 dark:bg-gray-950 dark:text-white transition-colors duration-300">
       {/* Hero */}
