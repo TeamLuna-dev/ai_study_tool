@@ -10,6 +10,7 @@
 
 import { useState } from "react";
 import Modal from "../common/Modal";
+import DocumentPreviewModal from "./DocumentPreviewModal";
 // maps file type to a label and Tailwind color classes
 function getFileTypeBadge(fileType) {
   if (fileType === "pdf") return { label: "PDF", color: "bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300" };
@@ -87,6 +88,9 @@ export default function DocumentCard({ doc, onDelete }) {
           Delete
         </button>
       </div>
+
+      {/* TEMP: preview modal test */}
+      <DocumentPreviewModal doc={doc} onClose={() => {}} />
 
       {/* Delete confirmation modal — centered on screen with frosted backdrop */}
       <Modal
