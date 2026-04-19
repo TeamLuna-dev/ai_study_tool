@@ -1,5 +1,26 @@
 import Modal from "../common/Modal";
 
+function getStatusBadge(status) {
+  if (status === "ready")      return { label: "Ready",      color: "bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300" };
+  if (status === "processing") return { label: "Processing", color: "bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300" };
+  if (status === "error")      return { label: "Error",      color: "bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300" };
+  return { label: "Unknown", color: "bg-gray-50 text-gray-500 dark:bg-gray-800 dark:text-gray-400" };
+}
+
+function formatFileSize(bytes) {
+  if (!bytes) return "—";
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function formatDate(timestamp) {
+  if (!timestamp?.seconds) return "—";
+  return new Date(timestamp.seconds * 1000).toLocaleDateString("en-US", {
+    month: "short", day: "numeric", year: "numeric",
+  });
+}
+
 function FileTypeIcon({ fileType }) {
   if (fileType === "pdf") {
     return (
@@ -29,6 +50,8 @@ function FileTypeIcon({ fileType }) {
 }
 
 export default function DocumentPreviewModal({ doc, onClose }) {
+  const status = getStatusBadge(doc.status);
+
   return (
     <Modal open onClose={onClose} cardClassName="max-w-sm">
       <div className="p-6 flex flex-col gap-5">
@@ -49,6 +72,27 @@ export default function DocumentPreviewModal({ doc, onClose }) {
           <p className="text-sm font-semibold text-gray-900 dark:text-white break-all">
             {doc.fileName ?? "Unnamed document"}
           </p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 text-xs">
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3">
+            <p className="text-gray-400 dark:text-gray-500 mb-1">Size</p>
+            <p className="font-medium text-gray-700 dark:text-gray-200">{formatFileSize(doc.fileSize)}</p>
+          </div>
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3">
+            <p className="text-gray-400 dark:text-gray-500 mb-1">Uploaded</p>
+            <p className="font-medium text-gray-700 dark:text-gray-200">{formatDate(doc.uploadedAt)}</p>
+          </div>
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3">
+            <p className="text-gray-400 dark:text-gray-500 mb-1">Format</p>
+            <p className="font-medium text-gray-700 dark:text-gray-200 uppercase">{doc.fileType ?? "—"}</p>
+          </div>
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3">
+            <p className="text-gray-400 dark:text-gray-500 mb-1">Status</p>
+            <span className={`inline-block font-medium px-2 py-0.5 rounded-md ${status.color}`}>
+              {status.label}
+            </span>
+          </div>
         </div>
 
       </div>
