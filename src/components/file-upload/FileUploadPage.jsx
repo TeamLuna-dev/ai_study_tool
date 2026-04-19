@@ -15,10 +15,12 @@ export default function FileUploadPage() {
   const { docs, loading, error, handleDelete } = useDocuments(user?.uid);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [formatFilter, setFormatFilter] = useState("");
 
   const filteredDocs = docs
     .filter(d => d.fileName.toLowerCase().includes(searchTerm.toLowerCase()))
-    .filter(d => statusFilter === '' || d.status === statusFilter);
+    .filter(d => statusFilter === '' || d.status === statusFilter)
+    .filter(d => formatFilter === '' || d.fileType === formatFilter || (formatFilter === 'jpg' && d.fileType === 'jpeg'));
     
   return (
     <div className="min-h-screen bg-[#f5f7fb] text-gray-900 dark:bg-gray-950 dark:text-white transition-colors duration-300">
@@ -176,6 +178,8 @@ export default function FileUploadPage() {
             onSearchChange={setSearchTerm}
             statusFilter={statusFilter}
             onStatusChange={setStatusFilter}
+            formatFilter={formatFilter}
+            onFormatChange={setFormatFilter}
           />
 
           <DocumentList
@@ -183,7 +187,7 @@ export default function FileUploadPage() {
             loading={loading}
             error={error}
             onDelete={handleDelete}
-            hasActiveFilter={searchTerm !== '' || statusFilter !== ''}
+            hasActiveFilter={searchTerm !== '' || statusFilter !== '' || formatFilter !== ''}
           />
         </div>
       </main>
