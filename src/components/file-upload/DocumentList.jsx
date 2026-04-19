@@ -13,7 +13,7 @@
 
 import DocumentCard from "./DocumentCard";
 
-export default function DocumentList({ docs, loading, error, onDelete, hasActiveFilter }) {
+export default function DocumentList({ docs, loading, error, onDelete, onRename, hasActiveFilter }) {
 
   if (loading) {
     return (
@@ -56,6 +56,7 @@ export default function DocumentList({ docs, loading, error, onDelete, hasActive
           key={doc.id}
           doc={doc}
           onDelete={onDelete}
+          onRename={onRename}
         />
       ))}
     </div>

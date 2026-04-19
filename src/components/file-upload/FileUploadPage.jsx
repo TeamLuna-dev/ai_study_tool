@@ -12,7 +12,7 @@ export default function FileUploadPage() {
   const get_auth_token = user ? () => user.getIdToken() : null;
 
   // fetch and manage documents for the library section
-  const { docs, loading, error, handleDelete } = useDocuments(user?.uid);
+  const { docs, loading, error, handleDelete, handleRename } = useDocuments(user?.uid);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [formatFilter, setFormatFilter] = useState("");
@@ -187,6 +187,7 @@ export default function FileUploadPage() {
             loading={loading}
             error={error}
             onDelete={handleDelete}
+            onRename={handleRename}
             hasActiveFilter={searchTerm !== '' || statusFilter !== '' || formatFilter !== ''}
           />
         </div>

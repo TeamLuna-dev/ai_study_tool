@@ -44,7 +44,7 @@ function formatDate(timestamp) {
   });
 }
 
-export default function DocumentCard({ doc, onDelete }) {
+export default function DocumentCard({ doc, onDelete, onRename }) {
   const fileType = getFileTypeBadge(doc.fileType);
   const status = getStatusBadge(doc.status);
 
@@ -90,7 +90,7 @@ export default function DocumentCard({ doc, onDelete }) {
         </button>
       </div>
 
-      {previewing && <DocumentPreviewModal doc={doc} onClose={() => setPreviewing(false)} />}
+      {previewing && <DocumentPreviewModal doc={doc} onClose={() => setPreviewing(false)} onRename={onRename} />}
 
       {/* Delete confirmation modal — centered on screen with frosted backdrop */}
       <Modal
