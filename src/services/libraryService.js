@@ -17,6 +17,7 @@ import {
   getDocs,
   doc,
   deleteDoc as firestoreDelete,
+  updateDoc,
 } from "firebase/firestore";
 import { ref, deleteObject } from "firebase/storage";
 import { db, storage } from "../config/firebase";
@@ -65,4 +66,15 @@ export async function deleteDoc(document) {
 
   // Step 2 —> delete Firestore document record
   await firestoreDelete(doc(db, "documents", document.id));
+}
+
+/**
+ * Renames a document in Firestore by updating its fileName field.
+ *
+ * @param {string} docId   -> Firestore document ID
+ * @param {string} newName -> new filename string
+ * @returns {Promise<void>}
+ */
+export async function renameDoc(docId, newName) {
+  await updateDoc(doc(db, "documents", docId), { fileName: newName });
 }
