@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Modal from "../common/Modal";
 
 function getStatusBadge(status) {
@@ -49,8 +50,25 @@ function FileTypeIcon({ fileType }) {
   );
 }
 
-export default function DocumentPreviewModal({ doc, onClose }) {
+export default function DocumentPreviewModal({ doc, onClose, onRename }) {
   const status = getStatusBadge(doc.status);
+  const [editing, setEditing] = useState(false);
+  const [nameInput, setNameInput] = useState(doc.fileName ?? "");
+  const [saving, setSaving] = useState(false);
+
+  async function handleSave() {
+    const trimmed = nameInput.trim();
+    if (!trimmed || trimmed === doc.fileName) { setEditing(false); return; }
+    setSaving(true);
+    await onRename(doc.id, trimmed);
+    setSaving(false);
+    setEditing(false);
+  }
+
+  function handleCancel() {
+    setNameInput(doc.fileName ?? "");
+    setEditing(false);
+  }
 
   return (
     <Modal open onClose={onClose} cardClassName="max-w-sm">
@@ -69,9 +87,48 @@ export default function DocumentPreviewModal({ doc, onClose }) {
 
         <div className="flex flex-col items-center gap-3 text-center">
           <FileTypeIcon fileType={doc.fileType} />
-          <p className="text-sm font-semibold text-gray-900 dark:text-white break-all">
-            {doc.fileName ?? "Unnamed document"}
-          </p>
+
+          {editing ? (
+            <div className="flex flex-col items-center gap-2 w-full">
+              <input
+                autoFocus
+                value={nameInput}
+                onChange={e => setNameInput(e.target.value)}
+                onKeyDown={e => { if (e.key === "Enter") handleSave(); if (e.key === "Escape") handleCancel(); }}
+                className="w-full text-center text-sm font-medium rounded-lg border border-indigo-300 dark:border-indigo-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              />
+              <div className="flex gap-2">
+                <button
+                  onClick={handleCancel}
+                  disabled={saving}
+                  className="text-xs px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSave}
+                  disabled={saving}
+                  className="text-xs px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
+                >
+                  {saving ? "Saving..." : "Save"}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1.5 group">
+              <p className="text-sm font-semibold text-gray-900 dark:text-white break-all">
+                {doc.fileName ?? "Unnamed document"}
+              </p>
+              <button
+                onClick={() => setEditing(true)}
+                className="text-gray-300 dark:text-gray-600 hover:text-indigo-500 dark:hover:text-indigo-400 opacity-0 group-hover:opacity-100 transition-all"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-1.414.586H9v-2a2 2 0 01.586-1.414z" />
+                </svg>
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-2 gap-3 text-xs">
