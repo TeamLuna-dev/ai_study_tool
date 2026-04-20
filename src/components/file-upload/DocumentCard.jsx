@@ -10,6 +10,7 @@
 
 import { useState } from "react";
 import Modal from "../common/Modal";
+import DocumentPreviewModal from "./DocumentPreviewModal";
 // maps file type to a label and Tailwind color classes
 function getFileTypeBadge(fileType) {
   if (fileType === "pdf") return { label: "PDF", color: "bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300" };
@@ -43,13 +44,14 @@ function formatDate(timestamp) {
   });
 }
 
-export default function DocumentCard({ doc, onDelete }) {
+export default function DocumentCard({ doc, onDelete, onRename }) {
   const fileType = getFileTypeBadge(doc.fileType);
   const status = getStatusBadge(doc.status);
 
   // Local state for delete confirmation and loading state during deletion
   const [confirming, setConfirming] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [previewing, setPreviewing] = useState(false);
 
   // two-click delete: first click asks for confirmation, second executes
   async function handleDeleteClick() {
@@ -57,7 +59,7 @@ export default function DocumentCard({ doc, onDelete }) {
   }
 
   return (
-    <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm p-4 flex flex-col gap-3 hover:border-gray-200 dark:hover:border-gray-600 transition-colors">
+    <div onClick={() => setPreviewing(true)} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm p-4 flex flex-col gap-3 hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors cursor-pointer">
 
       {/* Header — file type badge + filename */}
       <div className="flex items-start gap-3">
@@ -81,12 +83,14 @@ export default function DocumentCard({ doc, onDelete }) {
           {status.label}
         </span>
         <button
-          onClick={handleDeleteClick}
+          onClick={e => { e.stopPropagation(); handleDeleteClick(); }}
           className="text-xs text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-1 rounded-lg transition-colors cursor-pointer"
         >
           Delete
         </button>
       </div>
+
+      {previewing && <DocumentPreviewModal doc={doc} onClose={() => setPreviewing(false)} onRename={onRename} />}
 
       {/* Delete confirmation modal — centered on screen with frosted backdrop */}
       <Modal

@@ -7,7 +7,7 @@
  */
 
 import { useState, useEffect } from "react";
-import { getUserDocs, deleteDoc } from "../services/libraryService";
+import { getUserDocs, deleteDoc, renameDoc } from "../services/libraryService";
 
 /**
  * Fetches and manages the current user's uploaded documents.
@@ -57,5 +57,15 @@ export function useDocuments(uid) {
       setError("Failed to delete document. Please try again.");
     }
   }
-  return { docs, loading, error, handleDelete };
+  async function handleRename(docId, newName) {
+    try {
+      await renameDoc(docId, newName);
+      setDocs(prev => prev.map(d => d.id === docId ? { ...d, fileName: newName } : d));
+    } catch (err) {
+      console.error("[useDocuments] Failed to rename doc:", err);
+      setError("Failed to rename document. Please try again.");
+    }
+  }
+
+  return { docs, loading, error, handleDelete, handleRename };
 }

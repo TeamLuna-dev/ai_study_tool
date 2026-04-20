@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { FileUpload } from "./FileUpload";
 import { AuthGate } from "./AuthGate";
 import { useAuth } from "../../hooks/useAuth";
 import { useDocuments } from "../../hooks/useDocuments";
 import DocumentList from "./DocumentList";
+import SearchFilterBar from "./SearchFilterBar";
 
 export default function FileUploadPage() {
   const { user } = useAuth();
@@ -11,8 +12,16 @@ export default function FileUploadPage() {
   const get_auth_token = user ? () => user.getIdToken() : null;
 
   // fetch and manage documents for the library section
-  const { docs, loading, error, handleDelete } = useDocuments(user?.uid);
+  const { docs, loading, error, handleDelete, handleRename } = useDocuments(user?.uid);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [formatFilter, setFormatFilter] = useState("");
 
+  const filteredDocs = docs
+    .filter(d => d.fileName.toLowerCase().includes(searchTerm.toLowerCase()))
+    .filter(d => statusFilter === '' || d.status === statusFilter)
+    .filter(d => formatFilter === '' || d.fileType === formatFilter || (formatFilter === 'jpg' && d.fileType === 'jpeg'));
+    
   return (
     <div className="min-h-screen bg-[#f5f7fb] text-gray-900 dark:bg-gray-950 dark:text-white transition-colors duration-300">
       {/* Hero */}
@@ -164,45 +173,23 @@ export default function FileUploadPage() {
             </div>
           </div>
 
-          {/* Right side */}
-          <div className="space-y-6">
-            <div className="bg-white rounded-3xl border border-gray-200 shadow-md p-6">
-              <h3 className="text-xl font-bold text-gray-900">How it works</h3>
+          <SearchFilterBar
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            statusFilter={statusFilter}
+            onStatusChange={setStatusFilter}
+            formatFilter={formatFilter}
+            onFormatChange={setFormatFilter}
+          />
 
-              <div className="mt-5 space-y-4">
-                <div className="rounded-2xl border border-gray-100 bg-gray-50/70 p-4">
-                  <p className="font-semibold text-gray-800">
-                    1. Upload a study file
-                  </p>
-                  <p className="mt-1 text-sm text-gray-500">
-                    Add a PDF, JPG, or PNG from your device.
-                  </p>
-                </div>
-
-                <div className="rounded-2xl border border-gray-100 bg-gray-50/70 p-4">
-                  <p className="font-semibold text-gray-800">
-                    2. We extract the content
-                  </p>
-                  <p className="mt-1 text-sm text-gray-500">
-                    Your notes are prepared for summaries, quizzes, and AI tools.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-3xl border border-purple-100 shadow-sm p-6">
-              <h3 className="text-xl font-bold text-gray-900">
-                Supported files
-              </h3>
-
-              <ul className="mt-4 space-y-2 text-sm text-gray-600">
-                <li>• PDF documents</li>
-                <li>• JPG and PNG images</li>
-                <li>• Max size: 20 MB</li>
-                <li>• Clean notes work best</li>
-              </ul>
-            </div>
-          </div>
+          <DocumentList
+            docs={filteredDocs}
+            loading={loading}
+            error={error}
+            onDelete={handleDelete}
+            onRename={handleRename}
+            hasActiveFilter={searchTerm !== '' || statusFilter !== '' || formatFilter !== ''}
+          />
         </div>
       </main>
     </div>
