@@ -178,6 +178,19 @@ def store_ocr_text(doc_id: str, text: str) -> None:
 
 
 
+def store_document_topic(doc_id: str, topic: str) -> None:
+    """
+    Writes the AI-classified topic to the Firestore document.
+    Called after the embedding pipeline completes successfully.
+    """
+    try:
+        db, _ = _get_firebase()
+        db.collection("documents").document(doc_id).update({"topic": topic})
+        print(f"[FIREBASE] Document {doc_id} classified as '{topic}'.")
+    except Exception as exc:
+        print(f"[FIREBASE] Warning: could not store topic for {doc_id}: {exc}")
+
+
 def mark_document_error(doc_id: str, stage: str, message: str) -> None:
     """
     Updates a Firestore document status to "error" with structured context.
