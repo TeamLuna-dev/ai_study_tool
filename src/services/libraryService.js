@@ -78,3 +78,21 @@ export async function deleteDoc(document) {
 export async function renameDoc(docId, newName) {
   await updateDoc(doc(db, "documents", docId), { fileName: newName });
 }
+
+/**
+ * Fetches all ready documents owned by a user that match a given topic.
+ *
+ * @param {string} uid   -> Firebase UID of the authenticated user
+ * @param {string} topic -> topic string to match (must be one of TOPIC_OPTIONS)
+ * @returns {Promise<Array>} -> array of matching document objects with id field included
+ */
+export async function getDocsByTopic(uid, topic) {
+  const q = query(
+    collection(db, "documents"),
+    where("ownerId", "==", uid),
+    where("topic", "==", topic),
+    where("status", "==", "ready")
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
