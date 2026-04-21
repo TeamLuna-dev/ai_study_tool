@@ -10,12 +10,16 @@
 import QuizScoreBanner from "./QuizScoreBanner";
 import QuizAnswerReview from "./QuizAnswerReview";
 import QuizTopicAnalysis from "./QuizTopicAnalysis";
+import QuizSuggestions from "./QuizSuggestions";
 
 export default function QuizResults({
   result,
   quiz,
   weakTopics,
   loadingAnalysis,
+  suggestions,
+  suggestionsLoading,
+  onSelectDoc,
   error,
   handleRestart,
   handleRetake,
@@ -42,6 +46,12 @@ export default function QuizResults({
         />
 
         <QuizTopicAnalysis weakTopics={weakTopics} loading={loadingAnalysis} />
+
+        {suggestionsLoading ? (
+          <p className="mb-8 text-sm text-gray-400 dark:text-gray-500">Finding study materials...</p>
+        ) : (
+          <QuizSuggestions suggestions={suggestions} onSelectDoc={onSelectDoc} />
+        )}
 
         {error && (
           <p className="mb-6 text-red-600 dark:text-red-400">{error}</p>

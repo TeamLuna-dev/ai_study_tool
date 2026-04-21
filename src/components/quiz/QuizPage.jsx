@@ -6,7 +6,7 @@
  * Delegates presentation to QuizGenerator and QuizResults components. SRP compliant.
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { generateQuiz, scoreQuiz, getWeakTopics } from "../../services/quizService";
 import { shuffleArray } from "../../utils/shuffleArray";
 import { useAuth } from "../../hooks/useAuth";
@@ -15,6 +15,7 @@ import { db } from "../../config/firebase";
 import QuizGenerator from "./QuizGenerator"
 import QuizResults from "./QuizResults";
 import QuizLoadingScreen from "./QuizLoadingScreen";
+import { useQuizSuggestions } from "../../hooks/useQuizSuggestions";
 import { BRAND_BLUE, primaryButtonStyle, secondaryButtonStyle, disabledButtonStyle, layoutStyle } from "./quizStyles";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -52,6 +53,12 @@ export function QuizPage() {
   const [weakTopics, setWeakTopics] = useState([]);
   const [loadingAnalysis, setLoadingAnalysis] = useState(false);
   const [preQuizWeakTopics, setPreQuizWeakTopics] = useState([]);
+
+  const weakTopicNames = useMemo(
+    () => weakTopics.filter((t) => t.is_weak).map((t) => t.topic),
+    [weakTopics]
+  );
+  const { suggestions, loading: suggestionsLoading } = useQuizSuggestions(weakTopicNames, user?.uid);
 
   const [userDocs, setUserDocs] = useState([]); // state to hold user's uploaded documents for doc-based quiz generation
   const [selectedDocId, setSelectedDocId] = useState(""); // state to track which document the user has selected for quiz generation
@@ -269,6 +276,9 @@ export function QuizPage() {
         quiz={quiz}
         weakTopics={weakTopics}
         loadingAnalysis={loadingAnalysis}
+        suggestions={suggestions}
+        suggestionsLoading={suggestionsLoading}
+        onSelectDoc={() => navigate("/quiz")}
         error={error}
         handleRestart={handleRestart}
         handleRetake={handleRetake}
