@@ -49,14 +49,22 @@ export function QuizPage() {
   const [loadingGen, setLoadingGen] = useState(false);
   const [loadingScore, setLoadingScore] = useState(false);
   const [error, setError] = useState("");
-  const [weakTopics, setWeakTopics] = useState([]); // new states for personalized quiz-generation. (wll use in future tasks)
-  const [loadingAnalysis, setLoadingAnalysis] = useState(false); // state to track loading 
+  const [weakTopics, setWeakTopics] = useState([]);
+  const [loadingAnalysis, setLoadingAnalysis] = useState(false);
+  const [preQuizWeakTopics, setPreQuizWeakTopics] = useState([]);
 
   const [userDocs, setUserDocs] = useState([]); // state to hold user's uploaded documents for doc-based quiz generation
   const [selectedDocId, setSelectedDocId] = useState(""); // state to track which document the user has selected for quiz generation
   const [inputMode, setInputMode] = useState("docs"); // "docs" | "notes"
 
   const [questionCount, setQuestionCount] = useState(5); // defaults to 5 — matches backend default
+
+  useEffect(() => {
+    if (!user) return;
+    getWeakTopics(user.uid)
+      .then(setPreQuizWeakTopics)
+      .catch(() => {});
+  }, [user]);
 
   useEffect(() => { // fetch user's uploaded documents on component mount, if user is logged in
   if (!user) return;
