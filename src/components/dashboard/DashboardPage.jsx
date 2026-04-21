@@ -80,6 +80,7 @@ export function DashboardPage() {
         {/* Main dashboard content */}
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left column */}
+
           <div className="lg:col-span-2 space-y-6">
             <StudyBriefCard
               brief={brief}
@@ -88,8 +89,9 @@ export function DashboardPage() {
               generatedAt={briefGeneratedAt}
             />
 
-            <QuizProgressChart />
+            {/* Recent Activity (Recent Documents) moved above Quiz Progress Chart */}
             <RecentDocuments />
+            <QuizProgressChart />
           </div>
 
           {/* Right column */}
