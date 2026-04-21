@@ -9,6 +9,7 @@
 
 import QuizScoreBanner from "./QuizScoreBanner";
 import QuizAnswerReview from "./QuizAnswerReview";
+import QuizTopicAnalysis from "./QuizTopicAnalysis";
 
 export default function QuizResults({
   result,
@@ -40,48 +41,7 @@ export default function QuizResults({
           questions={quiz?.questions ?? []}
         />
 
-        {/* Weak topic analysis — loading */}
-        {loadingAnalysis && (
-          <div className="mb-8 rounded-2xl border border-gray-200 bg-gray-50 p-5 dark:border-gray-700 dark:bg-gray-800">
-            <p className="text-gray-600 dark:text-gray-300">
-              Loading quiz analysis...
-            </p>
-          </div>
-        )}
-
-        {/* Weak topic analysis — results */}
-        {!loadingAnalysis && weakTopics.length > 0 && (
-          <div className="mb-8">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-              Topic Performance
-            </h3>
-
-            <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60 p-5">
-              <ul className="space-y-3">
-                {weakTopics.map((item) => (
-                  <li
-                    key={item.topic}
-                    className="flex items-center justify-between gap-4 border-b border-gray-200 dark:border-gray-700 pb-3 last:border-b-0 last:pb-0"
-                  >
-                    <span className="text-gray-800 dark:text-gray-200 font-medium">
-                      {item.topic}
-                    </span>
-
-                    <span
-                      className={
-                        item.is_weak
-                          ? "text-red-600 dark:text-red-400 text-sm font-semibold"
-                          : "text-green-600 dark:text-green-400 text-sm font-semibold"
-                      }
-                    >
-                      {item.average_score}% {item.is_weak ? "(Weak)" : "(Strong)"}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        )}
+        <QuizTopicAnalysis weakTopics={weakTopics} loading={loadingAnalysis} />
 
         {error && (
           <p className="mb-6 text-red-600 dark:text-red-400">{error}</p>
