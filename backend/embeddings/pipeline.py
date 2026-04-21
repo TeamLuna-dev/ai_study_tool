@@ -43,6 +43,7 @@ from features.upload.firebase_storage import (
     mark_document_ready,
     mark_document_error,
     store_ocr_text,
+    store_document_topic,
 )
 
 IMAGE_MIME_TYPES = {"image/jpeg", "image/png"}
@@ -178,6 +179,13 @@ def process_document(
     mark_document_ready(doc_id, vector_ids)
     print(f"[PIPELINE] Done — '{file_name}': {len(vector_ids)} vectors stored.")
 
+    try:
+        from features.quizgen.topic_classifier import classify_document_topic
+        topic = classify_document_topic(doc_id)
+        store_document_topic(doc_id, topic)
+    except Exception as exc:
+        print(f"[PIPELINE] Warning: topic classification failed for '{file_name}': {exc}")
+
 
 def process_confirmed_ocr_text(
     text: str,
@@ -236,3 +244,10 @@ def process_confirmed_ocr_text(
 
     mark_document_ready(doc_id, vector_ids)
     print(f"[PIPELINE] Done — '{file_name}': {len(vector_ids)} confirmed OCR vectors stored.")
+
+    try:
+        from features.quizgen.topic_classifier import classify_document_topic
+        topic = classify_document_topic(doc_id)
+        store_document_topic(doc_id, topic)
+    except Exception as exc:
+        print(f"[PIPELINE] Warning: topic classification failed for '{file_name}': {exc}")
