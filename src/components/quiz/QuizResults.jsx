@@ -7,8 +7,8 @@
  * Has no state of its own: purely presentational.
  */
 
-import { useState } from "react";
 import QuizScoreBanner from "./QuizScoreBanner";
+import QuizAnswerReview from "./QuizAnswerReview";
 
 export default function QuizResults({
   result,
@@ -20,8 +20,6 @@ export default function QuizResults({
   handleRetake,
   handleRegenerate,
 }) {
-  const [showAnswers, setShowAnswers] = useState(false);
-
   const pct = result.percentage;
 
   return (
@@ -37,51 +35,10 @@ export default function QuizResults({
 
         <QuizScoreBanner pct={pct} score={result.score} total={result.total} />
 
-        {/* Incorrect answer review */}
-        {result.incorrect?.length > 0 && (
-          <div className="mb-8">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-xl font-bold">Review Incorrect Answers</h3>
-              <button
-                onClick={() => setShowAnswers((prev) => !prev)}
-                className="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400"
-              >
-                {showAnswers ? "Hide answers" : "Show answers"}
-              </button>
-            </div>
-
-            <div className="space-y-4">
-            {result.incorrect.map((x) => (
-              <div key={x.question_index} className="rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800"
-                >
-                <p className="font-medium text-gray-900 dark:text-gray-100">
-                  Question {x.question_index + 1}: {x.question}
-                </p>
-
-                {showAnswers && (
-                  <div className="mt-2 text-sm">
-                      <p>
-                        <span className="font-medium">Correct: </span>
-                        <span className="text-green-600 dark:text-green-400">
-                          {x.correct_choice}
-                        </span>
-                      </p>
-
-                    {x.your_index !== undefined && x.your_index >= 0 && (
-                      <p>
-                        <span className="font-medium">Your answer: </span>
-                        <span className="text-red-600 dark:text-red-400">
-                          {quiz?.questions?.[x.question_index]?.choices?.[x.your_index]}
-                        </span>
-                        </p>
-                      )}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        <QuizAnswerReview
+          incorrectAnswers={result.incorrect ?? []}
+          questions={quiz?.questions ?? []}
+        />
 
         {/* Weak topic analysis — loading */}
         {loadingAnalysis && (
