@@ -4,7 +4,7 @@ from .routes import progress_bp
 from flask import Flask, request, jsonify
 from datetime import datetime
 from firebase_admin import firestore
-from firebase_admin_config import db
+from security.firebase_admin_config import db
 from services import calculate_percentage, analyze_performance, get_total_study_time, get_study_summary
 
 app = Flask(__name__)

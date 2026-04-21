@@ -7,5 +7,29 @@
   },
   "storage": {
     "rules": "storage.rules"
-  }
+  },
+  "hosting": {
+    "public": "dist",
+    "rewrites": [
+      {
+        "source": "/api/**",
+        "run": {
+          "serviceId": "ai-tutor-backend",
+          "region": "us-central1"
+        }
+      },
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  },
+  "headers": [
+    {
+      "source": "**/*.@(js|css)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public,max-age=31536000,immutable" }
+      ]
+    }
+  ]
 }

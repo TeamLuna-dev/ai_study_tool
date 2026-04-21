@@ -20,7 +20,7 @@ export function SummarizerPage() {
     try {
       const token = user ? await user.getIdToken() : null;
 
-      const response = await fetch("http://127.0.0.1:5000/api/summarizer/generate", {
+      const response = await fetch(`{import.meta.env.VITE_API_BASE_URL}/api/summarizer/generate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

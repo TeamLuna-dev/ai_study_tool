@@ -13,12 +13,14 @@ dist/
 # Firebase service account key — never commit
 serviceAccountKey.json
 
+# Firebase Hosting cache
+.firebase/
+
 # Virtual environment
 venv/
 
 /quiz-gen/.env
 /backend/.venv
-/backend/.python-version
 # Compiled Java class files
 *.class
 

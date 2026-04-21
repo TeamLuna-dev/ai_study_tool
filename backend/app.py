@@ -9,25 +9,35 @@ def create_app():
 
     app = Flask(__name__)
 
+    @app.route("/api/health")
+    def health():
+        return {"status": "ok"}, 200
+
+    cors_origins = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3001",
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:5174",
+        "http://127.0.0.1:5174",
+    ]
+    frontend_url = os.environ.get("FRONTEND_URL")
+    if frontend_url and frontend_url not in cors_origins:
+        cors_origins.append(frontend_url)
+
+    # SCRUM-103. Work was overscoped in separate SCRUM-99 task, investigate commit e4889c5 for 103's ticket work 
     CORS(
         app,
         resources={
             r"/api/*": {
-                "origins": [
-                    "http://localhost:3000",
-                    "http://127.0.0.1:3000",
-                    "http://localhost:3001",
-                    "http://127.0.0.1:3001",
-                    "http://localhost:5173",
-                    "http://127.0.0.1:5173",
-                    "http://localhost:5174",
-                    "http://127.0.0.1:5174",
-                ],
+                "origins": cors_origins,  # Allow CORS for these origins
                 "allow_headers": ["Authorization", "Content-Type"],
                 "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
             }
         },
-        supports_credentials=True
+        supports_credentials=True,
     )
     
     # Import feature routes
@@ -82,4 +92,5 @@ def create_app():
 app = create_app()
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    debug = os.environ.get("DEV_MODE", "true").lower() == "true"
+    app.run(debug=debug)
