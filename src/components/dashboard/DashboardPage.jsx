@@ -10,6 +10,7 @@ import { DashboardStats } from "./DashboardStats";
 import { useDashboardStats } from "../../hooks/useDashboardStats";
 import { RecentDocuments } from "./RecentDocuments";
 import { StudyBriefCard } from "./StudyBriefCard";
+import { WeakTopicsCard } from "./WeakTopicsCard";
 import QuizProgressChart from "../quiz/QuizProgressChart";
 import { useEffect, useState } from "react";
 import { getUserProfile } from "../../services/userService";
@@ -136,7 +137,8 @@ export function DashboardPage() {
               </p>
             </div>
 
-            
+            {/* Weak Topics Card below Today's Progress */}
+            <WeakTopicsCard />
           </div>
         </section>
       </main>
