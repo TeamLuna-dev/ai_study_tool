@@ -76,7 +76,7 @@ export default function QuizResults({
         {suggestionsLoading ? (
           <p className="text-sm text-gray-400 dark:text-gray-500">Finding study materials...</p>
         ) : (
-          <QuizSuggestions suggestions={suggestions} onSelectDoc={onSelectDoc} />
+          <QuizSuggestions suggestions={suggestions} weakTopics={weakTopics} onSelectDoc={onSelectDoc} />
         )}
 
         {error && (
