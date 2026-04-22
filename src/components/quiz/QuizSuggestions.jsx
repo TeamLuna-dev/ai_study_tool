@@ -5,7 +5,7 @@
  */
 
 import { useRef, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, FileText } from "lucide-react";
 
 export default function QuizSuggestions({ suggestions = [], onSelectDoc }) {
   const scrollRef = useRef(null);
@@ -65,21 +65,25 @@ export default function QuizSuggestions({ suggestions = [], onSelectDoc }) {
         {cards.map(({ topic, doc }) => (
           <div
             key={doc.id}
-            className="shrink-0 w-64 flex items-center justify-between gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800"
+            className="shrink-0 w-64 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 flex flex-col gap-4 shadow-sm"
             style={{ scrollSnapAlign: "start" }}
           >
-            <div>
-              <p className="font-medium text-gray-900 dark:text-gray-100">
+            <span className="self-start text-xs font-semibold px-2.5 py-1 rounded-full bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300">
+              {topic}
+            </span>
+
+            <div className="flex items-start gap-3">
+              <div className="shrink-0 w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center">
+                <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              </div>
+              <p className="text-sm font-medium text-gray-900 dark:text-white line-clamp-2 leading-snug">
                 {doc.fileName}
-              </p>
-              <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
-                {topic}
               </p>
             </div>
 
             <button
               onClick={() => onSelectDoc(doc)}
-              className="shrink-0 rounded-2xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400"
+              className="mt-auto w-full rounded-xl bg-blue-600 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
             >
               Generate Quiz →
             </button>
