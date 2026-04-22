@@ -28,35 +28,45 @@ export default function QuizResults({
   const pct = result.percentage;
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-10 bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-white transition-colors">
-      <div className="w-full max-w-4xl rounded-3xl border border-gray-200 bg-white p-8 shadow-md dark:border-gray-700 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-white transition-colors px-4 py-10">
+      <div className="max-w-4xl mx-auto space-y-6">
+
         {/* Header */}
-        <div className="mb-8">
-          <h2 className="mb-2 text-3xl font-bold">Quiz Completed</h2>
-          <p className="text-gray-500 dark:text-gray-400">
+        <div>
+          <h2 className="text-3xl font-bold">Quiz Completed</h2>
+          <p className="mt-1 text-gray-500 dark:text-gray-400">
             Here's how you did and what to focus on next
           </p>
         </div>
 
+        {/* Score hero */}
         <QuizScoreBanner pct={pct} score={result.score} total={result.total} />
 
-        <QuizAnswerReview
-          incorrectAnswers={result.incorrect ?? []}
-          questions={quiz?.questions ?? []}
-        />
+        {/* Answer review + topic analysis */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-6">
+            <QuizAnswerReview
+              incorrectAnswers={result.incorrect ?? []}
+              questions={quiz?.questions ?? []}
+            />
+          </div>
+          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-6">
+            <QuizTopicAnalysis weakTopics={weakTopics} loading={loadingAnalysis} />
+          </div>
+        </div>
 
-        <QuizTopicAnalysis weakTopics={weakTopics} loading={loadingAnalysis} />
-
+        {/* Suggestions */}
         {suggestionsLoading ? (
-          <p className="mb-8 text-sm text-gray-400 dark:text-gray-500">Finding study materials...</p>
+          <p className="text-sm text-gray-400 dark:text-gray-500">Finding study materials...</p>
         ) : (
           <QuizSuggestions suggestions={suggestions} onSelectDoc={onSelectDoc} />
         )}
 
         {error && (
-          <p className="mb-6 text-red-600 dark:text-red-400">{error}</p>
+          <p className="text-red-600 dark:text-red-400">{error}</p>
         )}
 
+        {/* Actions */}
         <div className="flex gap-3">
           {handleRetake && (
             <button onClick={handleRetake} className="flex-1 rounded-2xl border border-gray-300 px-5 py-3 font-semibold hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
@@ -72,7 +82,6 @@ export default function QuizResults({
             Start New Quiz
           </button>
         </div>
-
 
       </div>
     </div>
