@@ -93,7 +93,7 @@ export default function QuizSuggestions({ suggestions = [], weakTopics = [], onS
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="flex gap-4 overflow-x-auto pb-2"
+        className="flex justify-center gap-4 overflow-x-auto pb-2"
         style={{ scrollSnapType: "x mandatory", scrollbarWidth: "none" }}
       >
         {activeDocs.map((doc) => (
