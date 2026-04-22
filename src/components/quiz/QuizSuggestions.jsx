@@ -1,22 +1,26 @@
 /**
  * QuizSuggestions.jsx
- * Carousel of suggested document cards based on the user's weak topics.
+ * Carousel of suggested document cards for one weak topic at a time.
+ * Shows topic pills to switch between topics when multiple exist.
  * Returns null when there are no suggestions.
  */
 
 import { useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, FileText } from "lucide-react";
 
-export default function QuizSuggestions({ suggestions = [], onSelectDoc }) {
+export default function QuizSuggestions({ suggestions = [], weakTopics = [], onSelectDoc }) {
   const scrollRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  const [activeTopic, setActiveTopic] = useState(suggestions[0]?.topic ?? null);
 
-  const cards = suggestions.flatMap(({ topic, docs }) =>
-    docs.map((doc) => ({ topic, doc }))
-  );
+  if (suggestions.length === 0) return null;
 
-  if (cards.length === 0) return null;
+  const activeEntry = suggestions.find((s) => s.topic === activeTopic) ?? suggestions[0];
+  const activeDocs = activeEntry?.docs ?? [];
+
+  const weakEntry = weakTopics.find((t) => t.topic === activeEntry?.topic);
+  const score = weakEntry ? Math.round(weakEntry.average_score) : null;
 
   function scroll(dir) {
     scrollRef.current?.scrollBy({ left: dir * 288, behavior: "smooth" });
@@ -29,19 +33,19 @@ export default function QuizSuggestions({ suggestions = [], onSelectDoc }) {
     setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
   }
 
+  function handleTopicChange(topic) {
+    setActiveTopic(topic);
+    scrollRef.current?.scrollTo({ left: 0 });
+  }
+
   return (
     <div className="mb-8">
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-            Suggested for you
-          </h3>
-          <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
-            Based on your recent performance, you should try to reinforce your learnings on the following
-          </p>
-        </div>
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+          Suggested for you
+        </h3>
 
-        {cards.length > 1 && (
+        {activeDocs.length > 1 && (
           <div className="flex gap-2">
             <button
               onClick={() => scroll(-1)}
@@ -61,20 +65,45 @@ export default function QuizSuggestions({ suggestions = [], onSelectDoc }) {
         )}
       </div>
 
+      {score !== null && (
+        <p className="mb-3 text-sm text-gray-500 dark:text-gray-400">
+          You scored <span className="font-semibold text-red-600 dark:text-red-400">{score}%</span> on <span className="font-semibold">{activeEntry?.topic}</span> here are some materials to help you improve:
+        </p>
+      )}
+
+      {/* Topic pills: only when multiple topics have suggestions */}
+      {suggestions.length > 1 && (
+        <div className="flex gap-2 flex-wrap mb-4">
+          {suggestions.map(({ topic }) => (
+            <button
+              key={topic}
+              onClick={() => handleTopicChange(topic)}
+              className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${
+                topic === activeEntry?.topic
+                  ? "bg-red-600 text-white"
+                  : "bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/50"
+              }`}
+            >
+              {topic}
+            </button>
+          ))}
+        </div>
+      )}
+
       <div
         ref={scrollRef}
         onScroll={handleScroll}
         className="flex gap-4 overflow-x-auto pb-2"
         style={{ scrollSnapType: "x mandatory", scrollbarWidth: "none" }}
       >
-        {cards.map(({ topic, doc }) => (
+        {activeDocs.map((doc) => (
           <div
             key={doc.id}
             className="shrink-0 w-64 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 flex flex-col gap-4 shadow-sm"
             style={{ scrollSnapAlign: "start" }}
           >
             <span className="self-start text-xs font-semibold px-2.5 py-1 rounded-full bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300">
-              {topic}
+              {activeEntry?.topic}
             </span>
 
             <div className="flex items-start gap-3">
@@ -90,7 +119,7 @@ export default function QuizSuggestions({ suggestions = [], onSelectDoc }) {
               onClick={() => onSelectDoc(doc)}
               className="mt-auto w-full rounded-xl bg-blue-600 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
             >
-              Generate Quiz →
+              Generate Quiz 
             </button>
           </div>
         ))}
