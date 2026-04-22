@@ -1,7 +1,8 @@
 from flask import Blueprint, jsonify, request
 from features.upload.auth import verify_firebase_token
 from .service import summarize_text
-from .firestore import get_document_text, save_summary, get_summaries, DocumentNotFoundError
+from .document_text import get_document_text
+from .firestore import save_summary, get_summaries, DocumentNotFoundError
 
 summarizer_bp = Blueprint("summarizer_bp", __name__)
 
