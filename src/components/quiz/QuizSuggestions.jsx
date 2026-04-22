@@ -32,9 +32,14 @@ export default function QuizSuggestions({ suggestions = [], onSelectDoc }) {
   return (
     <div className="mb-8">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-          Suggested for you
-        </h3>
+        <div>
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+            Suggested for you
+          </h3>
+          <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
+            Based on your recent performance, you should try to reinforce your learnings on the following
+          </p>
+        </div>
 
         {cards.length > 1 && (
           <div className="flex gap-2">

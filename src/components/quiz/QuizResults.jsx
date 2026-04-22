@@ -42,6 +42,23 @@ export default function QuizResults({
         {/* Score hero */}
         <QuizScoreBanner pct={pct} score={result.score} total={result.total} />
 
+        {/* Actions */}
+        <div className="flex gap-3">
+          {handleRetake && (
+            <button onClick={handleRetake} className="flex-1 rounded-2xl border border-gray-300 px-5 py-3 font-semibold hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
+              Retake Quiz
+            </button>
+          )}
+          {handleRegenerate && (
+            <button onClick={handleRegenerate} className="flex-1 rounded-2xl border border-gray-300 px-5 py-3 font-semibold hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
+              Regenerate
+            </button>
+          )}
+          <button onClick={handleRestart} className="flex-1 rounded-2xl bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400">
+            Start New Quiz
+          </button>
+        </div>
+
         {/* Answer review + topic analysis */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-6">
@@ -65,23 +82,6 @@ export default function QuizResults({
         {error && (
           <p className="text-red-600 dark:text-red-400">{error}</p>
         )}
-
-        {/* Actions */}
-        <div className="flex gap-3">
-          {handleRetake && (
-            <button onClick={handleRetake} className="flex-1 rounded-2xl border border-gray-300 px-5 py-3 font-semibold hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
-              Retake Quiz
-            </button>
-          )}
-          {handleRegenerate && (
-            <button onClick={handleRegenerate} className="flex-1 rounded-2xl border border-gray-300 px-5 py-3 font-semibold hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
-              Regenerate
-            </button>
-          )}
-          <button onClick={handleRestart} className="flex-1 rounded-2xl bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400">
-            Start New Quiz
-          </button>
-        </div>
 
       </div>
     </div>
