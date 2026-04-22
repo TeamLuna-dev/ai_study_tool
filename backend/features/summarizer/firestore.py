@@ -22,20 +22,19 @@ def _get_db():
     return db
 
 
-def get_document_text(doc_id: str, uid: str) -> tuple[str, str]:
+def get_document_metadata(doc_id: str, uid: str) -> dict:
     """
-    Fetches the extracted text and original filename for a document.
+    Fetches ownership-verified metadata for a document from Firestore.
 
     Arguments:
         doc_id: Firestore document ID.
         uid:    Firebase UID of the requesting user.
 
     Returns:
-        (ocr_text, file_name) tuple.
+        Dict with keys: ocr_text, file_name.
 
     Raises:
-        DocumentNotFoundError: If the document does not exist, is not owned by the
-                               user, or has no extracted text.
+        DocumentNotFoundError: If the document does not exist or is not owned by the user.
     """
     db = _get_db()
     snap = db.collection("documents").document(doc_id).get()
@@ -45,19 +44,13 @@ def get_document_text(doc_id: str, uid: str) -> tuple[str, str]:
 
     data = snap.to_dict()
 
-    # Treat documents owned by other users as not found (don't leak existence)
     if data.get("ownerId") != uid:
         raise DocumentNotFoundError(f"Document '{doc_id}' not found.")
 
-    text = (data.get("ocr_text") or "").strip()
-    if not text:
-        raise DocumentNotFoundError(
-            "No extracted text is available for this document. "
-            "Only image uploads with completed OCR are supported."
-        )
-
-    file_name = data.get("fileName") or data.get("file_name") or ""
-    return text, file_name
+    return {
+        "ocr_text":  (data.get("ocr_text") or "").strip(),
+        "file_name": data.get("fileName") or data.get("file_name") or "",
+    }
 
 
 def save_summary(
