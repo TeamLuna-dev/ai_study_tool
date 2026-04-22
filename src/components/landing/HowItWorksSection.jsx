@@ -1,55 +1,68 @@
+import { motion } from "framer-motion";
+
 const steps = [
   {
     number: "01",
-    title: "Upload your notes",
+    title: "Upload your materials",
     description:
-      "Add your study materials so the app can organize and process them.",
+      "Import your notes, PDFs, or study content into one organized workspace.",
   },
   {
     number: "02",
-    title: "Let AI do the work",
+    title: "Generate AI study tools",
     description:
-      "Generate summaries, quizzes, and study insights from your content.",
+      "Create summaries, quizzes, and focused insights from your content instantly.",
   },
   {
     number: "03",
     title: "Review and improve",
     description:
-      "Practice smarter, track progress, and focus on weak areas.",
+      "Track weak areas, revisit difficult topics, and improve over time.",
   },
 ];
 
 export default function HowItWorksSection() {
   return (
-    <section className="bg-gray-50 px-6 py-20 dark:bg-gray-900/40">
+    <section
+      id="how-it-works"
+      className="relative overflow-hidden bg-gray-50 px-6 py-24 dark:bg-gray-900/40"
+    >
       <div className="mx-auto max-w-7xl">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl dark:text-white">
-            How it works
-          </h2>
-          <p className="mt-4 text-gray-600 dark:text-gray-300">
-            A simple flow that helps you go from raw notes to better studying.
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="mx-auto max-w-3xl text-center"
+        >
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-purple-600 dark:text-purple-400">
+            Process
           </p>
-        </div>
+          <h2 className="mt-4 text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl dark:text-white">
+            From notes to mastery in three steps
+          </h2>
+        </motion.div>
 
-        <div className="mt-14 grid gap-6 md:grid-cols-3">
-          {steps.map((step) => (
-            <div
+        <div className="mt-16 grid gap-6 md:grid-cols-3">
+          {steps.map((step, index) => (
+            <motion.div
               key={step.number}
-              className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950"
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.12 }}
+              className="rounded-3xl border border-gray-200 bg-white p-8 shadow-sm dark:border-gray-800 dark:bg-gray-950"
             >
-              <span className="text-sm font-bold tracking-widest text-blue-600 dark:text-blue-300">
+              <div className="text-sm font-bold tracking-[0.3em] text-blue-600 dark:text-blue-400">
                 {step.number}
-              </span>
-
-              <h3 className="mt-3 text-xl font-semibold text-gray-900 dark:text-white">
+              </div>
+              <h3 className="mt-4 text-2xl font-semibold text-gray-900 dark:text-white">
                 {step.title}
               </h3>
-
-              <p className="mt-3 text-sm leading-6 text-gray-600 dark:text-gray-300">
+              <p className="mt-4 leading-7 text-gray-600 dark:text-gray-300">
                 {step.description}
               </p>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>

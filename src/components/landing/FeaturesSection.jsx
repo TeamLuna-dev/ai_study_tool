@@ -1,65 +1,96 @@
 import { FileText, Brain, BarChart3, Users } from "lucide-react";
+import { motion } from "framer-motion";
 
 const features = [
   {
     icon: FileText,
-    title: "Upload Notes",
+    title: "Upload and organize notes",
     description:
-      "Keep your study materials organized and ready for AI-powered processing.",
+      "Bring all your study material into one place and keep everything accessible.",
   },
   {
     icon: Brain,
-    title: "AI Summaries",
+    title: "Generate AI summaries",
     description:
-      "Turn long notes into short, clear summaries that are easier to review.",
+      "Turn long readings into concise, useful study notes in seconds.",
   },
   {
     icon: BarChart3,
-    title: "Track Progress",
+    title: "Track learning progress",
     description:
-      "Monitor quiz results and identify weak topics over time.",
+      "See quiz performance, identify weak topics, and improve intentionally.",
   },
   {
     icon: Users,
-    title: "Study Rooms",
+    title: "Collaborate in study rooms",
     description:
-      "Collaborate with classmates and learn together in shared spaces.",
+      "Learn with classmates, share context, and stay aligned as a group.",
   },
 ];
+
+const container = {
+  hidden: {},
+  show: {
+    transition: {
+      staggerChildren: 0.12,
+    },
+  },
+};
+
+const item = {
+  hidden: { opacity: 0, y: 24 },
+  show: { opacity: 1, y: 0 },
+};
 
 export default function FeaturesSection() {
   return (
     <section id="features" className="px-6 py-20">
       <div className="mx-auto max-w-7xl">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl dark:text-white">
-            Everything you need to study better
-          </h2>
-          <p className="mt-4 text-gray-600 dark:text-gray-300">
-            Built to help students save time, stay organized, and learn more efficiently.
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.6 }}
+          className="mx-auto max-w-3xl text-center"
+        >
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">
+            Features
           </p>
-        </div>
+          <h2 className="mt-4 text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl dark:text-white">
+            Built for focused, efficient studying
+          </h2>
+          <p className="mt-5 text-lg text-gray-600 dark:text-gray-300">
+            Everything students need to review faster, practice better, and stay organized.
+          </p>
+        </motion.div>
 
-        <div className="mt-14 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+        <motion.div
+          variants={container}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.2 }}
+          className="mt-16 grid gap-6 md:grid-cols-2 xl:grid-cols-4"
+        >
           {features.map(({ icon: Icon, title, description }) => (
-            <div
+            <motion.div
               key={title}
-              className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg dark:border-gray-800 dark:bg-gray-900"
+              variants={item}
+              className="group rounded-3xl border border-gray-200 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-2xl dark:border-gray-800 dark:bg-gray-900"
             >
-              <div className="mb-4 inline-flex rounded-xl bg-blue-100 p-3 dark:bg-blue-900/30">
-                <Icon className="h-6 w-6 text-blue-600 dark:text-blue-300" />
+              <div className="mb-5 inline-flex rounded-2xl bg-gradient-to-br from-blue-100 to-cyan-100 p-3 dark:from-blue-900/30 dark:to-cyan-900/20">
+                <Icon className="h-6 w-6 text-blue-700 dark:text-blue-300" />
               </div>
 
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
                 {title}
               </h3>
 
-              <p className="mt-3 text-sm leading-6 text-gray-600 dark:text-gray-300">
+              <p className="mt-3 leading-7 text-gray-600 dark:text-gray-300">
                 {description}
               </p>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
