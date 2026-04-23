@@ -150,6 +150,14 @@ export default function DocumentPreviewModal({ doc, onClose, onRename }) {
               {status.label}
             </span>
           </div>
+          {doc.topic && (
+            <div className="col-span-2 bg-gray-50 dark:bg-gray-800 rounded-xl p-3">
+              <p className="text-gray-400 dark:text-gray-500 mb-1">Topic</p>
+              <span className="inline-block font-medium px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
+                {doc.topic}
+              </span>
+            </div>
+          )}
         </div>
 
       </div>

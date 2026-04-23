@@ -109,7 +109,7 @@ export default function FileUploadPage() {
               </h3>
               <div className="mt-4">
                 <DocumentList
-                  docs={docs}
+                  docs={docs.slice(0, 3)}
                   loading={loading}
                   error={error}
                   onDelete={handleDelete}
