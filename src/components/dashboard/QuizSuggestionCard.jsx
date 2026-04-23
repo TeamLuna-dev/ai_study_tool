@@ -30,7 +30,7 @@ export function QuizSuggestionCard() {
   }, [user?.uid]);
 
   const weakTopicNames = useMemo(
-    () => weakTopics.map((t) => t.topic),
+    () => weakTopics.filter((t) => t.average_score < 60).map((t) => t.topic),
     [weakTopics]
   );
 
