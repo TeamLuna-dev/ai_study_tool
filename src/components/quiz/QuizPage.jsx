@@ -278,7 +278,7 @@ export function QuizPage() {
         loadingAnalysis={loadingAnalysis}
         suggestions={suggestions}
         suggestionsLoading={suggestionsLoading}
-        onSelectDoc={() => navigate("/quiz")}
+        onSelectDoc={(doc) => navigate("/quiz", { state: { doc } })}
         error={error}
         handleRestart={handleRestart}
         handleRetake={handleRetake}
