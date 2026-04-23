@@ -85,20 +85,6 @@ function RecentDocumentCard({ doc, onResume }) {
         </div>
       </div>
     </div>
-
-      <button
-        onClick={() => onResume(doc.id)}
-        className="
-          shrink-0 text-sm font-medium
-          text-blue-600 dark:text-blue-400
-          hover:text-blue-700 dark:hover:text-blue-300
-          px-3 py-1.5 rounded-lg
-          hover:bg-blue-50 dark:hover:bg-blue-900/30
-          transition-colors
-        "
-      >
-        Resume
-      </button>
     </div>
   );
 }
