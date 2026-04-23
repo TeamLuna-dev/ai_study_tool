@@ -80,7 +80,7 @@ function RecentDocumentCard({ doc, onResume }) {
         <div className="flex items-center gap-2 mt-1">
           <FileTypeBadge fileType={doc.fileType} />
           <span className="text-xs text-gray-400 dark:text-gray-500">
-            {formatRelativeTime(doc.lastAccessed)}
+            {formatRelativeTime(doc.uploadedAt)}
           </span>
         </div>
       </div>

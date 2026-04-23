@@ -7,30 +7,34 @@
 import {
   collection,
   query,
-  orderBy,
-  limit,
+  where,
   onSnapshot,
 } from "firebase/firestore";
 import { db } from "../config/firebase";
 
 /**
- * Subscribes to the user's most recently accessed documents.
+ * Subscribes to the user's most recently uploaded documents.
  *
- * Orders by `lastAccessed` descending. Documents that do not yet have a
- * `lastAccessed` field are excluded by Firestore's orderBy behaviour, so the
- * listener will yield an empty snapshot (not an error) until the field exists.
+ * Queries the top-level `documents` collection filtered by `ownerId`.
+ * Sorting by `uploadedAt` is done client-side to avoid requiring a
+ * composite Firestore index.
  *
- * @param {string}   uid      - Firebase Auth UID
- * @param {Function} onNext   - called with a Firestore QuerySnapshot
- * @param {Function} onError  - called with a FirestoreError
+ * @param {string}   uid         - Firebase Auth UID
+ * @param {Function} onNext      - called with a Firestore QuerySnapshot
+ * @param {Function} onError     - called with a FirestoreError
  * @param {number}   [limitCount=3] - maximum documents to return
  * @returns {() => void} Firestore unsubscribe function
  */
 export function getRecentDocuments(uid, onNext, onError, limitCount = 3) {
   const q = query(
-    collection(db, "users", uid, "documents"),
-    orderBy("lastAccessed", "desc"),
-    limit(limitCount)
+    collection(db, "documents"),
+    where("ownerId", "==", uid)
   );
-  return onSnapshot(q, onNext, onError);
+  return onSnapshot(q, (snapshot) => {
+    const sorted = snapshot.docs
+      .map((d) => ({ id: d.id, ...d.data() }))
+      .sort((a, b) => (b.uploadedAt?.seconds ?? 0) - (a.uploadedAt?.seconds ?? 0))
+      .slice(0, limitCount);
+    onNext(sorted);
+  }, onError);
 }
