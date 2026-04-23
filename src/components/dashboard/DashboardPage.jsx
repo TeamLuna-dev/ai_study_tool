@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import { getUserProfile } from "../../services/userService";
 import { ProfileCard } from "./ProfileCard";
 import { fetchStudyBrief } from "../../services/studyBriefService";
+import { QuizSuggestionCard } from "./QuizSuggestionCard";
 
 export function DashboardPage() {
     // Global dashboard loading indicator for real-time sync
@@ -139,6 +140,7 @@ export function DashboardPage() {
 
             {/* Weak Topics Card below Today's Progress */}
             <WeakTopicsCard />
+            <QuizSuggestionCard />
           </div>
         </section>
       </main>
