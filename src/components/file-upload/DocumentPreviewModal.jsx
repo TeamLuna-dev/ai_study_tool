@@ -58,7 +58,7 @@ export default function DocumentPreviewModal({ doc, onClose, onRename }) {
 
   async function handleSave() {
     const trimmed = nameInput.trim();
-    if (!trimmed || trimmed === doc.fileName) { setEditing(false); return; }
+    if (!trimmed || trimmed === doc.fileName || !onRename) { setEditing(false); return; }
     setSaving(true);
     await onRename(doc.id, trimmed);
     setSaving(false);

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { FileUpload } from "./FileUpload";
 import { AuthGate } from "./AuthGate";
 import { useAuth } from "../../hooks/useAuth";
@@ -113,6 +113,7 @@ export default function FileUploadPage() {
                   loading={loading}
                   error={error}
                   onDelete={handleDelete}
+                  onRename={handleRename}
                 />
               </div>
             </div>
