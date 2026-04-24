@@ -7,8 +7,10 @@ import { AuthGate, FileUpload } from "../file-upload";
 import { useAuth } from "../../hooks/useAuth";
 import { DashboardWelcome } from "./DashboardWelcome";
 import { DashboardStats } from "./DashboardStats";
+import { useDashboardStats } from "../../hooks/useDashboardStats";
 import { RecentDocuments } from "./RecentDocuments";
 import { StudyBriefCard } from "./StudyBriefCard";
+import { WeakTopicsCard } from "./WeakTopicsCard";
 import QuizProgressChart from "../quiz/QuizProgressChart";
 import { useEffect, useState } from "react";
 import { getUserProfile } from "../../services/userService";
@@ -16,6 +18,8 @@ import { ProfileCard } from "./ProfileCard";
 import { fetchStudyBrief } from "../../services/studyBriefService";
 
 export function DashboardPage() {
+    // Global dashboard loading indicator for real-time sync
+    const { loading: dashboardLoading } = useDashboardStats();
   const { user } = useAuth();
   const isAuthenticated = !!user;
   const getAuthToken = user ? () => user.getIdToken() : null;
@@ -61,6 +65,12 @@ export function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#f5f7fb] text-gray-900 dark:bg-gray-950 dark:text-white transition-colors duration-300">
+      {dashboardLoading && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 bg-gray-900 text-white px-4 py-2 rounded-full shadow-lg animate-fade-in">
+          <svg className="animate-spin h-5 w-5 mr-2 text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>
+          Syncing dashboard data…
+        </div>
+      )}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
         {/* Hero / Welcome */}
         <DashboardWelcome profile={profile} />
@@ -71,6 +81,7 @@ export function DashboardPage() {
         {/* Main dashboard content */}
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left column */}
+
           <div className="lg:col-span-2 space-y-6">
             <StudyBriefCard
               brief={brief}
@@ -79,8 +90,9 @@ export function DashboardPage() {
               generatedAt={briefGeneratedAt}
             />
 
-            <QuizProgressChart />
+            {/* Recent Activity (Recent Documents) moved above Quiz Progress Chart */}
             <RecentDocuments />
+            <QuizProgressChart />
           </div>
 
           {/* Right column */}
@@ -125,7 +137,8 @@ export function DashboardPage() {
               </p>
             </div>
 
-            
+            {/* Weak Topics Card below Today's Progress */}
+            <WeakTopicsCard />
           </div>
         </section>
       </main>
