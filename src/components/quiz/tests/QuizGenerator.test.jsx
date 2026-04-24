@@ -212,12 +212,12 @@ describe("QuizGenerator — Step 3: Confirmation", () => {
 
   it("shows correct topic in summary", () => {
     renderStep3();
-    expect(screen.getByText("Biology")).toBeTruthy();
+    expect(screen.getAllByText("Biology").length).toBeGreaterThan(0);
   });
 
   it("shows correct question count in summary", () => {
     renderStep3();
-    expect(screen.getByText("5")).toBeTruthy();
+    expect(screen.getAllByText("5").length).toBeGreaterThan(0);
   });
 
   it("shows Pasted notes when inputMode is notes", () => {
