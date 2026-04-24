@@ -64,8 +64,7 @@ class TestHappyPath:
         _, mock_create = _run(model="gpt-4o")
         assert mock_create.call_args[1]["model"] == "gpt-4o"
 
-
-# Missing API key 
+# Missing API key
 
 class TestMissingApiKey:
 
@@ -79,3 +78,61 @@ class TestMissingApiKey:
                 generate_adaptive_quiz(VALID_NOTES)
 
             MockOpenAI.assert_not_called()
+            
+# Prompt content
+
+class TestPromptContent:
+
+    def _get_prompt(self, **kwargs) -> str:
+        from features.quizgen.service import generate_adaptive_quiz
+
+        with patch("features.quizgen.service.OpenAI") as MockOpenAI, \
+             patch("features.quizgen.service.os.getenv", return_value="fake-key"):
+
+            mock_client = MagicMock()
+            MockOpenAI.return_value = mock_client
+            mock_client.chat.completions.create.return_value = _make_mock_response(json.dumps(FAKE_QUIZ))
+            generate_adaptive_quiz(**kwargs)
+            return mock_client.chat.completions.create.call_args[1]["messages"][0]["content"]
+
+    def test_notes_included_in_prompt(self):
+        assert VALID_NOTES in self._get_prompt(notes=VALID_NOTES)
+
+    def test_major_included_when_set(self):
+        assert "Biology" in self._get_prompt(notes=VALID_NOTES, major="Biology")
+
+    def test_major_absent_when_empty(self):
+        assert "The student is studying" not in self._get_prompt(notes=VALID_NOTES, major="")
+
+
+# Schema forwarding
+
+class TestSchemaForwarding:
+
+    def test_schema_name_matches_question_count(self):
+        _, mock_create = _run(question_count=10)
+        fmt = mock_create.call_args[1]["response_format"]
+        assert fmt["json_schema"]["name"] == "mcq_quiz_10"
+
+    def test_strict_mode_enabled(self):
+        _, mock_create = _run()
+        fmt = mock_create.call_args[1]["response_format"]
+        assert fmt["json_schema"]["strict"] is True
+
+
+# Error handling
+
+class TestErrorHandling:
+
+    def test_openai_exception_propagates(self):
+        from features.quizgen.service import generate_adaptive_quiz
+
+        with patch("features.quizgen.service.OpenAI") as MockOpenAI, \
+             patch("features.quizgen.service.os.getenv", return_value="fake-key"):
+
+            mock_client = MagicMock()
+            MockOpenAI.return_value = mock_client
+            mock_client.chat.completions.create.side_effect = RuntimeError("API timeout")
+
+            with pytest.raises(RuntimeError, match="API timeout"):
+                generate_adaptive_quiz(VALID_NOTES)
