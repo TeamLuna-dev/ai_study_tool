@@ -1,9 +1,8 @@
 
-import React from 'react';
-import { render, screen } from '@testing-library/react';
-import { WeakTopicsCard } from '../WeakTopicsCard';
 import { vi } from 'vitest';
-
+vi.mock('../../context/AuthContext', () => ({
+  useAuthContext: () => ({ user: { uid: 'user1', getIdToken: () => 'token' }, loading: false }),
+}));
 vi.mock('../../hooks/useWeakTopics', () => ({
   useWeakTopics: () => ({
     weakTopics: [
@@ -15,6 +14,9 @@ vi.mock('../../hooks/useWeakTopics', () => ({
     error: null,
   }),
 }));
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import { WeakTopicsCard } from '../WeakTopicsCard';
 
 describe('WeakTopicsCard', () => {
   it('renders weak topics below 60%', () => {
