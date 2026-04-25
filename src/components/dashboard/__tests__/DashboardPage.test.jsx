@@ -1,20 +1,19 @@
+
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { DashboardPage } from '../DashboardPage';
+import { vi } from 'vitest';
 
-// Mock dependencies
-jest.mock('../../hooks/useDashboardStats', () => ({
+vi.mock('../../hooks/useDashboardStats', () => ({
   useDashboardStats: () => ({ loading: false }),
 }));
-jest.mock('../../context/AuthContext', () => ({
+vi.mock('../../context/AuthContext', () => ({
   useAuth: () => ({ user: { uid: 'user1', getIdToken: () => 'token' } }),
 }));
-jest.mock('../../services/userService', () => ({
+vi.mock('../../services/userService', () => ({
   getUserProfile: () => Promise.resolve({ name: 'Test User' }),
 }));
-
-// Mock child components
-jest.mock('./WeakTopicsCard', () => ({ WeakTopicsCard: () => <div>WeakTopicsCard</div> }));
+vi.mock('./WeakTopicsCard', () => ({ WeakTopicsCard: () => <div>WeakTopicsCard</div> }));
 
 
 describe('DashboardPage', () => {
