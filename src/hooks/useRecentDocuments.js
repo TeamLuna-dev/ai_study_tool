@@ -14,7 +14,7 @@ import { getRecentDocuments } from "../services/documentService";
 
 /**
  * @returns {{
- *   documents: Array<{ id: string, fileName: string, fileType: string, lastAccessed: any, storageUrl: string }>,
+ *   documents: Array<{ id: string, fileName: string, fileType: string, uploadedAt: any, storageUrl: string }>,
  *   loading:   boolean,
  *   error:     import("firebase/firestore").FirestoreError | null,
  * }}
@@ -46,8 +46,8 @@ export function useRecentDocuments() {
 
     const unsubscribe = getRecentDocuments(
       uid,
-      (snapshot) => {
-        setDocuments(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+      (docs) => {
+        setDocuments(docs);
         setLoading(false);
       },
       (err) => {

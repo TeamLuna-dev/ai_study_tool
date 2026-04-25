@@ -12,16 +12,16 @@ export function WeakTopicsCard() {
       </h3>
       <div className="mb-4">
         <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300">
-          Only topics below 70% are shown as weak topics
+          Only topics below 60% are shown as weak topics
         </span>
       </div>
       {loading && <p className="text-gray-400 dark:text-gray-500">Loading…</p>}
       {error && <p className="text-red-500 text-sm">{error}</p>}
       {!loading && !error && (
-        weakTopics.filter(topic => (typeof topic.average_score === "number" ? topic.average_score : 0) < 70).length > 0 ? (
+        weakTopics.filter(topic => (typeof topic.average_score === "number" ? topic.average_score : 0) < 60).length > 0 ? (
           <ul className="space-y-4">
             {weakTopics
-              .filter(topic => (typeof topic.average_score === "number" ? topic.average_score : 0) < 70)
+              .filter(topic => (typeof topic.average_score === "number" ? topic.average_score : 0) < 60)
               .sort((a, b) => (a.average_score ?? 0) - (b.average_score ?? 0))
               .map((topic, idx) => {
                 const percent = typeof topic.average_score === "number" ? Number(topic.average_score) : 0;
@@ -35,9 +35,6 @@ export function WeakTopicsCard() {
                 } else if (percent < 60) {
                   barColor = "bg-orange-400";
                   badgeColor = "bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-200";
-                } else if (percent < 70) {
-                  barColor = "bg-yellow-300";
-                  badgeColor = "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-200";
                 }
                 return (
                   <li key={idx} className="flex flex-col gap-1 p-3 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/60 shadow-sm">

@@ -18,6 +18,12 @@ function getFileTypeBadge(fileType) {
   return { label: "File", color: "bg-gray-50 text-gray-600 dark:bg-gray-800 dark:text-gray-300" };
 }
 
+// maps classified topic to a Tailwind color badge
+function getTopicBadge(topic) {
+  if (!topic) return null;
+  return { label: topic, color: "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300" };
+}
+
 // maps status to a label and Tailwind color classes
 function getStatusBadge(status) {
   if (status === "ready")      return { label: "Ready",      color: "bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300" };
@@ -47,6 +53,7 @@ function formatDate(timestamp) {
 export default function DocumentCard({ doc, onDelete, onRename }) {
   const fileType = getFileTypeBadge(doc.fileType);
   const status = getStatusBadge(doc.status);
+  const topic = getTopicBadge(doc.topic);
 
   // Local state for delete confirmation and loading state during deletion
   const [confirming, setConfirming] = useState(false);
@@ -77,11 +84,18 @@ export default function DocumentCard({ doc, onDelete, onRename }) {
         <span>{formatDate(doc.uploadedAt)}</span>
       </div>
 
-      {/* Footer — status badge + delete button (wired in next commit) */}
+      {/* Footer — status badge + topic badge + delete button */}
       <div className="flex items-center justify-between">
-        <span className={`text-xs font-medium px-2 py-1 rounded-md ${status.color}`}>
-          {status.label}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className={`text-xs font-medium px-2 py-1 rounded-md ${status.color}`}>
+            {status.label}
+          </span>
+          {topic && (
+            <span className={`text-xs font-medium px-2 py-1 rounded-md ${topic.color}`}>
+              {topic.label}
+            </span>
+          )}
+        </div>
         <button
           onClick={e => { e.stopPropagation(); handleDeleteClick(); }}
           className="text-xs text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-1 rounded-lg transition-colors cursor-pointer"

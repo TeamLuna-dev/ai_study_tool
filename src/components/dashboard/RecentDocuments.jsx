@@ -79,26 +79,17 @@ function RecentDocumentCard({ doc, onResume }) {
 
         <div className="flex items-center gap-2 mt-1">
           <FileTypeBadge fileType={doc.fileType} />
+          {doc.topic && (
+            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
+              {doc.topic}
+            </span>
+          )}
           <span className="text-xs text-gray-400 dark:text-gray-500">
-            {formatRelativeTime(doc.lastAccessed)}
+            {formatRelativeTime(doc.uploadedAt)}
           </span>
         </div>
       </div>
     </div>
-
-      <button
-        onClick={() => onResume(doc.id)}
-        className="
-          shrink-0 text-sm font-medium
-          text-blue-600 dark:text-blue-400
-          hover:text-blue-700 dark:hover:text-blue-300
-          px-3 py-1.5 rounded-lg
-          hover:bg-blue-50 dark:hover:bg-blue-900/30
-          transition-colors
-        "
-      >
-        Resume
-      </button>
     </div>
   );
 }

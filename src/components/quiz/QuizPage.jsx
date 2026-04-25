@@ -6,7 +6,7 @@
  * Delegates presentation to QuizGenerator and QuizResults components. SRP compliant.
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { generateQuiz, scoreQuiz, getWeakTopics } from "../../services/quizService";
 import { shuffleArray } from "../../utils/shuffleArray";
 import { useAuth } from "../../hooks/useAuth";
@@ -15,6 +15,7 @@ import { db } from "../../config/firebase";
 import QuizGenerator from "./QuizGenerator"
 import QuizResults from "./QuizResults";
 import QuizLoadingScreen from "./QuizLoadingScreen";
+import { useQuizSuggestions } from "../../hooks/useQuizSuggestions";
 import { BRAND_BLUE, primaryButtonStyle, secondaryButtonStyle, disabledButtonStyle, layoutStyle } from "./quizStyles";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -49,14 +50,28 @@ export function QuizPage() {
   const [loadingGen, setLoadingGen] = useState(false);
   const [loadingScore, setLoadingScore] = useState(false);
   const [error, setError] = useState("");
-  const [weakTopics, setWeakTopics] = useState([]); // new states for personalized quiz-generation. (wll use in future tasks)
-  const [loadingAnalysis, setLoadingAnalysis] = useState(false); // state to track loading 
+  const [weakTopics, setWeakTopics] = useState([]);
+  const [loadingAnalysis, setLoadingAnalysis] = useState(false);
+  const [preQuizWeakTopics, setPreQuizWeakTopics] = useState([]);
+
+  const weakTopicNames = useMemo(
+    () => weakTopics.filter((t) => t.is_weak).map((t) => t.topic),
+    [weakTopics]
+  );
+  const { suggestions, loading: suggestionsLoading } = useQuizSuggestions(weakTopicNames, user?.uid);
 
   const [userDocs, setUserDocs] = useState([]); // state to hold user's uploaded documents for doc-based quiz generation
   const [selectedDocId, setSelectedDocId] = useState(""); // state to track which document the user has selected for quiz generation
   const [inputMode, setInputMode] = useState("docs"); // "docs" | "notes"
 
   const [questionCount, setQuestionCount] = useState(5); // defaults to 5 — matches backend default
+
+  useEffect(() => {
+    if (!user) return;
+    getWeakTopics(user.uid)
+      .then(setPreQuizWeakTopics)
+      .catch(() => {});
+  }, [user]);
 
   useEffect(() => { // fetch user's uploaded documents on component mount, if user is logged in
   if (!user) return;
@@ -77,17 +92,28 @@ export function QuizPage() {
 
   // On mount, check for retake state
   useEffect(() => {
-    if (location.state && location.state.questions) {
+    if (location.state?.questions) {
       setQuiz({ questions: location.state.questions, topic: location.state.topic });
       setTopic(location.state.topic || "");
       setCurrent(0);
       setSelected(null);
       setAnswers(new Array(location.state.questions.length).fill(null));
-      // Clear state so back/forward doesn't keep reusing it
       navigate("/quiz", { replace: true, state: {} });
     }
     // eslint-disable-next-line
   }, []);
+
+  // Runs whenever navigation state changes, handles doc pre-selection
+  useEffect(() => {
+    if (!location.state?.doc) return;
+    const doc = location.state.doc;
+    setSelectedDocId(doc.id);
+    setTopic(doc.topic || "");
+    setInputMode("docs");
+    setQuiz(null);
+    setResult(null);
+    navigate("/quiz", { replace: true, state: {} });
+  }, [location.state]);
 
   const questions = quiz?.questions || [];
   const q = questions[current];
@@ -261,6 +287,9 @@ export function QuizPage() {
         quiz={quiz}
         weakTopics={weakTopics}
         loadingAnalysis={loadingAnalysis}
+        suggestions={suggestions}
+        suggestionsLoading={suggestionsLoading}
+        onSelectDoc={(doc) => navigate("/quiz", { state: { doc } })}
         error={error}
         handleRestart={handleRestart}
         handleRetake={handleRetake}
