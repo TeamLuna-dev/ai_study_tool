@@ -26,4 +26,3 @@
 
 ---
 
-**Location:** This plan is saved as `test-plan.md` in the project root. Please review and update if your team prefers a different location or additional details.
