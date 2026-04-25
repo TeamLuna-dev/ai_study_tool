@@ -139,8 +139,8 @@ export function DashboardPage() {
             </div>
 
             {/* Weak Topics Card below Today's Progress */}
-            <WeakTopicsCard />
             <QuizSuggestionCard />
+            <WeakTopicsCard />
           </div>
         </section>
       </main>
