@@ -44,7 +44,10 @@ TypeError: Cannot destructure property 'user' of 'useAuthContext(...)' as it is 
   - Returns expected data structure for quiz generation endpoint
   - Handles errors gracefully if quiz feature fails to load
 - **Result:**
-  - (Paste output here after running: `pytest`)
+  - Test could not be run. The command 'pytest' was not recognized in the terminal, indicating that Python or pytest is not installed or not available in the system PATH. As a result, backend test results could not be documented.
+
+  - **Next Steps:**
+    - To run this test in the future, ensure Python and pytest are installed and available in your system PATH.
 
 ---
 
