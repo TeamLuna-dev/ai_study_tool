@@ -7,7 +7,7 @@ import os
 import sys
 
 SUMMARY_QUERY = "main topics, key concepts, and important details"
-SCORE_THRESHOLD = 0.3
+SCORE_THRESHOLD = 0.2
 TOP_K = 20
 
 
