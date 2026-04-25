@@ -1,9 +1,10 @@
+
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { WeakTopicsCard } from '../WeakTopicsCard';
+import { vi } from 'vitest';
 
-// Mock the useWeakTopics hook
-jest.mock('../../hooks/useWeakTopics', () => ({
+vi.mock('../../hooks/useWeakTopics', () => ({
   useWeakTopics: () => ({
     weakTopics: [
       { topic: 'Algebra', average_score: 55 },
@@ -24,7 +25,7 @@ describe('WeakTopicsCard', () => {
   });
 
   it('shows loading state', () => {
-    jest.mock('../../hooks/useWeakTopics', () => ({
+    vi.doMock('../../hooks/useWeakTopics', () => ({
       useWeakTopics: () => ({ weakTopics: [], loading: true, error: null }),
     }));
     render(<WeakTopicsCard />);
@@ -32,7 +33,7 @@ describe('WeakTopicsCard', () => {
   });
 
   it('shows no weak topics message', () => {
-    jest.mock('../../hooks/useWeakTopics', () => ({
+    vi.doMock('../../hooks/useWeakTopics', () => ({
       useWeakTopics: () => ({ weakTopics: [{ topic: 'Geometry', average_score: 75 }], loading: false, error: null }),
     }));
     render(<WeakTopicsCard />);
