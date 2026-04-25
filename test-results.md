@@ -25,7 +25,17 @@ TypeError: Cannot destructure property 'user' of 'useAuthContext(...)' as it is 
   - Renders WeakTopicsCard
   - Loads user profile
 - **Result:**
-  - (Paste output here after running: `npm test` or `npx vitest`)
+  - Test could not be executed successfully due to React context/hook mocking issues in the current setup. Multiple attempts were made to mock AuthContext and useAuthContext, but the test still failed with:
+
+```
+TypeError: Cannot destructure property 'user' of 'useAuthContext(...)' as it is null.
+    at useAuth (src/hooks/useAuth.js:12:11)
+    at useDashboardStats (src/hooks/useDashboardStats.js:27:27)
+    at DashboardPage (src/components/dashboard/DashboardPage.jsx:23:43)
+    ...
+```
+
+  - See commit history for evidence of attempts and troubleshooting steps.
 
 ## Quiz API Blueprint (Backend)
 - **Test File:** backend/features/quizgen/tests/test_quiz_blueprint.py
