@@ -133,7 +133,7 @@ Features to be implemented:<br>
   - [Scrum-11](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-11), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/branch/SCRUM-11-design-quiz-screen-react)
 
 
-## Reports
+## Report
 
 <img src="Assets/SP1-REPORT.png" alt="Dashboard" width="700">
 
@@ -213,9 +213,60 @@ Features to be implemented:<br>
 - Jira Task: Sam - [Quiz Quality Assurance]
   - [Scrum-65](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-65), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-65)
 
-## Reports
+## Report
 
 <img src="Assets/SP2-REPORT.png" alt="Dashboard" width="700">
+
+## Sprint 3
+
+### Contributions
+
+**Sumit:** "Short summary of what was accomplished"
+
+- Jira Task: Sumit - [Task Name]
+  - [SCRUM-#](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-#), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-#)
+
+
+**Lane:** "Started and finished implementing the OCR image processing & handling, finishing off the file-upload backend altogether."
+
+- Jira Task: Lane - [Embedding Generation & Qdrant Storage]
+  - [Scrum-39](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-39), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-39)
+
+- Jira Task: Lane - [Processing Error Handling]
+  - [Scrum-40](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-40), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-40)
+
+- Jira Task: Lane - [OCR Integration]
+  - [Scrum-36](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-36), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-36)
+
+- Jira Task: Lane - [Editable Text Review UI]
+  - [Scrum-37](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-37), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-37)
+
+- Jira Task: Lane - [Embedding Creation from Edited Text]
+  - [Scrum-41](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-41), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-41)
+
+  
+**Angel:** "To be added"
+
+- Jira Task: Angel - [Task Name]
+  - [Scrum-XX](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-XX), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-XX)
+
+
+**Chris:** "Short summary of what was accomplished"
+
+- Jira Task: Sumit - [Task Name]
+  - [SCRUM-#](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-#), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-#)
+
+
+**Sam:** "Short summary of what was accomplished"
+
+- Jira Task: Sumit - [Task Name]
+  - [SCRUM-#](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-#), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-#)
+
+
+## Report
+
+<img src="Assets/SP3-REPORT.png" alt="Dashboard" width="700">
+
 
 ## Next Steps
 
