@@ -4,7 +4,7 @@ import sys
 
 from flask import Blueprint, jsonify, request
 from dotenv import load_dotenv
-from openai import OpenAI
+from openai import AsyncOpenAI
 from .integrity_logger import log_integrity_result
 from .integrity_service import run_integrity_checks, run_llm_verification
 from .validators import validate_quiz, validate_answers, validate_topic
@@ -49,7 +49,7 @@ def quiz_health():
 
 
 @quiz_bp.post("/generate")
-def generate_quiz():
+async def generate_quiz():
     data = request.get_json(silent=True) or {}
     # read notes and doc_id from request, stripping whitespace and defaulting to empty string if not provided
     notes = (data.get("notes") or "").strip()
@@ -99,7 +99,7 @@ def generate_quiz():
             if not notes.strip():
                 return jsonify({"error": "Document chunks were found, but no text was available."}), 400
 
-        quiz_obj = generate_adaptive_quiz(notes, question_count=question_count)
+        quiz_obj = await generate_adaptive_quiz(notes, question_count=question_count)
         validate_quiz(quiz_obj)
 
         rule_result = run_integrity_checks(quiz_obj, notes)
@@ -120,8 +120,8 @@ def generate_quiz():
         print(f"[INTEGRITY] Rule checks passed — proceeding to LLM verification.")
 
         load_dotenv()
-        openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-        llm_result = run_llm_verification(quiz_obj, notes, openai_client)
+        openai_client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        llm_result = await run_llm_verification(quiz_obj, notes, openai_client)
         llm_pass_count = len(llm_result["passed"])
         llm_fail_count = len(llm_result["failed"])
         llm_pct = round((llm_pass_count / total_questions) * 100, 1) if total_questions else 0

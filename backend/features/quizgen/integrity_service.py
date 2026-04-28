@@ -78,7 +78,7 @@ def run_integrity_checks(quiz: dict, notes: str) -> dict:
         "blocked": blocked,
     }
 
-def verify_question_with_llm(question: dict, notes: str, client, model: str = "gpt-4o") -> list[str]:
+async def verify_question_with_llm(question: dict, notes: str, client, model: str = "gpt-4o") -> list[str]:
     q_text       = question.get("question", "")
     choices      = question.get("choices", [])
     correct      = question.get("correct_index", -1)
@@ -110,7 +110,7 @@ If the question passes all checks, reasons should be an empty list.
 """.strip()
 
     try:
-        response = client.chat.completions.create(
+        response = await client.chat.completions.create(
             model=model,
             messages=[{"role": "user", "content": prompt}],
             response_format={"type": "json_object"},
@@ -123,13 +123,13 @@ If the question passes all checks, reasons should be an empty list.
         print(f"[INTEGRITY] LLM verify failed: {e}")
         return []  # fail open — don't block if LLM call fails
 
-def run_llm_verification(quiz: dict, notes: str, client, model: str = "gpt-4o") -> dict:
+async def run_llm_verification(quiz: dict, notes: str, client, model: str = "gpt-4o") -> dict:
     questions = quiz.get("questions", [])
     passed = []
     failed = []
 
     for i, q in enumerate(questions):
-        reasons = verify_question_with_llm(q, notes, client, model)
+        reasons = await verify_question_with_llm(q, notes, client, model)
         if reasons:
             failed.append({
                 "question_index": i,

@@ -13,7 +13,7 @@ def summarizer_health():
 
 
 @summarizer_bp.post("/generate")
-def generate_summary():
+async def generate_summary():
     uid, auth_error = verify_firebase_token(request)
     if auth_error:
         return jsonify({"error": auth_error}), 401
@@ -33,7 +33,7 @@ def generate_summary():
         return jsonify({"error": "Provide either 'text' or a 'doc_id'."}), 400
 
     try:
-        result = summarize_text(text)
+        result = await summarize_text(text)
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
     except Exception:

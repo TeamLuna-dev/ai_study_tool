@@ -1,7 +1,7 @@
 import os
 import json
 from dotenv import load_dotenv
-from openai import OpenAI
+from openai import AsyncOpenAI
 
 # Switched to a function that dynamically builds the schema based on the question count, to allow for future flexibility if we want to generate quizzes with different numbers of questions. 
 # For now, it still defaults to 5 questions and 4 choices each.
@@ -37,7 +37,7 @@ def build_mcq_schema(question_count: int) -> dict:
         },
     }
 
-def generate_adaptive_quiz(notes: str, model: str = "gpt-4.1", academic_level: str = "undergraduate", major: str = "", question_count: int = 5) -> dict:
+async def generate_adaptive_quiz(notes: str, model: str = "gpt-4.1", academic_level: str = "undergraduate", major: str = "", question_count: int = 5) -> dict:
     if not isinstance(notes, str) or not notes.strip():
         raise ValueError("notes must be a non-empty string")
     
@@ -50,7 +50,7 @@ def generate_adaptive_quiz(notes: str, model: str = "gpt-4.1", academic_level: s
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
         raise RuntimeError("Missing OPENAI_API_KEY")
-    client = OpenAI(api_key=api_key)
+    client = AsyncOpenAI(api_key=api_key)
 
     level_instructions = {
         "high_school":   "Use simple vocabulary and straightforward concepts. Avoid jargon.",
@@ -83,7 +83,7 @@ NOTES:
 
     schema = build_mcq_schema(question_count) # dynamically build schema based on question count, feat
 
-    response = client.chat.completions.create(
+    response = await client.chat.completions.create(
         model=model,
         messages=[{"role": "user", "content": prompt}],
         response_format={

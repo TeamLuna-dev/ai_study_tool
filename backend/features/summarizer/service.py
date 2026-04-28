@@ -1,9 +1,9 @@
 import os
 from dotenv import load_dotenv
-from openai import OpenAI
+from openai import AsyncOpenAI
 
 
-def summarize_text(text: str, model: str = "gpt-4.1-mini") -> dict:
+async def summarize_text(text: str, model: str = "gpt-4.1-mini") -> dict:
     if not isinstance(text, str) or not text.strip():
         raise ValueError("text must be a non-empty string")
 
@@ -12,7 +12,7 @@ def summarize_text(text: str, model: str = "gpt-4.1-mini") -> dict:
     if not api_key:
         raise RuntimeError("Missing OPENAI_API_KEY")
 
-    client = OpenAI(api_key=api_key)
+    client = AsyncOpenAI(api_key=api_key)
 
     prompt = f"""
 You are helping a student study.
@@ -24,7 +24,7 @@ TEXT:
 {text}
 """.strip()
 
-    response = client.responses.create(
+    response = await client.responses.create(
         model=model,
         input=prompt,
     )

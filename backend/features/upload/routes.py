@@ -12,7 +12,7 @@ All Firebase operations are delegated to firebase_storage.py
 import os
 import sys
 import uuid
-import threading
+from concurrent.futures import ThreadPoolExecutor
 from flask import Blueprint, jsonify, request
 from .auth import verify_firebase_token
 
@@ -23,6 +23,8 @@ if _embeddings_dir not in sys.path:
 """
 upload_bp = Blueprint("upload", __name__)
 ocr_bp    = Blueprint("ocr",    __name__)
+
+_executor = ThreadPoolExecutor(max_workers=4)
 
 # ---------------------------------------------------------------------------
 # Validation constants
@@ -131,17 +133,14 @@ def upload_file():
         # response returns immediately. The pipeline updates the Firestore
         # doc status to "ready" (or "error") when it finishes.
         from embeddings.pipeline import process_document
-        threading.Thread(
-            target=process_document,
-            kwargs={
-                "file_bytes": file_bytes,
-                "uid":        uid,
-                "file_name":  file.filename,
-                "doc_id":     result["doc_id"],
-                "mimetype":   file.mimetype,
-            },
-            daemon=True,
-        ).start()
+        _executor.submit(
+            process_document,
+            file_bytes=file_bytes,
+            uid=uid,
+            file_name=file.filename,
+            doc_id=result["doc_id"],
+            mimetype=file.mimetype,
+        )
 
         return jsonify({
             "message": "File uploaded. Processing embeddings in the background.",
@@ -185,15 +184,12 @@ def save_ocr_text(doc_id):
     # Fetches uid/file_name from Firestore so the caller doesn't need to send them.
     from embeddings.pipeline import process_confirmed_ocr_text
     meta = get_document_metadata(doc_id)
-    threading.Thread(
-        target=process_confirmed_ocr_text,
-        kwargs={
-            "text":      body["text"],
-            "uid":       meta["uid"],
-            "file_name": meta["file_name"],
-            "doc_id":    doc_id,
-        },
-        daemon=True,
-    ).start()
+    _executor.submit(
+        process_confirmed_ocr_text,
+        text=body["text"],
+        uid=meta["uid"],
+        file_name=meta["file_name"],
+        doc_id=doc_id,
+    )
 
     return jsonify({"message": "OCR text saved. Embedding in progress."}), 200
