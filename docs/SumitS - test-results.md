@@ -1,0 +1,53 @@
+# Unit Test Execution and Results
+
+## WeakTopicsCard Component
+- **Test File:** src/components/dashboard/__tests__/WeakTopicsCard.test.jsx
+- **Tests:**
+  - Renders weak topics below 60%
+  - Shows loading state
+  - Shows no weak topics message
+- **Result:**
+  - Test could not be executed successfully due to React context/hook mocking issues in the current setup. Multiple attempts were made to mock AuthContext and useAuthContext, but the test still failed with:
+
+```
+TypeError: Cannot destructure property 'user' of 'useAuthContext(...)' as it is null.
+    at useAuth (src/hooks/useAuth.js:12:11)
+    at useWeakTopics (src/hooks/useWeakTopics.js:6:27)
+    at WeakTopicsCard (src/components/dashboard/WeakTopicsCard.jsx:5:42)
+    ...
+```
+
+  - See commit history for evidence of attempts and troubleshooting steps.
+
+## DashboardPage Component
+- **Test File:** src/components/dashboard/__tests__/DashboardPage.test.jsx
+- **Tests:**
+  - Renders WeakTopicsCard
+  - Loads user profile
+- **Result:**
+  - Test could not be executed successfully due to React context/hook mocking issues in the current setup. Multiple attempts were made to mock AuthContext and useAuthContext, but the test still failed with:
+
+```
+TypeError: Cannot destructure property 'user' of 'useAuthContext(...)' as it is null.
+    at useAuth (src/hooks/useAuth.js:12:11)
+    at useDashboardStats (src/hooks/useDashboardStats.js:27:27)
+    at DashboardPage (src/components/dashboard/DashboardPage.jsx:23:43)
+    ...
+```
+
+  - See commit history for evidence of attempts and troubleshooting steps.
+
+## Quiz API Blueprint (Backend)
+- **Test File:** backend/features/quizgen/tests/test_quiz_blueprint.py
+- **Tests:**
+  - Quiz blueprint is registered and responds to requests
+  - Returns expected data structure for quiz generation endpoint
+  - Handles errors gracefully if quiz feature fails to load
+- **Result:**
+  - Test could not be run. The command 'pytest' was not recognized in the terminal, indicating that Python or pytest is not installed or not available in the system PATH. As a result, backend test results could not be documented.
+
+  - **Next Steps:**
+    - To run this test in the future, ensure Python and pytest are installed and available in your system PATH.
+
+---
+

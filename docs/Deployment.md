@@ -44,6 +44,12 @@ brew install --cask gcloud-cli
 # Firebase CLI
 npm install -g firebase-tools
 ```
+### Add file .env.production.local to main root
+### File should only have VITE_API_BASE_URL: (key) ... nothing else
+
+### Include in your .gitignore
+### Firebase Hosting cache
+### .firebase/ 
 
 ### Authenticate
 
