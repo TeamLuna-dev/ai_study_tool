@@ -11,16 +11,15 @@ import io
 import os
 import sys
 
-# Add the file-upload/ directory to the path so pytest finds main, routes, auth
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-
-import pytest
-
 # Set dev mode before importing the app so Firebase is never initialised
 os.environ["DEV_MODE"] = "true"
 os.environ["DEV_UID"]  = "test-user-123"
 
-from main import create_app
+import pytest
+
+# Use the unified backend app factory instead of the legacy upload/main.py
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+from app import create_app
 
 
 @pytest.fixture
@@ -95,7 +94,7 @@ def test_uid_associated_with_upload(client):
 
 def test_auth_rejected_when_dev_mode_off(client, monkeypatch):
     """Confirms a missing token is rejected when DEV_MODE is false."""
-    import auth
+    import features.upload.auth as auth
     monkeypatch.setattr(auth, "DEV_MODE", False)
 
     data = {"file": make_file("notes.pdf", "application/pdf")}

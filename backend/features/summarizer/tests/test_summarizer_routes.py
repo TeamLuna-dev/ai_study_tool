@@ -19,7 +19,7 @@ from flask import Flask
 # Resolve imports from backend/
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "..")))
 
-os.environ["DEV_MODE"] = "false"  # force real auth path so we can test 401s
+os.environ["DEV_MODE"] = "true"  # keeps Firebase uninitialised; auth is fully mocked per-test
 
 from features.summarizer.routes import summarizer_bp
 from features.summarizer.firestore import DocumentNotFoundError
