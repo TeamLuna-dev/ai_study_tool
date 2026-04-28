@@ -271,34 +271,34 @@ Features to be implemented:<br>
 ## Next Steps
 
 **Sumit:**
-- Build progress chart components on the dashboard to visualize quiz performance over time
-- Create quiz history retrieval UI components for browsing past attempts
-- Add frontend integration for trend analysis and progress tracking endpoints
-- Implement knowledge gap analysis that maps weak topics across multiple quiz sessions
-- Add unit tests for quiz history API and trend analysis services
+- Next step
+
+- Next step
+
 
 **Lane:**
-- Refine the overall user interface for consistency and usability by standardizing component styling, improving layout responsiveness, and enhancing user flows across key views (dashboard, study rooms, document cards). Focus on cleaner visual hierarchy, smoother interactions, and reusable components to create a more polished and cohesive experience.
+- Next step
 
-- Extend the existing file-upload system to support AI-generated summaries by processing uploaded documents and extracting key insights. Integrate a summary service that analyzes document content and attaches structured notes (highlights, topics, key takeaways) to each file, making study materials more accessible within the app.
+- Next step
+
 
 **Angel:**
+- Next step
+
+- Next step
 
 
 **Chris:**
-- Add an in-app preview modal to DocumentCard that renders PDFs inline and displays file metadata (upload date, size, status), falling back to a download button for non-PDF types. One new DocumentPreviewModal.jsx component, no backend work required.
+- Next step
 
-- New Flask endpoint at backend/features/room_brief/ that aggregates recent chat messages and shared document metadata from a room, sends the context to OpenAI, and returns a structured summary with conversation highlights, document topics, and suggested next steps. Mirrors the existing SCRUM-82 study brief architecture with a new roomBriefService.js on the frontend to call it.
+- Next step
 
-- A RoomStudyBrief.jsx card inside the study room view that consumes the room brief endpoint, displaying the conversation summary, shared documents with detected topics, and a refresh button for regeneration. Includes loading skeleton, error state with retry, and useEffect guards for uid race conditions and StrictMode double-mount.
-
-- A StudyCommandCenter.jsx component at the top of the dashboard that surfaces the user's least-recently-accessed document as a study nudge, renders contextual quick-launch actions based on user state, and shows a teammate activity pulse with recent room messages. All data sourced from existing Firestore fields and listeners — no new backend endpoints or collections required.
 
 **Sam:**
-- Enhance the Quiz Generator by implementing a dynamic option to allow users to select the number of questions generated per quiz session.
-- Integrate an ML model into the existing integrity service to improve quiz quality assurance and response validation.
-- Implement a performance-based quiz suggestion system that recommends new quizzes based on the user's past quiz results and weak topics.
-- Build a profile settings page allowing users to view and edit their personal information (name, major, academic level) after onboarding.
+- Next step
+
+- Next step
+
 
 ## User Stories
 - **AI Knowledge Gap Analysis:** As a student, I would like the system to analyze my quiz performance and study activity so that I can identify my weak topics and improve efficiently. *(i, j)*
