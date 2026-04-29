@@ -251,10 +251,15 @@ Features to be implemented:<br>
   - [Scrum-XX](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-XX), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-XX)
 
 
-**Chris:** "Short summary of what was accomplished"
+**Chris:** "Finished study room invite/join flow. Researched and Deployed our application"
 
-- Jira Task: Sumit - [Task Name]
-  - [SCRUM-#](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-#), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-#)
+- Jira Task: Chris - [Implement Create Room and Invite Code Join Flow]
+  - [SCRUM-71](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-71), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-71-implement-create-room-and-invite-link)
+
+- Jira Task: Chris - [Configure DigitalOcean App Platform Project]
+  - [SCRUM-99](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-99), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-99-configure-digitalocean-app)
+
+Jira Task: Chris - Remaining tasks were completed off-codebase. Initially configuring Digital Ocean, afterwards migrating using Google cloud run and Firebase hosting. SCRUM-99 task commits were overscoped. 
 
 
 **Sam:** "Short summary of what was accomplished"
@@ -289,9 +294,7 @@ Features to be implemented:<br>
 
 
 **Chris:**
-- Next step
-
-- Next step
+- Continue working on this application, potentially turning it into a huge commodity for academic students or busy professionals alike. 
 
 
 **Sam:**
@@ -320,6 +323,8 @@ Features to be implemented:<br>
 - **Collaborative Study Room:** As a student in a study group, I want to create a shared room where my teammates can upload their own notes and we all interact with the same Al tutor, so that we can pool our materials and quiz each other on a combined knowledge base. *(k, m)*
 
 - **Personalized Study Plan Generator:** As a student, I would like the system to generate a personalized study schedule based on my upcoming exams and weak topics so that I can manage my time effectively. *(l, j)*
+
+- **Webapp Deployment:** As a student user, I want the AiTutor webapp to be accessible via a public URL so that I can study from any device without needing to run the app locally.
 
 
 ## Screenshots
@@ -355,3 +360,4 @@ Give credit here.
 
 ## Contact
 LW: ers151@txstate.edu
+CM: kgy5@txstate.edu
