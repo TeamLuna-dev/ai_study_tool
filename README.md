@@ -228,10 +228,21 @@ Features to be implemented:<br>
 
 ### Contributions
 
-**Sumit:** "Short summary of what was accomplished"
 
-- Jira Task: Sumit - [Task Name]
-  - [SCRUM-XX](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-XX), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-XX)
+**Sumit:** "Implemented quiz progress chart, quiz history UI, trend analytics, topic-wise filtering, and robust unit testing for quiz features. Enhanced Firestore synchronization and user feedback throughout the quiz workflow."
+
+- Jira Task: Sumit - [Implement Firestore Real-time Data Synchronization]
+  - [SCRUM-86](https://cs3398-luna-s26.atlassian.net/browse/SCRUM-86), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-86)
+- Jira Task: Sumit - [Retake Quiz buttons to Quiz History page]
+  - [SCRUM-87](https://cs3398-luna-s26.atlassian.net/browse/SCRUM-87), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-87)
+- Jira Task: Sumit - [Quiz Score Trend Chart on Dashboard]
+  - [SCRUM-121](https://cs3398-luna-s26.atlassian.net/browse/SCRUM-121), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-121)
+- Jira Task: Sumit - [Quiz History Retrieval with Topic-wise Filter]
+  - [SCRUM-122](https://cs3398-luna-s26.atlassian.net/browse/SCRUM-122), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-122)
+- Jira Task: Sumit - [Adding Unit Tests]
+  - [SCRUM-123](https://cs3398-luna-s26.atlassian.net/browse/SCRUM-123), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-123)
+- Jira Task: Sumit - [Testing and Documenting Unit Tests]
+  - [SCRUM-129](https://cs3398-luna-s26.atlassian.net/browse/SCRUM-129), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-129)
 
 
 **Lane:** "Finzalied the OCR error handling and QA, and implemented the 'notes summary generator' feature"
