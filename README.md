@@ -292,7 +292,6 @@ Features to be implemented:<br>
 
 **Chris:** "Finished study room invite/join flow. Researched and Deployed our application"
 
-<<<<<<< HEAD
 - Jira Task: Chris - [Implement Create Room and Invite Code Join Flow]
   - [SCRUM-71](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-71), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-71-implement-create-room-and-invite-link)
 
@@ -300,10 +299,6 @@ Features to be implemented:<br>
   - [SCRUM-99](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-99), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-99-configure-digitalocean-app)
 
 Jira Task: Chris - Remaining tasks were completed off-codebase. Initially configuring Digital Ocean, afterwards migrating using Google cloud run and Firebase hosting. SCRUM-99 task commits were overscoped. 
-=======
-- Jira Task: Sumit - [Task Name]
-  - [SCRUM-XX](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-XX), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-XX)
->>>>>>> origin/sprint3retro
 
 
 **Sam:** "Expanded quiz features with dynamic question count, retake functionality, and performance-based suggestions, plus built the document library with search/filter and the profile settings page"
@@ -356,7 +351,7 @@ Output:
 
 
 **Chris:**
-- Continue working on this application, potentially turning it into a huge commodity for academic students or busy professionals alike. 
+- Continue working on this application, potentially turning it into a huge commodity for academic students or busy professionals alike. In a 2-week sprint scenerio, I will be giving the study room component a UI 'facelift'. As well as: create a CI/CD deployment pipeline or complete the Docker/K8s Clustering user story in Jira. 
 
 
 **Sam:**
@@ -426,9 +421,6 @@ Give credit here.
 
 ## Contact
 LW: ers151@txstate.edu
-<<<<<<< HEAD
 CM: kgy5@txstate.edu
-=======
 SG: vzo20@txstate.edu
 AR: boj9@txstate.edu
->>>>>>> origin/sprint3retro
