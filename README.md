@@ -12,7 +12,6 @@
 * [Setup](#setup)
 * [Usage](#usage)
 * [Project Status](#project-status)
-* [Room for Improvement](#room-for-improvement)
 * [Acknowledgements](#acknowledgements)
 * [Contact](#contact)
 <!-- * [License](#license) -->
@@ -140,10 +139,10 @@ Features to be implemented:<br>
 - Jira Task: Sam - [Desing Quiz Screen (React)]
   - [Scrum-11](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-11), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/branch/SCRUM-11-design-quiz-screen-react)
 
-
 ## Report
 
 <img src="Assets/SP1-REPORT.png" alt="Dashboard" width="700">
+
 
 ## Sprint 2
 
@@ -179,7 +178,6 @@ Features to be implemented:<br>
   - [Scrum-41](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-41), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-41)
 
   
-
 **Angel:** "To be added"
 
 - Jira Task: Angel - [Task Name]
@@ -225,6 +223,7 @@ Features to be implemented:<br>
 
 <img src="Assets/SP2-REPORT.png" alt="Dashboard" width="700">
 
+
 ## Sprint 3
 
 ### Contributions
@@ -235,7 +234,7 @@ Features to be implemented:<br>
   - [SCRUM-XX](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-XX), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-XX)
 
 
-**Lane:** "Started and finished implementing the OCR image processing & handling, finishing off the file-upload backend altogether."
+**Lane:** "Finzalied the OCR error handling and QA, and implemented the 'notes summary generator' feature"
 
 - Jira Task: Lane - [OCR Failure Handling & Quality Detection]
   - [Scrum-43](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-43), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-43)
@@ -290,7 +289,6 @@ Features to be implemented:<br>
 
 - Jira Task: Sam - [Performance-Based Quiz Suggestions]
   - [SCRUM-92](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-92), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-92)
-
 
 ## Report
 
