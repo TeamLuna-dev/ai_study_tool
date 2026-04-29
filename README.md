@@ -244,6 +244,10 @@ Features to be implemented:<br>
 - Jira Task: Sumit - [Testing and Documenting Unit Tests]
   - [SCRUM-129](https://cs3398-luna-s26.atlassian.net/browse/SCRUM-129), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-129)
 
+**Next steps:**
+- Add advanced analytics and more filtering options to the quiz progress chart.
+- Expand quiz history UI with detailed attempt review and export features.
+- Improve accessibility and user feedback in quiz-related components.
 
 **Lane:** "Finzalied the OCR error handling and QA, and implemented the 'notes summary generator' feature"
 
