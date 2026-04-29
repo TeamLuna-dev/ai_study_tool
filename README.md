@@ -273,11 +273,22 @@ Features to be implemented:<br>
   - [Scrum-134](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-134), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-134)
 
   
-**Angel:** "To be added"
+**Angel:** "Created a clean and modern visual design that is consistent across the entire application."
 
-- Jira Task: Angel - [Task Name]
-  - [Scrum-XX](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-XX), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-XX)
+- Jira Task: Angel - [Design System & UI Consistency]
+  - [Scrum-112](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-112), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-112)
 
+- Jira Task: Angel - [Implement Dark/Light Mode Toggle]
+  - [Scrum-116](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-116), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-116)
+
+- Jira Task: Angel - [Responsive Design & Readability]
+  - [Scrum-114](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-114), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-114)
+
+- Jira Task: Angel - [Landing Page]
+  - [Scrum-124](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-124), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-124)
+
+- Jira Task: Angel - [Apply Dark Mode Styling to Quiz Progress Chart]
+  - [Scrum-126](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-126), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-126)
 
 **Chris:** "Short summary of what was accomplished"
 
@@ -323,9 +334,15 @@ Features to be implemented:<br>
 
 
 **Angel:**
-- Next step
-
-- Next step
+- Implement Study plan feature
+Smart Plan Generator (AI-powered), Daily Study Tasks (Actionable, not vague), Progress Tracking (Important for retention),Adaptive Plan.
+Input:
+  Uploaded documents (from your pipeline)
+  Deadline (exam date)
+  Difficulty level
+Output:
+  Daily/weekly plan (auto-generated)
+  Breaks content into chunks (based on your embeddings)
 
 
 **Chris:**
@@ -400,3 +417,4 @@ Give credit here.
 ## Contact
 LW: ers151@txstate.edu
 SG: vzo20@txstate.edu
+AR: boj9@txstate.edu
