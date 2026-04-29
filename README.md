@@ -1,6 +1,6 @@
 # Study-AI 
 > This repo contains the front and backend code of an AI-Study tool.
-> Live demo [_here_](https://www.example.com). <!-- If you have the project hosted somewhere, include the link here. -->
+> Live demo [_here_](https://aitutorproject-197c3.web.app/). <!-- If you have the project hosted somewhere, include the link here. -->
 
 
 ## Table of Contents
@@ -32,7 +32,6 @@
 - Vector database (Qdrant)
 - Google Vision API
 - Flask backend
-- *Coming soon...*
 
 
 ## Features
@@ -50,6 +49,12 @@ Features to be implemented:<br>
 **k**) Collaborative study room<br>
 **l**) Personalized study plan generator<br>
 **m**) Multi-User shared knowledge base<br>
+**n**) Document library with search & filter<br>
+**o**) Re-take quiz functionality<br>
+**p**) Performance-based quiz suggestions<br>
+**q**) Dynamic question count selection<br>
+**r**) Profile settings & personalization<br>
+**s**) Quiz history & trend analysis<br>
 
 ## Sprint 1
 
