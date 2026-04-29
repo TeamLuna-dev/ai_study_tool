@@ -1,6 +1,6 @@
 # Study-AI 
 > This repo contains the front and backend code of an AI-Study tool.
-> Live demo [_here_](https://www.example.com). <!-- If you have the project hosted somewhere, include the link here. -->
+> Live demo [_here_](https://aitutorproject-197c3.web.app/). <!-- If you have the project hosted somewhere, include the link here. -->
 
 
 ## Table of Contents
@@ -12,7 +12,6 @@
 * [Setup](#setup)
 * [Usage](#usage)
 * [Project Status](#project-status)
-* [Room for Improvement](#room-for-improvement)
 * [Acknowledgements](#acknowledgements)
 * [Contact](#contact)
 <!-- * [License](#license) -->
@@ -29,10 +28,11 @@
 - Open AI
 - Firebase (User login)
 - Python for API calls
-- Vector database (Qdrant)
+- Qdrant (Vector DB)
 - Google Vision API
 - Flask backend
-- *Coming soon...*
+- Google Cloud Run
+- Unstructured
 
 
 ## Features
@@ -50,6 +50,13 @@ Features to be implemented:<br>
 **k**) Collaborative study room<br>
 **l**) Personalized study plan generator<br>
 **m**) Multi-User shared knowledge base<br>
+**n**) Document library with search & filter<br>
+**o**) Re-take quiz functionality<br>
+**p**) Performance-based quiz suggestions<br>
+**q**) Dynamic question count selection<br>
+**r**) Profile settings & personalization<br>
+**s**) Quiz history & trend analysis<br>
+
 
 ## Sprint 1
 
@@ -132,10 +139,10 @@ Features to be implemented:<br>
 - Jira Task: Sam - [Desing Quiz Screen (React)]
   - [Scrum-11](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-11), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/branch/SCRUM-11-design-quiz-screen-react)
 
-
 ## Report
 
-<img src="Assets/SP1-REPORT.png" alt="Dashboard" width="700">
+<img src="assets/SP1-REPORT.png" alt="Dashboard" width="700">
+
 
 ## Sprint 2
 
@@ -171,7 +178,6 @@ Features to be implemented:<br>
   - [Scrum-41](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-41), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-41)
 
   
-
 **Angel:** "To be added"
 
 - Jira Task: Angel - [Task Name]
@@ -215,44 +221,78 @@ Features to be implemented:<br>
 
 ## Report
 
-<img src="Assets/SP2-REPORT.png" alt="Dashboard" width="700">
+<img src="assets/SP2-REPORT.png" alt="Dashboard" width="700">
+
 
 ## Sprint 3
 
 ### Contributions
 
-**Sumit:** "Short summary of what was accomplished"
 
-- Jira Task: Sumit - [Task Name]
-  - [SCRUM-#](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-#), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-#)
+**Sumit:** "Implemented quiz progress chart, quiz history UI, trend analytics, topic-wise filtering, and robust unit testing for quiz features. Enhanced Firestore synchronization and user feedback throughout the quiz workflow."
 
+- Jira Task: Sumit - [Implement Firestore Real-time Data Synchronization]
+  - [SCRUM-86](https://cs3398-luna-s26.atlassian.net/browse/SCRUM-86), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-86)
+- Jira Task: Sumit - [Retake Quiz buttons to Quiz History page]
+  - [SCRUM-87](https://cs3398-luna-s26.atlassian.net/browse/SCRUM-87), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-87)
+- Jira Task: Sumit - [Quiz Score Trend Chart on Dashboard]
+  - [SCRUM-121](https://cs3398-luna-s26.atlassian.net/browse/SCRUM-121), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-121)
+- Jira Task: Sumit - [Quiz History Retrieval with Topic-wise Filter]
+  - [SCRUM-122](https://cs3398-luna-s26.atlassian.net/browse/SCRUM-122), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-122)
+- Jira Task: Sumit - [Adding Unit Tests]
+  - [SCRUM-123](https://cs3398-luna-s26.atlassian.net/browse/SCRUM-123), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-123)
+- Jira Task: Sumit - [Testing and Documenting Unit Tests]
+  - [SCRUM-129](https://cs3398-luna-s26.atlassian.net/browse/SCRUM-129), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-129)
 
-**Lane:** "Started and finished implementing the OCR image processing & handling, finishing off the file-upload backend altogether."
+**Next steps:**
+- Add advanced analytics and more filtering options to the quiz progress chart.
+- Expand quiz history UI with detailed attempt review and export features.
+- Improve accessibility and user feedback in quiz-related components.
 
-- Jira Task: Lane - [Embedding Generation & Qdrant Storage]
-  - [Scrum-39](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-39), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-39)
+**Lane:** "Finzalied the OCR error handling and QA, and implemented the 'notes summary generator' feature"
 
-- Jira Task: Lane - [Processing Error Handling]
-  - [Scrum-40](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-40), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-40)
+- Jira Task: Lane - [OCR Failure Handling & Quality Detection]
+  - [Scrum-43](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-43), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-43)
 
-- Jira Task: Lane - [OCR Integration]
-  - [Scrum-36](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-36), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-36)
+- Jira Task: Lane - [Document Lookup & Auth]
+  - [Scrum-117](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-117), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-117)
 
-- Jira Task: Lane - [Editable Text Review UI]
-  - [Scrum-37](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-37), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-37)
+- Jira Task: Lane - [UI Component]
+  - [Scrum-118](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-118), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-118)
 
-- Jira Task: Lane - [Embedding Creation from Edited Text]
-  - [Scrum-41](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-41), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-41)
+- Jira Task: Lane - [Summarizer API Service & Custom Hook]
+  - [Scrum-119](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-119), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-119)
+
+- Jira Task: Lane - [Summary History Panel & Firestore Integration]
+  - [Scrum-120](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-120), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-120)
+
+- Jira Task: Lane - [Unit Tests Plan]
+  - [Scrum-133](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-133), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-133)
+
+- Jira Task: Lane - [Unit Tests Execution/Documentation]
+  - [Scrum-134](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-134), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-134)
 
   
-**Angel:** "To be added"
+**Angel:** "Created a clean and modern visual design that is consistent across the entire application."
 
-- Jira Task: Angel - [Task Name]
-  - [Scrum-XX](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-XX), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-XX)
+- Jira Task: Angel - [Design System & UI Consistency]
+  - [Scrum-112](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-112), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-112)
 
+- Jira Task: Angel - [Implement Dark/Light Mode Toggle]
+  - [Scrum-116](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-116), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-116)
+
+- Jira Task: Angel - [Responsive Design & Readability]
+  - [Scrum-114](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-114), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-114)
+
+- Jira Task: Angel - [Landing Page]
+  - [Scrum-124](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-124), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-124)
+
+- Jira Task: Angel - [Apply Dark Mode Styling to Quiz Progress Chart]
+  - [Scrum-126](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-126), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-126)
 
 **Chris:** "Finished study room invite/join flow. Researched and Deployed our application"
 
+<<<<<<< HEAD
 - Jira Task: Chris - [Implement Create Room and Invite Code Join Flow]
   - [SCRUM-71](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-71), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-71-implement-create-room-and-invite-link)
 
@@ -260,17 +300,35 @@ Features to be implemented:<br>
   - [SCRUM-99](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-99), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/branch/SCRUM-99-configure-digitalocean-app)
 
 Jira Task: Chris - Remaining tasks were completed off-codebase. Initially configuring Digital Ocean, afterwards migrating using Google cloud run and Firebase hosting. SCRUM-99 task commits were overscoped. 
-
-
-**Sam:** "Short summary of what was accomplished"
-
+=======
 - Jira Task: Sumit - [Task Name]
-  - [SCRUM-#](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-#), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-#)
+  - [SCRUM-XX](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-XX), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-XX)
+>>>>>>> origin/sprint3retro
 
+
+**Sam:** "Expanded quiz features with dynamic question count, retake functionality, and performance-based suggestions, plus built the document library with search/filter and the profile settings page"
+
+- Jira Task: Sam - [Dynamic Question Count (Quizgen)]
+  - [SCRUM-91](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-91), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-91)
+
+- Jira Task: Sam - [Document Library Page]
+  - [SCRUM-93](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-93), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-93)
+
+- Jira Task: Sam - [Re-take Quiz]
+  - [SCRUM-96](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-96), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-96)
+
+- Jira Task: Sam - [Profile Settings Page]
+  - [SCRUM-95](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-95), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-95)
+
+- Jira Task: Sam - [Search/Filter on Document Library]
+  - [SCRUM-94](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-94), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-94)
+
+- Jira Task: Sam - [Performance-Based Quiz Suggestions]
+  - [SCRUM-92](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-92), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-92)
 
 ## Report
 
-<img src="Assets/SP3-REPORT.png" alt="Dashboard" width="700">
+<img src="assets/SP3-REPORT.png" alt="Dashboard" width="700">
 
 
 ## Next Steps
@@ -282,15 +340,19 @@ Jira Task: Chris - Remaining tasks were completed off-codebase. Initially config
 
 
 **Lane:**
-- Next step
-
-- Next step
+- Implement a caching layer (celery + redis) for reduced latency and smoother UX. This will also reduce the load on the APIs, reducing overall cost.
 
 
 **Angel:**
-- Next step
-
-- Next step
+- Implement Study plan feature
+Smart Plan Generator (AI-powered), Daily Study Tasks (Actionable, not vague), Progress Tracking (Important for retention),Adaptive Plan.
+Input:
+  Uploaded documents (from your pipeline)
+  Deadline (exam date)
+  Difficulty level
+Output:
+  Daily/weekly plan (auto-generated)
+  Breaks content into chunks (based on your embeddings)
 
 
 **Chris:**
@@ -328,7 +390,8 @@ Jira Task: Chris - Remaining tasks were completed off-codebase. Initially config
 
 
 ## Screenshots
-<img src="Assets/SmilingFriendsTeam.png" alt="Dashboard" width="700">
+<img src="assets/SmilingFriendsTeam.png" alt="Dashboard" width="700">
+<img src="assets/HomePage.png" alt="LandingPage" width="700">
 
 
 ## Setup
@@ -338,14 +401,17 @@ Jira Task: Chris - Remaining tasks were completed off-codebase. Initially config
 4) Start venv: 'source venv/bin/activate'
 5) Install Python dependencies (requirements.txt): 'pip3 install -r requirements.txt'
 6) Run backned locally: 'python3 app.py'
-6) Run React app frontent locally (using Vite) from main project directory in seperate terminal: 'npm run dev'
+6) In seperate terminal, from main project directory, run React app frontent locally (Vite): 'npm run dev'
 
 
 
 ## Usage
-To be determined
-
-`write-your-code-here`
+- Simple & secure sign in with Google Account
+- Upload a PDF (Textbook, assignments, notes) or JPG/PNG of handwritten notes
+- Use uploaded files to generate quizzes and summaries
+- Use the quiz performance tracker and tips to improve your weak subjects
+- Collaborate with other users in a Study Room by sharing files and ideas seamlessly
+- Study smarter!
 
 
 ## Project Status
@@ -360,4 +426,9 @@ Give credit here.
 
 ## Contact
 LW: ers151@txstate.edu
+<<<<<<< HEAD
 CM: kgy5@txstate.edu
+=======
+SG: vzo20@txstate.edu
+AR: boj9@txstate.edu
+>>>>>>> origin/sprint3retro
