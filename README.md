@@ -29,9 +29,11 @@
 - Open AI
 - Firebase (User login)
 - Python for API calls
-- Vector database (Qdrant)
+- Qdrant (Vector DB)
 - Google Vision API
 - Flask backend
+- Google Cloud Run
+- Unstructured
 
 
 ## Features
@@ -55,6 +57,7 @@ Features to be implemented:<br>
 **q**) Dynamic question count selection<br>
 **r**) Profile settings & personalization<br>
 **s**) Quiz history & trend analysis<br>
+
 
 ## Sprint 1
 
@@ -229,25 +232,31 @@ Features to be implemented:<br>
 **Sumit:** "Short summary of what was accomplished"
 
 - Jira Task: Sumit - [Task Name]
-  - [SCRUM-#](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-#), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-#)
+  - [SCRUM-XX](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-XX), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-XX)
 
 
 **Lane:** "Started and finished implementing the OCR image processing & handling, finishing off the file-upload backend altogether."
 
-- Jira Task: Lane - [Embedding Generation & Qdrant Storage]
-  - [Scrum-39](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-39), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-39)
+- Jira Task: Lane - [OCR Failure Handling & Quality Detection]
+  - [Scrum-43](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-43), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-43)
 
-- Jira Task: Lane - [Processing Error Handling]
-  - [Scrum-40](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-40), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-40)
+- Jira Task: Lane - [Document Lookup & Auth]
+  - [Scrum-117](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-117), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-117)
 
-- Jira Task: Lane - [OCR Integration]
-  - [Scrum-36](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-36), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-36)
+- Jira Task: Lane - [UI Component]
+  - [Scrum-118](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-118), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-118)
 
-- Jira Task: Lane - [Editable Text Review UI]
-  - [Scrum-37](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-37), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-37)
+- Jira Task: Lane - [Summarizer API Service & Custom Hook]
+  - [Scrum-119](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-119), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-119)
 
-- Jira Task: Lane - [Embedding Creation from Edited Text]
-  - [Scrum-41](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-41), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-41)
+- Jira Task: Lane - [Summary History Panel & Firestore Integration]
+  - [Scrum-120](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-120), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-120)
+
+- Jira Task: Lane - [Unit Tests Plan]
+  - [Scrum-133](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-133), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-133)
+
+- Jira Task: Lane - [Unit Tests Execution/Documentation]
+  - [Scrum-134](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-134), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-134)
 
   
 **Angel:** "To be added"
@@ -259,7 +268,7 @@ Features to be implemented:<br>
 **Chris:** "Short summary of what was accomplished"
 
 - Jira Task: Sumit - [Task Name]
-  - [SCRUM-#](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-#), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-#)
+  - [SCRUM-XX](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-XX), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-XX)
 
 
 **Sam:** "Expanded quiz features with dynamic question count, retake functionality, and performance-based suggestions, plus built the document library with search/filter and the profile settings page"
@@ -297,9 +306,7 @@ Features to be implemented:<br>
 
 
 **Lane:**
-- Next step
-
-- Next step
+- Implement a caching layer (celery + redis) for reduced latency and smoother UX. This will also reduce the load on the APIs, reducing overall cost.
 
 
 **Angel:**
@@ -353,14 +360,17 @@ Features to be implemented:<br>
 4) Start venv: 'source venv/bin/activate'
 5) Install Python dependencies (requirements.txt): 'pip3 install -r requirements.txt'
 6) Run backned locally: 'python3 app.py'
-6) Run React app frontent locally (using Vite) from main project directory in seperate terminal: 'npm run dev'
+6) In seperate terminal, from main project directory, run React app frontent locally (Vite): 'npm run dev'
 
 
 
 ## Usage
-To be determined
-
-`write-your-code-here`
+- Simple & secure sign in with Google Account
+- Upload a PDF (Textbook, assignments, notes) or JPG/PNG of handwritten notes
+- Use uploaded files to generate quizzes and summaries
+- Use the quiz performance tracker and tips to improve your weak subjects
+- Collaborate with other users in a Study Room by sharing files and ideas seamlessly
+- Study smarter!
 
 
 ## Project Status
