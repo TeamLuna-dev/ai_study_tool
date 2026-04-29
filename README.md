@@ -141,7 +141,7 @@ Features to be implemented:<br>
 
 ## Report
 
-<img src="Assets/SP1-REPORT.png" alt="Dashboard" width="700">
+<img src="assets/SP1-REPORT.png" alt="Dashboard" width="700">
 
 
 ## Sprint 2
@@ -221,7 +221,7 @@ Features to be implemented:<br>
 
 ## Report
 
-<img src="Assets/SP2-REPORT.png" alt="Dashboard" width="700">
+<img src="assets/SP2-REPORT.png" alt="Dashboard" width="700">
 
 
 ## Sprint 3
@@ -292,7 +292,7 @@ Features to be implemented:<br>
 
 ## Report
 
-<img src="Assets/SP3-REPORT.png" alt="Dashboard" width="700">
+<img src="assets/SP3-REPORT.png" alt="Dashboard" width="700">
 
 
 ## Next Steps
@@ -348,7 +348,8 @@ Features to be implemented:<br>
 
 
 ## Screenshots
-<img src="Assets/SmilingFriendsTeam.png" alt="Dashboard" width="700">
+<img src="assets/SmilingFriendsTeam.png" alt="Dashboard" width="700">
+<img src="assets/HomePage.png" alt="LandingPage" width="700">
 
 
 ## Setup
