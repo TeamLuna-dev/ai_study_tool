@@ -257,10 +257,25 @@ Features to be implemented:<br>
   - [SCRUM-#](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-#), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-#)
 
 
-**Sam:** "Short summary of what was accomplished"
+**Sam:** "Expanded quiz features with dynamic question count, retake functionality, and performance-based suggestions, plus built the document library with search/filter and the profile settings page"
 
-- Jira Task: Sumit - [Task Name]
-  - [SCRUM-#](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-#), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-#)
+- Jira Task: Sam - [Dynamic Question Count (Quizgen)]
+  - [SCRUM-91](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-91), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-91)
+
+- Jira Task: Sam - [Document Library Page]
+  - [SCRUM-93](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-93), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-93)
+
+- Jira Task: Sam - [Re-take Quiz]
+  - [SCRUM-96](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-96), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-96)
+
+- Jira Task: Sam - [Profile Settings Page]
+  - [SCRUM-95](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-95), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-95)
+
+- Jira Task: Sam - [Search/Filter on Document Library]
+  - [SCRUM-94](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-94), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-94)
+
+- Jira Task: Sam - [Performance-Based Quiz Suggestions]
+  - [SCRUM-92](https://cs3398-luna-s26.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-92), [Bitbucket](https://bitbucket.org/cs3398-luna-s26/ai-study-tool-repository/commits/?search=SCRUM-92)
 
 
 ## Report
