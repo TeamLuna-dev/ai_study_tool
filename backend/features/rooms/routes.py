@@ -135,6 +135,23 @@ def delete_room(room_id):
         return jsonify({"error": str(exc)}), 500
 
 
+@rooms_bp.post("/<room_id>/summarize")
+async def summarize_room(room_id):
+    uid, error = get_current_uid()
+    if error:
+        return jsonify({"error": error[0]}), error[1]
+
+    try:
+        result = await room_service.generate_room_summary(room_id, uid)
+        return jsonify(result), 200
+    except PermissionError as exc:
+        return jsonify({"error": str(exc)}), 403
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 404
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
+
+
 @rooms_bp.get("/health")
 def health():
     return jsonify({"rooms": "ok"}), 200
