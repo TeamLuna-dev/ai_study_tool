@@ -1,18 +1,36 @@
 import { useState } from 'react';
-import { Send, MessageSquare } from 'lucide-react';
+import { Send, MessageSquare, Sparkles, Loader2 } from 'lucide-react';
+import { generateRoomSummary } from '../../services/roomService';
 
 /**
  * Chat area for room communication
- * Single responsibility: Display messages and message input
+ * Single responsibility: Display messages, message input, and AI summarization trigger
  */
-export function ChatArea({ messages, onSend }) {
+export function ChatArea({ messages, onSend, roomId, user }) {
   const [newMessage, setNewMessage] = useState('');
+  const [summarizing, setSummarizing] = useState(false);
+  const [summaryError, setSummaryError] = useState(null);
 
   const handleSend = (e) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
     onSend?.(newMessage);
     setNewMessage('');
+  };
+
+  const handleSummarize = async () => {
+    if (summarizing || !user) return;
+    setSummarizing(true);
+    setSummaryError(null);
+    try {
+      const token = await user.getIdToken();
+      await generateRoomSummary(token, roomId);
+      // The AI message will appear via the real-time onSnapshot listener
+    } catch (err) {
+      setSummaryError(err.message || 'Failed to generate summary.');
+    } finally {
+      setSummarizing(false);
+    }
   };
 
   const formatTime = (date) => {
@@ -31,9 +49,34 @@ export function ChatArea({ messages, onSend }) {
         lg:h-full
       ">
       {/* Header */}
-      <div className="border-b border-gray-200 px-4 py-3 dark:border-gray-700">
+      <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3 dark:border-gray-700">
         <h3 className="font-semibold text-gray-900 dark:text-gray-100">Chat</h3>
+        <button
+          onClick={handleSummarize}
+          disabled={summarizing || !user}
+          className="
+            flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium
+            text-white transition shadow-sm
+            bg-gradient-to-r from-purple-600 to-indigo-600
+            hover:from-purple-700 hover:to-indigo-700
+            disabled:opacity-50 disabled:cursor-not-allowed
+          "
+        >
+          {summarizing ? (
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          ) : (
+            <Sparkles className="h-3.5 w-3.5" />
+          )}
+          {summarizing ? 'Summarizing...' : 'Summarize'}
+        </button>
       </div>
+
+      {/* Summary error */}
+      {summaryError && (
+        <div className="mx-4 mt-2 rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-xs text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-300">
+          {summaryError}
+        </div>
+      )}
 
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto p-4">
@@ -50,34 +93,61 @@ export function ChatArea({ messages, onSend }) {
           </div>
         ) : (
           <div className="space-y-4">
-            {messages.map((message) => (
-              <div key={message.id} className="flex gap-3">
-                {/* Avatar */}
-                <div className="
-                    flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full
-                    bg-blue-100 dark:bg-blue-900/30
-                  ">
-                  <span className="text-xs font-medium text-blue-700 dark:text-blue-300">
-                    {getInitials(message.sender)}
-                  </span>
+            {messages.map((message) =>
+              message.type === 'ai' ? (
+                /* ── AI Summary Message ── */
+                <div key={message.id} className="flex gap-3">
+                  <div className="
+                      flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full
+                      bg-gradient-to-br from-purple-500 to-indigo-500
+                    ">
+                    <Sparkles className="h-4 w-4 text-white" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-sm font-medium text-purple-700 dark:text-purple-300">
+                        AI Summary
+                      </span>
+                      <span className="text-xs text-gray-400 dark:text-gray-500">
+                        {formatTime(message.timestamp)}
+                      </span>
+                    </div>
+                    <div className="
+                        mt-1 rounded-xl border p-3 text-sm
+                        border-purple-200 bg-purple-50 text-gray-800
+                        dark:border-purple-800/50 dark:bg-purple-900/20 dark:text-gray-200
+                      ">
+                      <p className="whitespace-pre-wrap break-words">{message.text}</p>
+                    </div>
+                  </div>
                 </div>
-
-                {/* Message Content */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                      {message.sender}
-                    </span>
-                    <span className="text-xs text-gray-400 dark:text-gray-500">
-                      {formatTime(message.timestamp)}
+              ) : (
+                /* ── Regular User Message ── */
+                <div key={message.id} className="flex gap-3">
+                  <div className="
+                      flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full
+                      bg-blue-100 dark:bg-blue-900/30
+                    ">
+                    <span className="text-xs font-medium text-blue-700 dark:text-blue-300">
+                      {getInitials(message.sender)}
                     </span>
                   </div>
-                  <p className="mt-0.5 text-sm text-gray-700 dark:text-gray-300 break-words">
-                    {message.text}
-                  </p>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                        {message.sender}
+                      </span>
+                      <span className="text-xs text-gray-400 dark:text-gray-500">
+                        {formatTime(message.timestamp)}
+                      </span>
+                    </div>
+                    <p className="mt-0.5 text-sm text-gray-700 dark:text-gray-300 break-words">
+                      {message.text}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            )}
           </div>
         )}
       </div>
