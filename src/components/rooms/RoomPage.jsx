@@ -9,6 +9,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { useRoomDetail } from "../../hooks/useRoomDetail";
+import { useDocuments } from "../../hooks/useDocuments";
 import { deleteRoom, leaveRoom, removeMember } from "../../services/roomService";
 import { RoomLobby } from "./RoomLobby";
 import { SharedDocumentPanel } from "./SharedDocumentPanel";
@@ -21,6 +22,7 @@ export function RoomPage() {
   const { user } = useAuth();
 
   const { room, members, messages, sendMessage, sharedDocuments, loading, error } = useRoomDetail(roomId);
+  const { docs: userDocuments, loading: userDocsLoading } = useDocuments(user?.uid);
   const [deleting, setDeleting] = useState(false);
   const [leaving, setLeaving] = useState(false);
 
@@ -157,6 +159,8 @@ export function RoomPage() {
               documents={sharedDocuments}
               roomId={roomId}
               user={user}
+              userDocuments={userDocuments}
+              userDocsLoading={userDocsLoading}
             />
           </div>
 
@@ -165,6 +169,8 @@ export function RoomPage() {
             <ChatArea
               messages={messages}
               onSend={(text) => sendMessage(text, user)}
+              roomId={roomId}
+              user={user}
             />
           </div>
         </div>
