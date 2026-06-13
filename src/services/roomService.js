@@ -7,6 +7,7 @@
 import {
   collection,
   doc,
+  getDoc,
   query,
   where,
   orderBy,
@@ -239,6 +240,74 @@ export async function deleteRoom(idToken, roomId) {
 
   if (!res.ok) {
     throw new Error(data.detail || data.error || `Failed to delete room (${res.status})`);
+  }
+
+  return data;
+}
+
+/**
+ * Shares an existing library document into a room (no re-upload).
+ * Reads the source document's metadata and creates a shared-documents entry
+ * with a `sourceDocId` linking back to the original.
+ *
+ * @param {string} roomId
+ * @param {string} sourceDocId  Firestore ID from the user's document library
+ * @param {{ uid: string, displayName: string | null }} user
+ * @returns {Promise<{ id: string }>}
+ */
+export async function shareExistingDocument(roomId, sourceDocId, user) {
+  if (!user?.uid) throw new Error("Must be signed in to share a document.");
+
+  const sourceSnap = await getDoc(doc(db, "documents", sourceDocId));
+  if (!sourceSnap.exists()) throw new Error("Source document not found.");
+
+  const source = sourceSnap.data();
+
+  const docRef = await addDoc(collection(db, "rooms", roomId, "shared-documents"), {
+    fileName:    source.fileName,
+    fileType:    source.fileType || "pdf",
+    fileSize:    source.fileSize || 0,
+    storageUrl:  source.storageUrl || "",
+    storagePath: source.storagePath || "",
+    sourceDocId,
+    uploadedBy:   user.uid,
+    uploaderName: user.displayName || "Anonymous",
+    uploadedAt:   serverTimestamp(),
+    status:       "ready",
+  });
+
+  return { id: docRef.id };
+}
+
+/**
+ * Triggers AI summarization of all room messages + shared document content.
+ * The summary is saved as a message with `type: "ai"` in the room's messages
+ * subcollection, so it flows through the existing real-time listener.
+ *
+ * @param {string} idToken
+ * @param {string} roomId
+ * @returns {Promise<{ summary: string }>}
+ */
+export async function generateRoomSummary(idToken, roomId) {
+  let res;
+  try {
+    res = await fetch(`${API_BASE}/api/rooms/${roomId}/summarize`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${idToken}`,
+        "Content-Type": "application/json",
+      },
+    });
+  } catch {
+    throw new Error(
+      "Could not reach the server. Make sure the Flask backend is running (python3 app.py) on port 5000."
+    );
+  }
+
+  const data = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    throw new Error(data.detail || data.error || `Failed to generate summary (${res.status})`);
   }
 
   return data;
