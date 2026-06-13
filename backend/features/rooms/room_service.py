@@ -20,8 +20,8 @@ from security.firebase_admin_config import db
 # Never modify has_permission() — the checking logic never changes.
 
 ROLE_PERMISSIONS: Dict[str, Set[str]] = {
-    "owner":  {"can_delete_room", "can_remove_members", "can_upload", "can_read"},
-    "member": {"can_upload", "can_read"},
+    "owner":  {"can_delete_room", "can_remove_members", "can_upload", "can_read", "can_summarize"},
+    "member": {"can_upload", "can_read", "can_summarize"},
 }
 
 
@@ -246,3 +246,82 @@ def delete_room(room_id: str, requesting_uid: str) -> dict:
 
     room_ref.delete()
     return {"deleted": room_id}
+
+
+async def generate_room_summary(room_id: str, requesting_uid: str) -> dict:
+    """
+    Generates an AI summary of all user messages and shared document content
+    in the room. The summary is saved as a message with type "ai" so it
+    flows through the existing real-time listener on the frontend.
+
+    Skips previous AI messages to prevent recursive summarization.
+    Qdrant lookups are wrapped individually so one failure doesn't block everything.
+    """
+    from features.summarizer.service import summarize_text
+    from features.summarizer.qdrant import search_document_chunks
+
+    # ── Auth check ────────────────────────────────────────────────────────
+    role = _get_member_role(room_id, requesting_uid)
+    if role is None:
+        raise PermissionError("Not a member of this room")
+    if not has_permission(role, "can_summarize"):
+        raise PermissionError("You do not have permission to summarize this room")
+
+    room_ref = db.collection("rooms").document(room_id)
+    if not room_ref.get().exists:
+        raise ValueError("Room not found")
+
+    # ── Gather message texts (skip AI messages) ───────────────────────────
+    messages_snap = room_ref.collection("messages").order_by("createdAt").get()
+    message_texts = []
+    for msg in messages_snap:
+        data = msg.to_dict()
+        if data.get("type") == "ai":
+            continue
+        sender = data.get("displayName", "Unknown")
+        text = data.get("text", "")
+        if text.strip():
+            message_texts.append(f"{sender}: {text}")
+
+    # ── Gather shared document content via Qdrant vectors ─────────────────
+    doc_texts = []
+    shared_docs = room_ref.collection("shared-documents").get()
+    for shared in shared_docs:
+        data = shared.to_dict()
+        source_id = data.get("sourceDocId")
+        if not source_id:
+            continue
+        try:
+            chunks = search_document_chunks(source_id)
+            if chunks:
+                file_name = data.get("fileName", "Untitled")
+                doc_texts.append(f"[Document: {file_name}]\n{chunks}")
+        except Exception as exc:
+            # One document failing shouldn't block the whole summary
+            print(f"[room_service] Qdrant lookup failed for {source_id}: {exc}")
+
+    # ── Combine and summarize ─────────────────────────────────────────────
+    combined_parts = []
+    if message_texts:
+        combined_parts.append("CHAT MESSAGES:\n" + "\n".join(message_texts))
+    if doc_texts:
+        combined_parts.append("SHARED DOCUMENTS:\n" + "\n\n".join(doc_texts))
+
+    if not combined_parts:
+        raise ValueError("Nothing to summarize — no messages or documents found.")
+
+    combined = "\n\n".join(combined_parts)
+    result = await summarize_text(combined)
+    summary_text = result["summary"]
+
+    # ── Save as AI message ────────────────────────────────────────────────
+    now = datetime.now(timezone.utc)
+    room_ref.collection("messages").add({
+        "text":        summary_text,
+        "uid":         "system",
+        "displayName": "AI Summary",
+        "type":        "ai",
+        "createdAt":   now,
+    })
+
+    return {"summary": summary_text}
