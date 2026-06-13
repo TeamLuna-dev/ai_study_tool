@@ -87,6 +87,7 @@ export function useRoomDetail(roomId) {
               sender:    data.displayName || data.senderName || data.uid || data.senderId || 'Unknown',
               text:      data.text,
               timestamp: data.createdAt?.toDate() ?? new Date(),
+              type:      data.type || 'user',
             };
           }));
           messagesLoaded = true;
@@ -101,14 +102,16 @@ export function useRoomDetail(roomId) {
           setSharedDocuments(snapshot.docs.map((d) => {
             const data = d.data();
             return {
-              id:          d.id,
-              fileName:    data.fileName,
-              fileType:    data.fileType,
-              fileSize:    data.fileSize,
-              storageUrl:  data.storageUrl,
+              id:           d.id,
+              fileName:     data.fileName,
+              fileType:     data.fileType,
+              fileSize:     data.fileSize,
+              storageUrl:   data.storageUrl,
               uploaderName: data.uploaderName || "Anonymous",
-              uploadedAt:  data.uploadedAt?.toDate() ?? new Date(),
-              status:      data.status,
+              uploadedAt:   data.uploadedAt?.toDate() ?? new Date(),
+              status:       data.status,
+              sourceDocId:  data.sourceDocId || null,
+              storagePath:  data.storagePath,
             };
           }));
           docsLoaded = true;
