@@ -293,10 +293,7 @@ export async function generateRoomSummary(idToken, roomId) {
   try {
     res = await fetch(`${API_BASE}/api/rooms/${roomId}/summarize`, {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${idToken}`,
-        "Content-Type": "application/json",
-      },
+      headers: { Authorization: `Bearer ${idToken}` },
     });
   } catch {
     throw new Error(
