@@ -1,3 +1,5 @@
+import traceback
+
 from flask import Blueprint, request, jsonify
 from firebase_admin import auth as firebase_auth
 
@@ -136,19 +138,20 @@ def delete_room(room_id):
 
 
 @rooms_bp.post("/<room_id>/summarize")
-async def summarize_room(room_id):
+def summarize_room(room_id):
     uid, error = get_current_uid()
     if error:
         return jsonify({"error": error[0]}), error[1]
 
     try:
-        result = await room_service.generate_room_summary(room_id, uid)
+        result = room_service.generate_room_summary(room_id, uid)
         return jsonify(result), 200
     except PermissionError as exc:
         return jsonify({"error": str(exc)}), 403
     except ValueError as exc:
-        return jsonify({"error": str(exc)}), 404
+        return jsonify({"error": str(exc)}), 400
     except Exception as exc:
+        traceback.print_exc()
         return jsonify({"error": str(exc)}), 500
 
 
