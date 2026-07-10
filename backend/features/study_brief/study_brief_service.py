@@ -1,9 +1,9 @@
 """
 study_brief_service.py
 Queries Firestore for recent quiz sessions and documents, then calls the
-OpenAI API to generate a short personalised study recommendation.
+Anthropic API to generate a short personalised study recommendation.
 
-Single Responsibility: all Firestore queries and the OpenAI call live here.
+Single Responsibility: all Firestore queries and the Anthropic call live here.
 HTTP concerns live in routes.py; display concerns live in the frontend component.
 """
 
@@ -11,7 +11,7 @@ import os
 from datetime import datetime, timezone
 
 from dotenv import load_dotenv
-from openai import OpenAI
+from anthropic import Anthropic
 
 from security.firebase_admin_config import db
 
@@ -129,25 +129,22 @@ def generate_study_brief(uid: str) -> dict:
 
     prompt = "\n".join(lines)
 
-    # ── 5. Call OpenAI ────────────────────────────────────────────────────────
-    # Uses the Chat Completions API (client.chat.completions.create) rather
-    # than the newer Responses API (client.responses.create).  The Chat
-    # Completions API has a stable, well-documented response shape that makes
-    # extracting the text reliable: response.choices[0].message.content.
+    # ── 5. Call Anthropic ──────────────────────────────────────────────────────
     try:
-        api_key = os.getenv("OPENAI_API_KEY")
+        api_key = os.getenv("ANTHROPIC_LUNA_KEY")
         if not api_key:
-            raise RuntimeError("Missing OPENAI_API_KEY")
+            raise RuntimeError("Missing ANTHROPIC_LUNA_KEY")
 
-        client = OpenAI(api_key=api_key)
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
+        client = Anthropic(api_key=api_key)
+        response = client.messages.create(
+            model="claude-sonnet-4-6",
+            max_tokens=256,
             messages=[{"role": "user", "content": prompt}],
         )
 
-        brief_text = (response.choices[0].message.content or "").strip()
+        brief_text = (response.content[0].text or "").strip()
         if not brief_text:
-            raise RuntimeError("Empty response from OpenAI")
+            raise RuntimeError("Empty response from Anthropic")
 
         return {"brief": brief_text, "generatedAt": now_iso}
 
