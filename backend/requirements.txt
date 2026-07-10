@@ -6,6 +6,9 @@ gunicorn>=21.2.0
 # Firebase
 firebase-admin==6.5.0
 
+# Anthropic
+anthropic>=0.40.0
+
 # OpenAI & OCR
 openai>=1.0.0
 google-cloud-vision>=3.7.0
