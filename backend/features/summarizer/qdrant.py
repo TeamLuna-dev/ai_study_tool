@@ -36,8 +36,12 @@ def search_document_chunks(doc_id: str, top_k: int = TOP_K) -> str:
     from embeddings.embedder import EMBEDDING_MODEL
     from qdrant_client.models import Filter, FieldCondition, MatchValue
 
+    api_key = os.getenv("OPEN_AI_EMBEDDINGS_KEY")
+    if not api_key:
+        raise RuntimeError("Missing OPEN_AI_EMBEDDINGS_KEY")
+
     query_vector = (
-        OpenAI()
+        OpenAI(api_key=api_key)
         .embeddings.create(model=EMBEDDING_MODEL, input=SUMMARY_QUERY)
         .data[0]
         .embedding
