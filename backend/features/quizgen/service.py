@@ -1,9 +1,9 @@
 import os
 import json
 from dotenv import load_dotenv
-from openai import AsyncOpenAI
+from anthropic import AsyncAnthropic
 
-# Switched to a function that dynamically builds the schema based on the question count, to allow for future flexibility if we want to generate quizzes with different numbers of questions. 
+# Switched to a function that dynamically builds the schema based on the question count, to allow for future flexibility if we want to generate quizzes with different numbers of questions.
 # For now, it still defaults to 5 questions and 4 choices each.
 def build_mcq_schema(question_count: int) -> dict:
     return {
@@ -37,20 +37,20 @@ def build_mcq_schema(question_count: int) -> dict:
         },
     }
 
-async def generate_adaptive_quiz(notes: str, model: str = "gpt-4.1", academic_level: str = "undergraduate", major: str = "", question_count: int = 5) -> dict:
+async def generate_adaptive_quiz(notes: str, model: str = "claude-opus-4-8", academic_level: str = "undergraduate", major: str = "", question_count: int = 5) -> dict:
     if not isinstance(notes, str) or not notes.strip():
         raise ValueError("notes must be a non-empty string")
-    
+
     # validate question_count is within accepted values
     # accepted: 3, 5, 10, 15 —> matches the options shown in the frontend selector and validated in the route handler
     if question_count not in (3, 5, 10, 15):
         raise ValueError("question_count must be one of: 3, 5, 10, 15")
 
     load_dotenv()
-    api_key = os.getenv("OPENAI_API_KEY")
+    api_key = os.getenv("ANTHROPIC_LUNA_KEY")
     if not api_key:
-        raise RuntimeError("Missing OPENAI_API_KEY")
-    client = AsyncOpenAI(api_key=api_key)
+        raise RuntimeError("Missing ANTHROPIC_LUNA_KEY")
+    client = AsyncAnthropic(api_key=api_key)
 
     level_instructions = {
         "high_school":   "Use simple vocabulary and straightforward concepts. Avoid jargon.",
@@ -60,6 +60,8 @@ async def generate_adaptive_quiz(notes: str, model: str = "gpt-4.1", academic_le
 
     level_guidance = level_instructions.get(academic_level, level_instructions["undergraduate"])
     major_context  = f"The student is studying {major}." if major else ""
+
+    schema = build_mcq_schema(question_count)
 
     prompt = f"""
 You are helping a student study.
@@ -81,20 +83,16 @@ NOTES:
 {notes}
 """.strip()
 
-    schema = build_mcq_schema(question_count) # dynamically build schema based on question count, feat
-
-    response = await client.chat.completions.create(
+    response = await client.messages.create(
         model=model,
+        max_tokens=4096,
         messages=[{"role": "user", "content": prompt}],
-        response_format={
-            "type": "json_schema",
-            "json_schema": {
-                "name": schema["name"],
-                "schema": schema["schema"],
-                "strict": True,
-            }
-        },
+        tools=[{
+            "name": schema["name"],
+            "description": "Generate a multiple choice quiz from student notes",
+            "input_schema": schema["schema"],
+        }],
+        tool_choice={"type": "tool", "name": schema["name"]},
     )
 
-    json_text = response.choices[0].message.content
-    return json.loads(json_text)
+    return response.content[0].input
