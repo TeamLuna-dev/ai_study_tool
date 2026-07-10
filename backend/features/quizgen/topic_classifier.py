@@ -1,7 +1,7 @@
 import os
 import sys
 from dotenv import load_dotenv
-from openai import OpenAI
+from anthropic import Anthropic
 
 # Resolve qdrant_store from backend/embeddings/
 _backend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
@@ -68,11 +68,11 @@ def _fetch_chunk_texts(doc_id: str) -> list:
 
 def _call_classifier(chunks: list) -> str:
     load_dotenv()
-    api_key = os.getenv("OPENAI_API_KEY")
+    api_key = os.getenv("ANTHROPIC_LUNA_KEY")
     if not api_key:
-        raise RuntimeError("Missing OPENAI_API_KEY")
+        raise RuntimeError("Missing ANTHROPIC_LUNA_KEY")
 
-    client = OpenAI(api_key=api_key)
+    client = Anthropic(api_key=api_key)
     combined_text = "\n\n".join(chunks)
     topics_list = ", ".join(TOPIC_OPTIONS)
 
@@ -88,12 +88,12 @@ Rules:
 DOCUMENT TEXT:
 {combined_text}"""
 
-    response = client.chat.completions.create(
-        model="gpt-4o",
-        messages=[{"role": "user", "content": prompt}],
+    response = client.messages.create(
+        model="claude-sonnet-4-6",
         max_tokens=10,
         temperature=0,
+        messages=[{"role": "user", "content": prompt}],
     )
 
-    raw = response.choices[0].message.content.strip()
+    raw = response.content[0].text.strip()
     return raw if raw in TOPIC_OPTIONS else "Other"

@@ -35,7 +35,11 @@ def embed_chunks(chunks: List[dict]) -> List[dict]:
     if not chunks:
         raise ValueError("embed_chunks received an empty chunk list.")
 
-    client = OpenAI()  # reads OPENAI_API_KEY from environment
+    api_key = os.getenv("OPEN_AI_EMBEDDINGS_KEY")
+    if not api_key:
+        raise RuntimeError("Missing OPEN_AI_EMBEDDINGS_KEY")
+
+    client = OpenAI(api_key=api_key)
 
     texts = [chunk["text"] for chunk in chunks]
 

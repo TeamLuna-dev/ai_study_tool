@@ -34,7 +34,11 @@ def _resolve_credential():
     """Return a firebase_admin credential, or None to use ADC."""
     sa_json = os.environ.get("FIREBASE_SERVICE_ACCOUNT_JSON")
     if sa_json:
-        return credentials.Certificate(json.loads(sa_json))
+        # Malformed env JSON must warn + fall through, not sink init silently
+        try:
+            return credentials.Certificate(json.loads(sa_json))
+        except (ValueError, TypeError) as exc:
+            print(f"[FIREBASE] Ignoring malformed FIREBASE_SERVICE_ACCOUNT_JSON: {exc}")
 
     # On Cloud Run / GCE / local with `gcloud auth application-default login`,
     # letting firebase_admin discover ADC is the most robust path.
@@ -51,14 +55,16 @@ def _resolve_credential():
     return None
 
 
+# Initialise the default app once; real credential errors now surface
+# loudly instead of being masked as "app not initialised" downstream.
 try:
+    firebase_admin.get_app()
+except ValueError:
     _cred = _resolve_credential()
     if _cred is None:
         firebase_admin.initialize_app(options={"storageBucket": _STORAGE_BUCKET})
     else:
         firebase_admin.initialize_app(_cred, {"storageBucket": _STORAGE_BUCKET})
-except ValueError:
-    pass  # App already initialised (e.g. by a previous import)
 
 
 db: firestore.Client = firestore.client()
