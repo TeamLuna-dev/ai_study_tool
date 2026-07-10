@@ -1,18 +1,18 @@
 import os
 from dotenv import load_dotenv
-from openai import AsyncOpenAI
+from anthropic import AsyncAnthropic
 
 
-async def summarize_text(text: str, model: str = "gpt-4.1-mini") -> dict:
+async def summarize_text(text: str, model: str = "claude-sonnet-4-6") -> dict:
     if not isinstance(text, str) or not text.strip():
         raise ValueError("text must be a non-empty string")
 
     load_dotenv()
-    api_key = os.getenv("OPENAI_API_KEY")
+    api_key = os.getenv("ANTHROPIC_LUNA_KEY")
     if not api_key:
-        raise RuntimeError("Missing OPENAI_API_KEY")
+        raise RuntimeError("Missing ANTHROPIC_LUNA_KEY")
 
-    client = AsyncOpenAI(api_key=api_key)
+    client = AsyncAnthropic(api_key=api_key)
 
     prompt = f"""
 You are helping a student study.
@@ -24,19 +24,13 @@ TEXT:
 {text}
 """.strip()
 
-    response = await client.responses.create(
+    response = await client.messages.create(
         model=model,
-        input=prompt,
+        max_tokens=4096,
+        messages=[{"role": "user", "content": prompt}],
     )
 
-    summary_text = ""
-    for item in getattr(response, "output", []) or []:
-        if getattr(item, "type", None) == "message":
-            for content in getattr(item, "content", []) or []:
-                if getattr(content, "type", None) == "output_text":
-                    summary_text += getattr(content, "text", "")
-
-    summary_text = summary_text.strip()
+    summary_text = response.content[0].text.strip()
 
     if not summary_text:
         raise RuntimeError("No summary was generated")
