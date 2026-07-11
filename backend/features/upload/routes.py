@@ -117,7 +117,11 @@ def upload_file():
         }), 201
     else:
         # ── Production path: delegate to firebase_storage.py ───────────────
-        from .firebase_storage import upload_file_to_storage, FirebaseStorageError
+        from .firebase_storage import (
+            upload_file_to_storage,
+            FirebaseStorageError,
+            mark_document_error,
+        )
 
         try:
             result = upload_file_to_storage(
@@ -132,18 +136,34 @@ def upload_file():
         # Kick off embedding pipeline in a background thread so the upload
         # response returns immediately. The pipeline updates the Firestore
         # doc status to "ready" (or "error") when it finishes.
-        from embeddings.pipeline import process_document
-        _executor.submit(
-            process_document,
-            file_bytes=file_bytes,
-            uid=uid,
-            file_name=file.filename,
-            doc_id=result["doc_id"],
-            mimetype=file.mimetype,
-        )
+        # Guard import+submit: the file is already in Storage +
+        # Firestore, so a missing pipeline dep must not 500 the upload.
+        embedding_started = True
+        try:
+            from embeddings.pipeline import process_document
+            _executor.submit(
+                process_document,
+                file_bytes=file_bytes,
+                uid=uid,
+                file_name=file.filename,
+                doc_id=result["doc_id"],
+                mimetype=file.mimetype,
+            )
+        except Exception as exc:
+            # Upload succeeded; only embedding failed to start.
+            embedding_started = False
+            mark_document_error(
+                result["doc_id"], "embedding",
+                f"Pipeline failed to start: {exc}",
+            )
+            print(f"[UPLOAD] Embedding pipeline unavailable: {exc}")
 
         return jsonify({
-            "message": "File uploaded. Processing embeddings in the background.",
+            "message": (
+                "File uploaded. Processing embeddings in the background."
+                if embedding_started
+                else "File uploaded, but embedding could not start."
+            ),
             "filename": file.filename,
             "mimetype": file.mimetype,
             "size_bytes": len(file_bytes),
@@ -151,6 +171,7 @@ def upload_file():
             "doc_id": result["doc_id"],
             "storage_url": result["storage_url"],
             "storage_path": result["storage_path"],
+            "embedding_started": embedding_started,
         }), 201
 
 
