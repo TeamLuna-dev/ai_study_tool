@@ -1,0 +1,20 @@
+.gcloudignore
+.git
+.gitignore
+
+# Secrets — never upload
+serviceAccountKey.json
+*.env
+.env*
+
+# Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+*.egg-info/
+
+# Dev/test only
+README.md
+Procfile
