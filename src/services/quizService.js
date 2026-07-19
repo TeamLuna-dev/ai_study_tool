@@ -1,7 +1,8 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:5000";
+// Same-origin base avoids CORS preflights entirely
+import API_BASE_URL from "../config/api";
 
 export async function getWeakTopics(userId) {
-  const res = await fetch(`${API_BASE}/api/progress/weak-topics/${userId}`);
+  const res = await fetch(`${API_BASE_URL}/progress/weak-topics/${userId}`);
   const data = await res.json().catch(() => ({}));
 
   if (!res.ok) {
@@ -13,7 +14,7 @@ export async function getWeakTopics(userId) {
 }
 
 export async function getSessionSummary(userId) {
-  const res = await fetch(`${API_BASE}/api/progress/session-summary/${userId}`);
+  const res = await fetch(`${API_BASE_URL}/progress/session-summary/${userId}`);
   const data = await res.json().catch(() => ({}));
 
   if (!res.ok) {
@@ -30,7 +31,7 @@ export async function generateQuiz({ notes, docId, questionCount = 5 } = {}) {
 
   const body = docId ? { doc_id: docId, question_count: questionCount } : { notes,  question_count: questionCount  };
 
-  const res = await fetch(`${API_BASE}/api/quiz/generate`, {
+  const res = await fetch(`${API_BASE_URL}/quiz/generate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
@@ -42,7 +43,7 @@ export async function generateQuiz({ notes, docId, questionCount = 5 } = {}) {
 }
 
 export async function scoreQuiz(quiz, answers, topic, user_id) {
-  const res = await fetch(`${API_BASE}/api/quiz/score`, {
+  const res = await fetch(`${API_BASE_URL}/quiz/score`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ quiz, answers, topic, user_id }),
@@ -64,7 +65,7 @@ export async function getQuizHistory(userId, { topic, startDate, endDate, sortBy
   if (perPage) params.set("per_page", perPage);
 
   const qs = params.toString();
-  const res = await fetch(`${API_BASE}/api/progress/quiz-attempts/${userId}${qs ? `?${qs}` : ""}`);
+  const res = await fetch(`${API_BASE_URL}/progress/quiz-attempts/${userId}${qs ? `?${qs}` : ""}`);
   const data = await res.json().catch(() => ({}));
 
   if (!res.ok) {
@@ -75,7 +76,7 @@ export async function getQuizHistory(userId, { topic, startDate, endDate, sortBy
 }
 
 export async function getQuizAttemptById(userId, attemptId) {
-  const res = await fetch(`${API_BASE}/api/progress/quiz-attempts/${userId}/${attemptId}`);
+  const res = await fetch(`${API_BASE_URL}/progress/quiz-attempts/${userId}/${attemptId}`);
   const data = await res.json().catch(() => ({}));
 
   if (!res.ok) {
