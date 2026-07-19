@@ -3,12 +3,12 @@
  * HTTP and Firestore access for the summarizer feature.
  * Single responsibility: data transport only — no state, no UI.
  *
- * Follows the same pattern as quizService.js:
- *   - API_BASE from env, falls back to local Flask server
+ *   - Shared API base: same-origin /api in dev (Vite proxy)
  *   - Throws on non-ok responses so callers (hooks) handle errors in one place
  */
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:5000";
+// Same-origin base avoids CORS preflights entirely
+import API_BASE_URL from "../config/api";
 
 /**
  * Calls POST /api/summarizer/generate and returns the generated summary.
@@ -24,7 +24,7 @@ export async function generateSummary({ text, docId, idToken } = {}) {
 
   const body = docId ? { doc_id: docId } : { text };
 
-  const res = await fetch(`${API_BASE}/api/summarizer/generate`, {
+  const res = await fetch(`${API_BASE_URL}/summarizer/generate`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -50,7 +50,7 @@ export async function generateSummary({ text, docId, idToken } = {}) {
  * @throws {Error} on network failure or non-2xx response
  */
 export async function fetchSummaryHistory(idToken) {
-  const res = await fetch(`${API_BASE}/api/summarizer/history`, {
+  const res = await fetch(`${API_BASE_URL}/summarizer/history`, {
     headers: {
       ...(idToken ? { Authorization: `Bearer ${idToken}` } : {}),
     },
