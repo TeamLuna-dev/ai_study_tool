@@ -1,3 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  /* Warm paper ground + ink text as the app-wide default */
+  body { @apply bg-paper text-ink font-sans antialiased; }
+  h1, h2, h3 { @apply font-display; text-wrap: balance; }
+  /* Visible gilt ring on every focusable element, no exceptions */
+  :focus-visible { outline: 2px solid theme('colors.gilt.600'); outline-offset: 2px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
