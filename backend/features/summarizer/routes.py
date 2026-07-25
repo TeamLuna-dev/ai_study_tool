@@ -21,6 +21,7 @@ async def generate_summary():
     data   = request.get_json(silent=True) or {}
     doc_id = (data.get("doc_id") or "").strip() or None
     text   = (data.get("text")   or "").strip()
+    style  = (data.get("style")  or "study-notes").strip()
 
     # Resolve the text to summarise
     file_name = None
@@ -33,7 +34,7 @@ async def generate_summary():
         return jsonify({"error": "Provide either 'text' or a 'doc_id'."}), 400
 
     try:
-        result = await summarize_text(text)
+        result = await summarize_text(text, style=style)
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
     except Exception:
