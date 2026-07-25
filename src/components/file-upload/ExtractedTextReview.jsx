@@ -1,9 +1,12 @@
 /**
- * OcrTextReview.jsx
+ * ExtractedTextReview.jsx
  *
- * Shown after OCR completes on an image upload. Displays the extracted
- * text in an editable textarea so the user can correct mistakes before
- * the text is sent to the embedding pipeline.
+ * Shown after text extraction completes (OCR for images, transcription for
+ * audio). Displays the extracted text in an editable textarea so the user
+ * can correct mistakes before the text is sent to the embedding pipeline.
+ *
+ * title/description are injectable so OCR and transcript review can share
+ * this one component instead of forking near-identical copies (KISS).
  *
  * The saveFn prop is injectable (e.g. for tests) via useOcrTextReview.
  */
@@ -17,10 +20,20 @@ import { useOcrTextReview, SAVE_STATUS } from "../../hooks/useOcrTextReview";
  *   extractedText: string,
  *   authToken?:    string|null,
  *   saveFn?:       Function,
- *   ocrWarning?:   string|null,
+ *   warning?:      string|null,
+ *   title?:        string,
+ *   description?:  string,
  * }} props
  */
-export function OcrTextReview({ docId, extractedText, authToken, saveFn, ocrWarning }) {
+export function ExtractedTextReview({
+  docId,
+  extractedText,
+  authToken,
+  saveFn,
+  warning,
+  title = "Review Extracted Text",
+  description = "Edit the text below if needed, then confirm to save.",
+}) {
   const { text, setText, handleSave, saveStatus, saveError } = useOcrTextReview({
     docId,
     initialText: extractedText,
@@ -32,7 +45,7 @@ export function OcrTextReview({ docId, extractedText, authToken, saveFn, ocrWarn
   const isSaved  = saveStatus === SAVE_STATUS.SAVED;
 
   if (!extractedText) return null;
- 
+
   return (
     <div
       data-testid="ocr-text-review"
@@ -46,14 +59,14 @@ export function OcrTextReview({ docId, extractedText, authToken, saveFn, ocrWarn
       "
     >
       <p className="mb-1 font-semibold text-slate-800 dark:text-slate-100">
-        Review Extracted Text
+        {title}
       </p>
 
       <p className="mb-3 text-slate-500 dark:text-slate-400">
-        Edit the text below if needed, then confirm to save.
+        {description}
       </p>
 
-      {ocrWarning && (
+      {warning && (
         <div
           role="alert"
           data-testid="ocr-warning"
@@ -65,7 +78,7 @@ export function OcrTextReview({ docId, extractedText, authToken, saveFn, ocrWarn
             text-yellow-800 dark:text-yellow-300
           "
         >
-          ⚠ {ocrWarning}
+          ⚠ {warning}
         </div>
       )}
 

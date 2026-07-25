@@ -27,17 +27,18 @@ ocr_bp    = Blueprint("ocr",    __name__)
 _executor = ThreadPoolExecutor(max_workers=4)
 
 # ---------------------------------------------------------------------------
-# Validation constants
-# Add new types here without changing any route logic
+# Validation registry — mirrors src/util/fileValidation.js on the frontend.
+# Add new types here without changing any route logic below.
 # ---------------------------------------------------------------------------
 ALLOWED_MIME_TYPES = {
-    "application/pdf",
-    "image/jpeg",
-    "image/png",
+    "application/pdf": {"max_size_bytes": 20 * 1024 * 1024},
+    "image/jpeg":       {"max_size_bytes": 20 * 1024 * 1024},
+    "image/png":        {"max_size_bytes": 20 * 1024 * 1024},
+    "audio/mpeg":       {"max_size_bytes": 100 * 1024 * 1024},
+    "audio/mp4":        {"max_size_bytes": 100 * 1024 * 1024},
+    "audio/x-m4a":      {"max_size_bytes": 100 * 1024 * 1024},
+    "audio/wav":        {"max_size_bytes": 100 * 1024 * 1024},
 }
-
-MAX_FILE_SIZE_MB    = 20
-MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
 
 # Dev mode flag — same source as auth.py
 DEV_MODE = os.getenv("DEV_MODE", "true").lower() == "true"
@@ -79,19 +80,19 @@ def upload_file():
         return jsonify({"error": "No file selected."}), 400
 
     # 3. Validate MIME type
-    if file.mimetype not in ALLOWED_MIME_TYPES:
+    type_entry = ALLOWED_MIME_TYPES.get(file.mimetype)
+    if type_entry is None:
         return jsonify({
-            "error": (
-                f"Unsupported file type '{file.mimetype}'. "
-                f"Allowed: PDF, JPG, PNG."
-            )
+            "error": f"Unsupported file type '{file.mimetype}'."
         }), 415
 
-    # 4. Validate file size
+    # 4. Validate file size against this type's own limit
     file_bytes = file.read()
-    if len(file_bytes) > MAX_FILE_SIZE_BYTES:
+    max_size_bytes = type_entry["max_size_bytes"]
+    if len(file_bytes) > max_size_bytes:
+        max_size_mb = max_size_bytes // (1024 * 1024)
         return jsonify({
-            "error": f"File exceeds the {MAX_FILE_SIZE_MB}MB size limit."
+            "error": f"File exceeds the {max_size_mb}MB size limit."
         }), 413
 
     # 5. Store the file

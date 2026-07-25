@@ -16,23 +16,12 @@ import QuizGenerator from "./QuizGenerator"
 import QuizResults from "./QuizResults";
 import QuizLoadingScreen from "./QuizLoadingScreen";
 import { useQuizSuggestions } from "../../hooks/useQuizSuggestions";
-import { BRAND_BLUE, primaryButtonStyle, secondaryButtonStyle, disabledButtonStyle, layoutStyle } from "./quizStyles";
-import { useLocation, useNavigate } from "react-router-dom";
-
-const TOPIC_OPTIONS = [
-  "Math",
-  "Science",
-  "History",
-  "Programming",
-  "Biology",
-  "Chemistry",
-  "Physics",
-  "English",
-];
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 export function QuizPage() {
   const location = useLocation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { user } = useAuth(); // get current user for personalized analysis
  
   
@@ -61,6 +50,7 @@ export function QuizPage() {
   const { suggestions, loading: suggestionsLoading } = useQuizSuggestions(weakTopicNames, user?.uid);
 
   const [userDocs, setUserDocs] = useState([]); // state to hold user's uploaded documents for doc-based quiz generation
+  const [docsLoaded, setDocsLoaded] = useState(false); // gates the ?doc= preselect until docs resolve
   const [selectedDocId, setSelectedDocId] = useState(""); // state to track which document the user has selected for quiz generation
   const [inputMode, setInputMode] = useState("docs"); // "docs" | "notes"
 
@@ -85,10 +75,22 @@ export function QuizPage() {
     const snap = await getDocs(q);
     const docs = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
     setUserDocs(docs);
+    setDocsLoaded(true);
   }
 
   fetchDocs();
 }, [user]);
+
+  // Preselect from ?doc=<id> once docs resolve; ignore ids not in the list.
+  useEffect(() => {
+    if (!docsLoaded) return;
+    const docParam = searchParams.get("doc");
+    if (!docParam) return;
+    if (userDocs.some((d) => d.id === docParam)) {
+      setSelectedDocId(docParam);
+      setInputMode("docs");
+    }
+  }, [docsLoaded, userDocs, searchParams]);
 
   // On mount, check for retake state
   useEffect(() => {
@@ -301,26 +303,26 @@ export function QuizPage() {
 
   // quiz in progress...
   return (
-    <div className="min-h-screen bg-gray-50 px-4 py-10 text-gray-900 transition-colors duration-300 dark:bg-gray-950 dark:text-white">
+    <div className="min-h-screen bg-paper px-4 py-10 text-ink transition-colors duration-300 dark:bg-gray-950 dark:text-white">
       <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-3xl items-center justify-center">
-        <div className="w-full rounded-3xl border border-gray-200 bg-white p-8 shadow-md transition-colors dark:border-gray-700 dark:bg-gray-900">
+        <div className="w-full rounded-2xl border border-hairline bg-surface p-8 shadow-sm transition-colors dark:border-gray-700 dark:bg-gray-900">
           <div className="mb-6 flex items-center justify-between gap-4">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+            <h2 className="text-2xl font-bold text-ink dark:text-white">
               Question {current + 1} / {questions.length}
             </h2>
-            <span className="text-sm text-gray-500 dark:text-gray-400">
+            <span className="text-sm text-ink-soft dark:text-gray-400">
               Topic: {topic || "General"}
             </span>
           </div>
 
-        <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden mb-8">
+        <div className="w-full h-2 bg-hairline dark:bg-gray-700 rounded-full overflow-hidden mb-8">
           <div
-            className="h-full bg-blue-600 dark:bg-blue-500 rounded-full transition-all duration-300"
+            className="h-full bg-gilt-600 dark:bg-gilt-400 rounded-full transition-all duration-300"
             style={{ width: `${((current + 1) / questions.length) * 100}%` }}
           />
         </div>
 
-        <p className="text-lg md:text-xl font-medium text-gray-900 dark:text-white">
+        <p className="text-lg md:text-xl font-medium text-ink dark:text-white">
           {q.question}
         </p>
 
@@ -331,8 +333,8 @@ export function QuizPage() {
               onClick={() => setSelected(idx)}
               className={`p-4 rounded-2xl text-left border transition-all duration-200 ${
                 selected === idx
-                  ? "bg-blue-600 text-white border-blue-600 dark:bg-blue-500 dark:border-blue-500"
-                  : "bg-gray-100 text-gray-900 border-gray-200 hover:bg-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-700 dark:hover:bg-gray-700"
+                  ? "bg-gilt-600 text-white border-gilt-600 dark:bg-gilt-400 dark:border-gilt-400 dark:text-gray-950"
+                  : "bg-gray-100 text-ink border-hairline hover:bg-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-700 dark:hover:bg-gray-700"
               }`}
             >
               <span className="font-semibold mr-2">
@@ -343,7 +345,7 @@ export function QuizPage() {
           ))}
         </div>
 
-        <div className="mt-5 text-sm text-gray-500 dark:text-gray-400">
+        <div className="mt-5 text-sm text-ink-soft dark:text-gray-400">
           Selected:{" "}
           {selected === null ? "None" : String.fromCharCode(65 + selected)}
         </div>
@@ -358,8 +360,8 @@ export function QuizPage() {
             disabled={isFirst || loadingScore}
             className={`px-5 py-3 rounded-2xl font-semibold border transition ${
               isFirst || loadingScore
-                ? "border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed"
-                : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
+                ? "border-hairline dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-ink-faint dark:text-gray-500 cursor-not-allowed"
+                : "border-hairline dark:border-gray-700 bg-white dark:bg-gray-800 text-ink-soft dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
             }`}
           >
             Previous
@@ -368,10 +370,10 @@ export function QuizPage() {
           <button
             onClick={handleNext}
             disabled={selected === null || loadingScore}
-            className={`px-5 py-3 rounded-2xl font-semibold text-white transition ${
+            className={`px-5 py-3 rounded-2xl font-semibold transition ${
               selected === null || loadingScore
-                ? "bg-blue-300 dark:bg-blue-800 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400"
+                ? "bg-gilt-600/40 text-white cursor-not-allowed dark:bg-gilt-400/30"
+                : "bg-gilt-600 text-white hover:-translate-y-0.5 hover:shadow-lg dark:bg-gilt-400 dark:text-gray-950"
             }`}
           >
             {loadingScore ? "Scoring..." : isLast ? "Finish" : "Next"}

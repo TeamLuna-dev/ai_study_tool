@@ -182,6 +182,7 @@ Referenced via `--set-secrets` as `ENV_VAR=secret-name:latest`. Mounted as envir
 | `OPENAI_API_KEY` | `openai-api-key` |
 | `UNSTRUCTURED_API_KEY` | `unstructured-api-key` |
 | `QDRANT_API_KEY` | `qdrant-api-key` |
+| `ANTHROPIC_LUNA_KEY` | `anthropic-luna-key` |
 
 ### Updating an env var or secret
 

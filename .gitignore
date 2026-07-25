@@ -65,4 +65,10 @@ Thumbs.db
 # Temporary files
 temp/
 
+# Implementation briefs — working docs, not project documentation
+AUDIO_SIZE_LIMIT_BRIEF.md
+AUDIO_UPLOAD_BRIEF.md
+GILT_EDGE_REVAMP.md
+UX_FIXES_BRIEF.md
+
 .claude

@@ -1,6 +1,6 @@
 /**
  * ToolPlaceholderPage.jsx
- * Temporary placeholder rendered for tool routes (/qa, /quiz, /summaries, /rooms)
+ * Temporary placeholder rendered for tool routes (/qa)
  * until each team member builds their feature page.
  */
 

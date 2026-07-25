@@ -10,16 +10,28 @@
  */
 
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { DropZone } from "./DropZone";
 import { ProgressBar } from "./ProgressBar";
 import { StatusAlert } from "./StatusAlert";
 import { ProcessingStatus } from "./ProcessingStatus";
-import { OcrTextReview } from "./OcrTextReview";
+import { ExtractedTextReview } from "./ExtractedTextReview";
 import { useFileUpload, UPLOAD_STATUS } from "../../hooks/useFileUpload";
 import { useDocumentStatus } from "../../hooks/useDocumentStatus";
-import { formatFileSize } from "../../util/fileValidation";
+import { formatFileSize, ALLOWED_TYPES } from "../../util/fileValidation";
+import { Button } from "../common/Button";
 
-const IMAGE_TYPES = new Set(["image/jpeg", "image/png"]);
+// Copy for the extraction-review step, keyed by registry `kind`.
+const REVIEW_COPY = {
+  image: {
+    title: "Review Extracted Text",
+    description: "Edit the text below if needed, then confirm to save.",
+  },
+  audio: {
+    title: "Review your transcript",
+    description: "Fix names and technical terms before we file it.",
+  },
+};
 
 /**
  * @param {{
@@ -27,9 +39,11 @@ const IMAGE_TYPES = new Set(["image/jpeg", "image/png"]);
  *   onUploadError?:   (message: string) => void; - called when upload fails
  *   uploadFn?:        Function;                  - injectable transport (for testing)
  *   getAuthToken?:    () => Promise<string>;      - e.g. () => currentUser.getIdToken()
+ *   allowedKinds?:    string[];                   - restricts this instance to certain kinds
  * }} props
  */
-export function FileUpload({ onUploadSuccess, onUploadError, uploadFn, getAuthToken }) {
+export function FileUpload({ onUploadSuccess, onUploadError, uploadFn, getAuthToken, allowedKinds }) {
+  const navigate = useNavigate();
   const {
     status,
     progress,
@@ -40,7 +54,7 @@ export function FileUpload({ onUploadSuccess, onUploadError, uploadFn, getAuthTo
     handleUpload,
     handleCancel,
     reset,
-  } = useFileUpload({ uploadFn, getAuthToken });
+  } = useFileUpload({ uploadFn, getAuthToken, allowedKinds });
 
   const isUploading = status === UPLOAD_STATUS.UPLOADING;
   const isSuccess   = status === UPLOAD_STATUS.SUCCESS;
@@ -52,8 +66,11 @@ export function FileUpload({ onUploadSuccess, onUploadError, uploadFn, getAuthTo
     getAuthToken?.().then(setAuthToken).catch(() => {});
   }, [getAuthToken]);
 
-  const isImage = selectedFile && IMAGE_TYPES.has(selectedFile.type);
-  const showOcrReview = pipelineStatus === "pending_review" && isImage && ocrText;
+  // Review gating is kind-based, not type-based, so new kinds (audio) reuse
+  // the same extraction-review step without touching this condition again.
+  const fileKind = selectedFile && ALLOWED_TYPES[selectedFile.type]?.kind;
+  const reviewCopy = REVIEW_COPY[fileKind];
+  const showExtractedTextReview = pipelineStatus === "pending_review" && reviewCopy && ocrText;
 
   React.useEffect(() => {
     if (isSuccess && message) onUploadSuccess?.(message);
@@ -74,7 +91,7 @@ export function FileUpload({ onUploadSuccess, onUploadError, uploadFn, getAuthTo
         hover:bg-blue-100/40 dark:hover:bg-blue-900/20
         transition
       ">
-        <DropZone onFileSelect={handleFileSelect} disabled={isUploading} />
+        <DropZone onFileSelect={handleFileSelect} disabled={isUploading} allowedKinds={allowedKinds} />
       </div>
 
       {selectedFile && !isSuccess && (
@@ -102,18 +119,32 @@ export function FileUpload({ onUploadSuccess, onUploadError, uploadFn, getAuthTo
         />
       </div>
 
-      {showOcrReview && (
+      {showExtractedTextReview && (
         <div className="
           mt-6 rounded-3xl
           border border-gray-200 dark:border-gray-700
           bg-white dark:bg-gray-900
           p-5 shadow-sm transition-colors
         ">
-          <OcrTextReview
+          <ExtractedTextReview
             docId={docId}
             extractedText={ocrText}
             authToken={authToken}
+            warning={ocrWarning}
+            title={reviewCopy.title}
+            description={reviewCopy.description}
           />
+        </div>
+      )}
+
+      {pipelineStatus === "ready" && (
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Button onClick={() => navigate(`/summarizer?doc=${docId}`)}>
+            Summarize this
+          </Button>
+          <Button variant="ghost" onClick={() => navigate(`/quiz?doc=${docId}`)}>
+            Quiz me on this
+          </Button>
         </div>
       )}
 

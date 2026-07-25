@@ -50,6 +50,11 @@ const QuizHistoryPage = lazy(() =>
   }))
 );
 const ToolPlaceholderPage = lazy(() => import("./pages/ToolPlaceholderPage"));
+const ProgressPage = lazy(() =>
+  import("./pages/ProgressPage").then((m) => ({
+    default: m.ProgressPage,
+  }))
+);
 
 /**
  * Redirects / based on auth state:
@@ -73,15 +78,12 @@ function AppLayout() {
   const shouldShowNavbar = !hideNavbarRoutes.includes(location.pathname);
 
   return (
-    <div className="min-h-screen bg-white text-black dark:bg-gray-950 dark:text-white transition-colors duration-300">
+    <div className="min-h-screen bg-white text-ink dark:bg-gray-950 dark:text-white transition-colors duration-300">
       {shouldShowNavbar && <NavBar />}
 
       <Suspense fallback={<LoadingSpinner />}>
         <Routes>
-          <Route path="/" element={<LandingPage />} />
-          {/* Or use this if you want auto-redirect for logged users:
-              <Route path="/" element={<LandingGate />} />
-          */}
+          <Route path="/" element={<LandingGate />} />
 
           <Route path="/login" element={<LoginPage />} />
 
@@ -99,6 +101,15 @@ function AppLayout() {
             element={
               <ProtectedRoute>
                 <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/progress"
+            element={
+              <ProtectedRoute>
+                <ProgressPage />
               </ProtectedRoute>
             }
           />
@@ -135,15 +146,6 @@ function AppLayout() {
             element={
               <ProtectedRoute>
                 <SummarizerPage />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/study-plan"
-            element={
-              <ProtectedRoute>
-                <ToolPlaceholderPage title="Study Plan Generator" />
               </ProtectedRoute>
             }
           />
