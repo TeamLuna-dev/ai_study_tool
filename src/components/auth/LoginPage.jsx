@@ -9,11 +9,8 @@ import { Navigate, useNavigate, useLocation } from "react-router-dom";
 import { signInWithGoogle } from "../../services/authService";
 import { useAuth } from "../../hooks/useAuth";
 import LoadingSpinner from "../common/LoadingSpinner";
-
-const link = document.createElement("link");
-link.rel = "stylesheet";
-link.href = "https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@700;800&display=swap";
-document.head.appendChild(link);
+import { Card } from "../common/Card";
+import { Button } from "../common/Button";
 
 // Official Google "G" logo mark using brand colors
 function GoogleIcon() {
@@ -81,211 +78,107 @@ export default function LoginPage() {
   }
 
   return (
-    <div style={{
-    minHeight: "100vh",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    background: "#f7f8fa",
-    padding: "24px",
-    fontFamily: "'DM Sans', sans-serif",
-  }}>
+    <div className="relative flex min-h-screen items-center justify-center bg-paper p-6 transition-colors duration-300 dark:bg-gray-950">
 
-    {/* subtle blue grid background */}
-    <div style={{
-      position: "fixed",
-      inset: 0,
-      backgroundImage: `
-        linear-gradient(rgba(37,99,235,0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(37,99,235,0.04) 1px, transparent 1px)
-      `,
-      backgroundSize: "48px 48px",
-      pointerEvents: "none",
-    }} />
+      {/* subtle gilt grid background */}
+      <div className="pointer-events-none fixed inset-0 bg-[linear-gradient(rgba(171,126,12,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(171,126,12,0.04)_1px,transparent_1px)] bg-[size:48px_48px] dark:bg-[linear-gradient(rgba(217,182,90,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(217,182,90,0.05)_1px,transparent_1px)]" />
 
-    {/* card shell — empty for now */}
-    <div style={{
-      position: "relative",
-      width: "100%",
-      maxWidth: "420px",
-      background: "#ffffff",
-      border: "1px solid #e8eaed",
-      borderRadius: "20px",
-      boxShadow: "0 8px 32px rgba(0,0,0,0.08)",
-      padding: "48px 40px",
-      animation: "fadeSlideUp 0.5s cubic-bezier(0.16,1,0.3,1) both", // ← only add this line
-    }}>
+      <Card className="relative w-full max-w-[420px] animate-fade-slide-up px-10 py-12">
 
-      {/* Branding — logo, app name, tagline */}
-<div style={{ textAlign: "center", marginBottom: "40px" }}>
+        {/* Branding — logo, app name, tagline */}
+        <div className="mb-10 text-center">
 
-  {/* Logo mark */}
-  <div style={{
-    width: "56px",
-    height: "56px",
-    background: "#2563eb",
-    borderRadius: "14px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    margin: "0 auto 16px",
-    boxShadow: "0 4px 12px rgba(37,99,235,0.3)",
-  }}>
-    <span style={{ color: "#fff", fontSize: "24px", fontWeight: 800, fontFamily: "'Syne', sans-serif" }}>S</span>
-  </div>
+          {/* Logo mark */}
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gilt-600 shadow-[0_4px_12px_rgba(171,126,12,0.3)] dark:bg-gilt-400 dark:shadow-[0_4px_12px_rgba(217,182,90,0.3)]">
+            <span className="font-display text-2xl font-bold text-on-gilt dark:text-gray-950">S</span>
+          </div>
 
-  {/* App name */}
-  <h1 style={{
-    fontFamily: "'Syne', sans-serif",
-    fontSize: "26px",
-    fontWeight: 800,
-    color: "#1a1a2e",
-    margin: "0 0 8px",
-  }}>
-    AI Study Assistant
-  </h1>
+          {/* App name */}
+          <h1 className="font-display mb-2 text-[26px] font-extrabold text-ink dark:text-white">
+            AI Study Assistant
+          </h1>
 
-  {/* Tagline */}
-  <p style={{
-    fontSize: "14px",
-    color: "#7a7a8c",
-    margin: 0,
-    lineHeight: 1.6,
-  }}>
-    Your AI-powered study companion
-  </p>
-</div>
+          {/* Tagline */}
+          <p className="text-sm leading-relaxed text-ink-soft dark:text-gray-400">
+            Your AI-powered study companion
+          </p>
+        </div>
 
-  {/* Feature highlights */}
-  <div style={{
-    display: "flex",
-    justifyContent: "space-between",
-    gap: "8px",
-    marginBottom: "28px",
-  }}>
-    {[
-      { icon: "📄", label: "Upload notes" },
-      { icon: "🧠", label: "Generate quizzes" },
-      { icon: "📊", label: "Track progress" },
-    ].map(({ icon, label }) => (
-      <div key={label} style={{
-        flex: 1,
-        textAlign: "center",
-        padding: "12px 8px",
-        background: "#f7f8fa",
-        border: "1px solid #e8eaed",
-        borderRadius: "10px",
-      }}>
-        <div style={{ fontSize: "20px", marginBottom: "4px" }}>{icon}</div>
-        <div style={{
-          fontSize: "11px",
-          color: "#7a7a8c",
-          fontWeight: 500,
-          lineHeight: 1.3,
-        }}>{label}</div>
-      </div>
-    ))}
-  </div>
+        {/* Feature highlights */}
+        <div className="mb-7 flex justify-between gap-2">
+          {[
+            { icon: "📄", label: "Upload notes" },
+            { icon: "🧠", label: "Generate quizzes" },
+            { icon: "📊", label: "Track progress" },
+          ].map(({ icon, label }) => (
+            <div
+              key={label}
+              className="flex-1 rounded-[10px] border border-hairline bg-paper px-2 py-3 text-center dark:border-gray-700 dark:bg-gray-800"
+            >
+              <div className="mb-1 text-xl">{icon}</div>
+              <div className="text-[11px] font-medium leading-tight text-ink-soft dark:text-gray-400">
+                {label}
+              </div>
+            </div>
+          ))}
+        </div>
 
-  {/* Google sign-in button */}
-  <button
-    onClick={handleGoogleSignIn}
-    disabled={signingIn}
-    style={{
-      width: "100%",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      gap: "12px",
-      padding: "13px 24px",
-      background: "#ffffff",
-      border: "1px solid #e8eaed",
-      borderRadius: "10px",
-      color: "#1a1a2e",
-      fontSize: "15px",
-      fontWeight: 500,
-      fontFamily: "'DM Sans', sans-serif",
-      cursor: signingIn ? "not-allowed" : "pointer",
-      opacity: signingIn ? 0.6 : 1,
-      boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-      transition: "all 0.2s",
-    }}
-  >
-    {signingIn ? (
-      <svg
-        style={{ animation: "spin 1s linear infinite", width: 20, height: 20 }}
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-      >
-        <circle
-          style={{ opacity: 0.25 }}
-          cx="12" cy="12" r="10"
-          stroke="#2563eb"
-          strokeWidth="4"
-        />
-        <path
-          style={{ opacity: 0.75 }}
-          fill="#2563eb"
-          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-        />
-      </svg>
-    ) : (
-      <GoogleIcon />
-    )}
-    {signingIn ? "Signing in…" : "Sign in with Google"}
-  </button>
+        {/* Google sign-in button */}
+        <Button
+          variant="ghost"
+          onClick={handleGoogleSignIn}
+          disabled={signingIn}
+          className="flex w-full items-center justify-center gap-3"
+        >
+          {signingIn ? (
+            <svg
+              className="h-5 w-5 animate-spin text-gilt-600 dark:text-gilt-400"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12" cy="12" r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+              />
+            </svg>
+          ) : (
+            <GoogleIcon />
+          )}
+          {signingIn ? "Signing in…" : "Sign in with Google"}
+        </Button>
 
-  {/* Spin animation */}
-  <style>{`
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-    @keyframes fadeSlideUp {
-      from { opacity: 0; transform: translateY(24px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-  `}</style>
+        {/* Error message */}
+        {error && (
+          <p
+            className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3.5 py-2.5 text-center text-[13px] text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-300"
+            role="alert"
+          >
+            {error}
+          </p>
+        )}
 
-  {/* Error message */}
-  {error && (
-    <p style={{
-      marginTop: "12px",
-      textAlign: "center",
-      fontSize: "13px",
-      color: "#dc2626",
-      padding: "10px 14px",
-      background: "#fef2f2",
-      border: "1px solid #fecaca",
-      borderRadius: "8px",
-    }} role="alert">
-      {error}
-    </p>
-  )}
+        {/* Footer */}
+        <p className="mt-6 text-center text-xs leading-relaxed text-ink-faint">
+          By signing in you agree to follow our (hypothetical){" "}
+          <a href="#" className="text-gilt-ink underline dark:text-gilt-400">Terms of Service</a>{" "}
+          and acknowledge our{" "}
+          <a href="#" className="text-gilt-ink underline dark:text-gilt-400">Privacy Policy</a>.
+        </p>
 
-  {/* Footer */}
-  <p style={{
-    marginTop: "24px",
-    textAlign: "center",
-    fontSize: "12px",
-    color: "#b0b0be",
-    lineHeight: 1.6,
-  }}>
-    By signing in you agree to follow our (hypothetical) <a href="#" style={{ color: "#2563eb", textDecoration: "underline" }}>Terms of Service</a> and acknowledge our <a href="#" style={{ color: "#2563eb", textDecoration: "underline" }}>Privacy Policy</a>.
-  </p>
+        {/* Team credit as we should!!! */}
+        <p className="mt-2 text-center text-[11px] text-ink-faint">
+          © 2026 Team Luna. All rights reserved.
+        </p>
 
-  {/* Team credit as we should!!! */}
-  <p style={{
-    marginTop: "8px",
-    textAlign: "center",
-    fontSize: "11px",
-    color: "#d0d0da",
-  }}>
-      © 2026 Team Luna. All rights reserved.
-  </p>
-
-  </div>
-  </div>
-);
+      </Card>
+    </div>
+  );
 }
