@@ -12,9 +12,12 @@ import { useState } from "react";
 import Modal from "../common/Modal";
 import DocumentPreviewModal from "./DocumentPreviewModal";
 // maps file type to a label and Tailwind color classes
+// Audio keys are the raw stored fileType per mimetype (mp3="mpeg", m4a
+// comes in as either "mp4" or "x-m4a" depending on how the browser reports it).
 function getFileTypeBadge(fileType) {
   if (fileType === "pdf") return { label: "PDF", color: "bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300" };
   if (["png", "jpg", "jpeg"].includes(fileType)) return { label: "Image", color: "bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-300" };
+  if (["mpeg", "mp4", "x-m4a", "wav"].includes(fileType)) return { label: "Audio", color: "bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300" };
   return { label: "File", color: "bg-gray-50 text-gray-600 dark:bg-gray-800 dark:text-gray-300" };
 }
 
