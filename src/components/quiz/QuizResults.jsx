@@ -28,7 +28,7 @@ export default function QuizResults({
   const pct = result.percentage;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-white transition-colors px-4 py-10">
+    <div className="min-h-screen bg-paper dark:bg-gray-950 text-ink dark:text-white transition-colors px-4 py-10">
       <div className="max-w-4xl mx-auto space-y-6">
 
         {/* Header */}
@@ -54,7 +54,7 @@ export default function QuizResults({
               Regenerate
             </button>
           )}
-          <button onClick={handleRestart} className="flex-1 rounded-2xl bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400">
+          <button onClick={handleRestart} className="flex-1 rounded-2xl bg-gilt-700 px-5 py-3 font-semibold text-white hover:-translate-y-0.5 hover:shadow-lg transition dark:bg-gilt-400 dark:text-gray-950">
             Start New Quiz
           </button>
         </div>
