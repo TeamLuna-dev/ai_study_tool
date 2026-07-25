@@ -20,6 +20,12 @@ const FILE_TYPE_STYLES = {
   png:  { bg: "bg-green-100 dark:bg-green-900/30", text: "text-green-700 dark:text-green-300" },
   jpg:  { bg: "bg-green-100 dark:bg-green-900/30", text: "text-green-700 dark:text-green-300" },
   jpeg: { bg: "bg-green-100 dark:bg-green-900/30", text: "text-green-700 dark:text-green-300" },
+  // Stored fileType per registered audio mimetype (mimetype.split("/")[-1]);
+  // teal isn't remapped to gilt, unlike blue/indigo/purple/etc.
+  mpeg:  { bg: "bg-teal-100 dark:bg-teal-900/30", text: "text-teal-700 dark:text-teal-300" },
+  mp4:   { bg: "bg-teal-100 dark:bg-teal-900/30", text: "text-teal-700 dark:text-teal-300" },
+  "x-m4a": { bg: "bg-teal-100 dark:bg-teal-900/30", text: "text-teal-700 dark:text-teal-300" },
+  wav:   { bg: "bg-teal-100 dark:bg-teal-900/30", text: "text-teal-700 dark:text-teal-300" },
 };
 
 const DEFAULT_BADGE = { bg: "bg-gray-100 dark:bg-gray-800", text: "text-gray-700 dark:text-gray-300" };
@@ -38,7 +44,7 @@ function FileTypeBadge({ fileType }) {
 
 const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
 
-function formatRelativeTime(timestamp) {
+export function formatRelativeTime(timestamp) {
   if (!timestamp) return "Unknown";
   const date = timestamp?.toDate ? timestamp.toDate() : new Date(timestamp);
   if (isNaN(date.getTime())) return "Unknown";
@@ -58,13 +64,19 @@ function formatRelativeTime(timestamp) {
 
 function RecentDocumentCard({ doc, onResume }) {
   return (
-    <div className="
-      flex items-center justify-between gap-4 p-4 rounded-2xl
-      border border-gray-100 dark:border-gray-700
-      bg-white dark:bg-gray-900
-      hover:shadow-md hover:-translate-y-[2px]
-      transition-all duration-300
-    ">
+    <button
+      type="button"
+      onClick={() => onResume(doc.id)}
+      className="
+        flex w-full items-center justify-between gap-4 p-4 rounded-2xl text-left
+        border border-gray-100 dark:border-gray-700
+        bg-white dark:bg-gray-900
+        hover:shadow-md hover:-translate-y-[2px]
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gilt-600
+        dark:focus-visible:ring-gilt-400
+        transition-all duration-300
+      "
+    >
       <div className="flex items-center gap-4 flex-1 min-w-0">
 
         {/* Icon */}
@@ -90,7 +102,7 @@ function RecentDocumentCard({ doc, onResume }) {
         </div>
       </div>
     </div>
-    </div>
+    </button>
   );
 }
 
@@ -126,14 +138,14 @@ export function RecentDocuments() {
 
   const handleResume = (docId) => {
     if (!docId) return;
-    navigate(`/documents/${docId}`);
+    navigate(`/summarizer?doc=${docId}`);
   };
 
   return (
     <div className="
-      bg-white dark:bg-gray-900
-      rounded-3xl
-      border border-gray-200 dark:border-gray-700
+      bg-surface dark:bg-gray-900
+      rounded-2xl
+      border border-hairline dark:border-gray-700
       shadow-sm
       p-6
       transition-colors
