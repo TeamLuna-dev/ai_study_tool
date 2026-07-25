@@ -13,16 +13,16 @@ import API_BASE_URL from "../config/api";
 /**
  * Calls POST /api/summarizer/generate and returns the generated summary.
  *
- * @param {{ text?: string, docId?: string, idToken?: string|null }} options
+ * @param {{ text?: string, docId?: string, style?: string, idToken?: string|null }} options
  * @returns {Promise<{ summary: string, doc_id: string|null }>}
  * @throws {Error} on network failure or non-2xx response
  */
-export async function generateSummary({ text, docId, idToken } = {}) {
+export async function generateSummary({ text, docId, style, idToken } = {}) {
   if (!text && !docId) {
     throw new Error("Provide either text or a docId.");
   }
 
-  const body = docId ? { doc_id: docId } : { text };
+  const body = { ...(docId ? { doc_id: docId } : { text }), ...(style ? { style } : {}) };
 
   const res = await fetch(`${API_BASE_URL}/summarizer/generate`, {
     method: "POST",
