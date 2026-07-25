@@ -4,23 +4,25 @@
  */
 
 import React, { useRef, useState, useCallback } from "react";
-import { ALLOWED_TYPES, MAX_FILE_SIZE_MB } from "../../util/fileValidation";
-
-// Build a human-readable string of allowed extensions for the hint text
-// e.g. ".pdf, .jpg, .png"
-const allowedExtensions = Object.values(ALLOWED_TYPES)
-  .map((t) => t.extension)
-  .join(", ");
-
-// Build the accept attribute for the file input
-// e.g. "application/pdf,image/jpeg,image/png"
-const acceptAttr = Object.keys(ALLOWED_TYPES).join(",");
+import {
+  acceptStringFor,
+  extensionsForKinds,
+  maxSizeMBForKinds,
+} from "../../util/fileValidation";
 
 /**
- * @param {{ onFileSelect: (file: File) => void, disabled?: boolean }} props
+ * @param {{
+ *   onFileSelect: (file: File) => void,
+ *   disabled?:    boolean,
+ *   allowedKinds?: string[],  - restricts accept/hint copy to these kinds
+ * }} props
  */
 
-export function DropZone({ onFileSelect, disabled = false }) {
+export function DropZone({ onFileSelect, disabled = false, allowedKinds }) {
+  // Registry-derived per-zone copy — never hand-write type lists here
+  const acceptAttr = acceptStringFor(allowedKinds);
+  const allowedExtensions = extensionsForKinds(allowedKinds);
+  const maxSizeMB = maxSizeMBForKinds(allowedKinds);
   // Ref to the hidden file input so we can trigger it on click
   const inputRef = useRef(null);
   // Track whether the user is dragging a file over the zone
@@ -92,7 +94,7 @@ export function DropZone({ onFileSelect, disabled = false }) {
 
       {/* Sub text */}
       <p className="mt-2 text-sm text-gray-400 dark:text-gray-500">
-        Accepts {allowedExtensions.toUpperCase()} · Max {MAX_FILE_SIZE_MB} MB
+        Accepts {allowedExtensions.toUpperCase()} · Max {maxSizeMB} MB
       </p>
     </div>
   );

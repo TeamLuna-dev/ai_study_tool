@@ -19,7 +19,7 @@ import { generateSummary, fetchSummaryHistory } from "../services/summarizerServ
  *   loading:      boolean,
  *   error:        string|null,
  *   history:      Array,
- *   generate:     ({ text?: string, docId?: string }) => Promise<void>,
+ *   generate:     ({ text?: string, docId?: string, style?: string }) => Promise<void>,
  *   clearSummary: () => void,
  *   loadHistory:  () => Promise<void>,
  * }}
@@ -36,14 +36,14 @@ export function useSummarizer() {
    * generate — calls the summarizer API with either a docId or raw text.
    * Sets loading while in-flight; populates summary or error on resolution.
    */
-  const generate = useCallback(async ({ text, docId } = {}) => {
+  const generate = useCallback(async ({ text, docId, style } = {}) => {
     setLoading(true);
     setError(null);
     setSummary(null);
 
     try {
       const idToken = user ? await user.getIdToken() : null;
-      const result = await generateSummary({ text, docId, idToken });
+      const result = await generateSummary({ text, docId, style, idToken });
       setSummary(result.summary);
     } catch (err) {
       setError(err.message || "Something went wrong.");

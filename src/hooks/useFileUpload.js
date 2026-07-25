@@ -34,6 +34,7 @@ export const UPLOAD_STATUS = {
  * @param {{
  *   uploadFn?:     typeof uploadFile;        - injectable for testing
  *   getAuthToken?: () => Promise<string>;    - e.g. () => currentUser.getIdToken()
+ *   allowedKinds?: string[];                 - restricts validation, e.g. ["audio"]
  * }} options
  *
  * @returns {{
@@ -47,7 +48,7 @@ export const UPLOAD_STATUS = {
  *   reset:            () => void;
  * }}
  */
-export function useFileUpload({ uploadFn = uploadFile, getAuthToken } = {}) {
+export function useFileUpload({ uploadFn = uploadFile, getAuthToken, allowedKinds } = {}) {
 
   // ── State ──────────────────────────────────────────────────────────────────
 
@@ -84,7 +85,7 @@ export function useFileUpload({ uploadFn = uploadFile, getAuthToken } = {}) {
    * before they even click Upload.
    */
   const handleFileSelect = useCallback((file) => {
-    const { valid, error } = validateFile(file);
+    const { valid, error } = validateFile(file, allowedKinds);
 
     if (!valid) {
       // Show the validation error and clear any previously selected file
@@ -98,7 +99,7 @@ export function useFileUpload({ uploadFn = uploadFile, getAuthToken } = {}) {
     setStatus(UPLOAD_STATUS.IDLE);
     setMessage(null);
     setSelectedFile(file);
-  }, []);
+  }, [allowedKinds]);
 
   /**
    * handleUpload — fires when the user clicks the Upload button.
