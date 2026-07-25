@@ -41,6 +41,16 @@ function FileTypeIcon({ fileType }) {
       </div>
     );
   }
+  // Stored fileType per registered audio mimetype (mimetype.split("/")[-1])
+  if (["mpeg", "mp4", "x-m4a", "wav"].includes(fileType)) {
+    return (
+      <div className="w-20 h-20 rounded-2xl bg-teal-50 dark:bg-teal-900/20 flex items-center justify-center">
+        <svg className="w-10 h-10 text-teal-500 dark:text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
+        </svg>
+      </div>
+    );
+  }
   return (
     <div className="w-20 h-20 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
       <svg className="w-10 h-10 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
