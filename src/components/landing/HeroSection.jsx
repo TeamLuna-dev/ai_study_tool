@@ -12,11 +12,9 @@ export default function HeroSection() {
 
   return (
     <section className="relative overflow-hidden px-6 pb-20 pt-20 sm:pb-24 sm:pt-24">
-      {/* Background glow */}
+      {/* Background glow — one faint gold wash, not a hue mix */}
       <div className="absolute inset-0 -z-10">
-        <div className="absolute left-1/2 top-0 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-blue-500/20 blur-3xl" />
-        <div className="absolute right-10 top-32 h-[300px] w-[300px] rounded-full bg-purple-500/20 blur-3xl" />
-        <div className="absolute bottom-0 left-10 h-[250px] w-[250px] rounded-full bg-cyan-400/10 blur-3xl" />
+        <div className="absolute left-1/2 top-0 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-gilt-500/10 blur-3xl" />
       </div>
 
       <div className="mx-auto grid max-w-7xl items-center gap-16 lg:grid-cols-2">
@@ -31,9 +29,9 @@ export default function HeroSection() {
             AI-powered learning for students
           </div>
 
-          <h1 className="mt-6 max-w-3xl text-5xl font-semibold leading-tight tracking-tight text-gray-900 sm:text-6xl dark:text-white">
+          <h1 className="mt-6 max-w-3xl font-display text-5xl font-semibold leading-tight tracking-tight text-ink sm:text-6xl dark:text-white">
             Turn messy notes into
-            <span className="bg-gradient-to-r from-blue-600 via-cyan-500 to-purple-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-gilt-600 to-gilt-700 bg-clip-text text-transparent">
               {" "}summaries, quizzes, and progress insights
             </span>
           </h1>
