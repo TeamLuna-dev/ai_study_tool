@@ -1,28 +1,81 @@
 // Navbar.jsx
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
+import { getUserProfile } from "../services/userService";
+import { ProfileCard } from "./dashboard/ProfileCard";
+
+// Active-route styling shares this string across desktop links.
+const NAV_LINK = "rounded px-3 py-2 transition duration-300 hover:bg-gilt-600/15 hover:text-gilt-400";
+const NAV_LINK_ACTIVE = "text-gilt-400";
 
 export default function Navbar() {
   const [desktopQuizOpen, setDesktopQuizOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileQuizOpen, setMobileQuizOpen] = useState(false);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const [profile, setProfile] = useState(null);
+  const location = useLocation();
+  const { user } = useAuth();
+
+  const quizMenuRef = useRef(null);
+  const profileMenuRef = useRef(null);
+
+  useEffect(() => {
+    if (!user) return;
+    getUserProfile(user.uid).then(setProfile);
+  }, [user]);
+
+  // Shared outside-click / Escape handling for both dropdowns.
+  useEffect(() => {
+    function handlePointerDown(e) {
+      if (quizMenuRef.current && !quizMenuRef.current.contains(e.target)) {
+        setDesktopQuizOpen(false);
+      }
+      if (profileMenuRef.current && !profileMenuRef.current.contains(e.target)) {
+        setProfileMenuOpen(false);
+      }
+    }
+    function handleKeyDown(e) {
+      if (e.key === "Escape") {
+        setDesktopQuizOpen(false);
+        setProfileMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   function closeMenus() {
     setDesktopQuizOpen(false);
     setMobileQuizOpen(false);
     setMobileMenuOpen(false);
+    setProfileMenuOpen(false);
   }
+
+  function linkClass(path) {
+    return `${NAV_LINK} ${location.pathname === path ? NAV_LINK_ACTIVE : ""}`;
+  }
+
+  const avatarPhoto = user?.photoURL ?? null;
+  const avatarLabel = (profile?.displayName ?? user?.displayName ?? user?.email ?? "?")
+    .charAt(0)
+    .toUpperCase();
 
   return (
     <>
     <nav className="bg-gradient-to-r from-gray-800 to-gray-900 shadow-lg text-white">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-        
+
         {/* Logo / Title */}
         <Link
           to="/dashboard"
           onClick={closeMenus}
-          className="flex items-center gap-2 text-lg font-bold tracking-wide transition duration-300 hover:text-blue-400 sm:text-xl md:text-2xl"
+          className="flex items-center gap-2 text-lg font-bold tracking-wide transition duration-300 hover:text-gilt-400 sm:text-xl md:text-2xl"
         >
           <span>🤖</span>
           <span className="hidden sm:inline">AI Study Assistant</span>
@@ -31,26 +84,20 @@ export default function Navbar() {
 
         {/* Desktop Navbsr */}
         <div className="hidden items-center gap-2 lg:flex">
-          <Link
-            to="/dashboard"
-            className="rounded px-3 py-2 transition duration-300 hover:bg-blue-500 hover:text-white"
-          >
+          <Link to="/dashboard" className={linkClass("/dashboard")}>
             Home
           </Link>
 
-          <Link
-            to="/summarizer"
-            className="rounded px-3 py-2 transition duration-300 hover:bg-blue-500 hover:text-white"
-          >
+          <Link to="/summarizer" className={linkClass("/summarizer")}>
             AI Notes Summary
           </Link>
 
           {/* Desktop Quiz Dropdown */}
-          <div
-            className="relative">
+          <div className="relative" ref={quizMenuRef}>
             <button
               onClick={() => setDesktopQuizOpen((prev) => !prev)}
-              className="rounded px-3 py-2 transition duration-300 hover:bg-blue-500 hover:text-white"
+              aria-expanded={desktopQuizOpen}
+              className={NAV_LINK}
             >
               Quizzes ▾
             </button>
@@ -60,14 +107,14 @@ export default function Navbar() {
                 <Link
                   to="/quiz"
                    onClick={() => setDesktopQuizOpen(false)}
-                  className="block px-4 py-2 transition duration-200 hover:bg-blue-500"
+                  className="block px-4 py-2 transition duration-200 hover:bg-gilt-600/15 hover:text-gilt-400"
                 >
                   Quiz Generator
                 </Link>
                 <Link
                   to="/quiz-history"
                   onClick={() => setDesktopQuizOpen(false)}
-                  className="block px-4 py-2 transition duration-200 hover:bg-blue-500"
+                  className="block px-4 py-2 transition duration-200 hover:bg-gilt-600/15 hover:text-gilt-400"
                 >
                   Quiz History
                 </Link>
@@ -75,26 +122,43 @@ export default function Navbar() {
             )}
           </div>
 
-          <Link
-            to="/file-upload"
-            className="rounded px-3 py-2 transition duration-300 hover:bg-blue-500 hover:text-white"
-          >
+          <Link to="/file-upload" className={linkClass("/file-upload")}>
             File Uploader
           </Link>
 
-          <Link
-            to="/study-plan"
-            className="rounded px-3 py-2 transition duration-300 hover:bg-blue-500 hover:text-white"
-          >
-            Study Plan Generator
-          </Link>
-
-          <Link
-            to="/rooms"
-            className="rounded px-3 py-2 transition duration-300 hover:bg-blue-500 hover:text-white"
-          >
+          <Link to="/rooms" className={linkClass("/rooms")}>
             Study Room
           </Link>
+
+          <Link to="/progress" className={linkClass("/progress")}>
+            Progress
+          </Link>
+
+          {/* Profile avatar menu — far right, flows with the link row */}
+          <div className="relative ml-2" ref={profileMenuRef}>
+            <button
+              onClick={() => setProfileMenuOpen((prev) => !prev)}
+              aria-expanded={profileMenuOpen}
+              aria-label="Open profile menu"
+              className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-white/20 text-sm font-semibold transition hover:border-gilt-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gilt-400"
+            >
+              {avatarPhoto ? (
+                <img src={avatarPhoto} alt="" className="h-full w-full object-cover" />
+              ) : (
+                <span className="flex h-full w-full items-center justify-center bg-gilt-600 text-white dark:bg-gilt-400 dark:text-gray-950">
+                  {avatarLabel}
+                </span>
+              )}
+            </button>
+
+            {profileMenuOpen && (
+              <div className="absolute right-0 top-full z-50 mt-2 w-80 max-w-[calc(100vw-2rem)]">
+                {profile && (
+                  <ProfileCard profile={profile} user={user} onProfileUpdate={setProfile} />
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Mobile Menu Button */}
@@ -154,11 +218,18 @@ export default function Navbar() {
           </div>
 
           {/* Mobile Links */}
-          <div className="flex flex-1 flex-col gap-2 px-6 py-6 text-lg">
+          <div className="flex flex-1 flex-col gap-2 overflow-y-auto px-6 py-6 text-lg">
+            {/* Profile entry — sign-out lives inside ProfileCard */}
+            {profile && (
+              <div className="mb-2">
+                <ProfileCard profile={profile} user={user} onProfileUpdate={setProfile} />
+              </div>
+            )}
+
             <Link
               to="/dashboard"
               onClick={closeMenus}
-              className="rounded px-3 py-3 transition hover:bg-blue-500"
+              className="rounded px-3 py-3 transition hover:bg-gilt-600/15 hover:text-gilt-400"
             >
               Home
             </Link>
@@ -166,7 +237,7 @@ export default function Navbar() {
             <Link
               to="/summarizer"
               onClick={closeMenus}
-              className="rounded px-3 py-3 transition hover:bg-blue-500"
+              className="rounded px-3 py-3 transition hover:bg-gilt-600/15 hover:text-gilt-400"
             >
               AI Notes Summary
             </Link>
@@ -175,7 +246,7 @@ export default function Navbar() {
             <div className="rounded">
               <button
                 onClick={() => setMobileQuizOpen((prev) => !prev)}
-                className="flex w-full items-center justify-between rounded px-3 py-3 transition hover:bg-blue-500"
+                className="flex w-full items-center justify-between rounded px-3 py-3 transition hover:bg-gilt-600/15 hover:text-gilt-400"
               >
                 <span>Quizzes</span>
                 <span>{mobileQuizOpen ? "▴" : "▾"}</span>
@@ -186,14 +257,14 @@ export default function Navbar() {
                   <Link
                     to="/quiz"
                     onClick={closeMenus}
-                    className="rounded px-3 py-2 transition hover:bg-blue-500"
+                    className="rounded px-3 py-2 transition hover:bg-gilt-600/15 hover:text-gilt-400"
                   >
                     Quiz Generator
                   </Link>
                   <Link
                     to="/quiz-history"
                     onClick={closeMenus}
-                    className="rounded px-3 py-2 transition hover:bg-blue-500"
+                    className="rounded px-3 py-2 transition hover:bg-gilt-600/15 hover:text-gilt-400"
                   >
                     Quiz History
                   </Link>
@@ -204,25 +275,25 @@ export default function Navbar() {
             <Link
               to="/file-upload"
               onClick={closeMenus}
-              className="rounded px-3 py-3 transition hover:bg-blue-500"
+              className="rounded px-3 py-3 transition hover:bg-gilt-600/15 hover:text-gilt-400"
             >
               File Uploader
             </Link>
 
             <Link
-              to="/study-plan"
+              to="/rooms"
               onClick={closeMenus}
-              className="rounded px-3 py-3 transition hover:bg-blue-500"
+              className="rounded px-3 py-3 transition hover:bg-gilt-600/15 hover:text-gilt-400"
             >
-              Study Plan Generator
+              Study Room
             </Link>
 
             <Link
-              to="/rooms"
+              to="/progress"
               onClick={closeMenus}
-              className="rounded px-3 py-3 transition hover:bg-blue-500"
+              className="rounded px-3 py-3 transition hover:bg-gilt-600/15 hover:text-gilt-400"
             >
-              Study Room
+              Progress
             </Link>
           </div>
         </div>
