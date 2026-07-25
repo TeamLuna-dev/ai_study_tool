@@ -9,9 +9,9 @@ display live progress via an onSnapshot listener.
 PDF status progression:
   processing → extracting → embedding → storing → ready
 
-Image status progression:
+Image and audio status progression:
   processing → extracting → pending_review
-    (user confirms OCR text)
+    (user confirms OCR text / transcript)
   pending_review → embedding → storing → ready
 
 Designed to run in a background thread after the upload route returns.
@@ -45,8 +45,19 @@ from features.upload.firebase_storage import (
     store_ocr_text,
     store_document_topic,
 )
+from features.upload.transcriber import transcribe
 
 IMAGE_MIME_TYPES = {"image/jpeg", "image/png"}
+AUDIO_MIME_TYPES = {"audio/mpeg", "audio/mp4", "audio/x-m4a", "audio/wav"}
+
+# Temp-file suffix per audio mimetype — the transcription provider reads
+# the file from disk and some providers infer format from the extension.
+AUDIO_SUFFIXES = {
+    "audio/mpeg":  ".mp3",
+    "audio/mp4":   ".m4a",
+    "audio/x-m4a": ".m4a",
+    "audio/wav":   ".wav",
+}
 
 LOW_CONFIDENCE_THRESHOLD = 0.70
 
@@ -79,13 +90,19 @@ def process_document(
         uid:        Firebase UID of the uploading user.
         file_name:  Original filename as uploaded.
         doc_id:     Firestore document ID to update throughout processing.
-        mimetype:   Only "application/pdf" is processed; others are rejected.
+        mimetype:   "application/pdf", an IMAGE_MIME_TYPES entry, or an
+                    AUDIO_MIME_TYPES entry; anything else is rejected.
     """
-    if mimetype not in IMAGE_MIME_TYPES and mimetype != "application/pdf":
+    is_supported = (
+        mimetype == "application/pdf"
+        or mimetype in IMAGE_MIME_TYPES
+        or mimetype in AUDIO_MIME_TYPES
+    )
+    if not is_supported:
         mark_document_error(
             doc_id,
             stage="extraction",
-            message=f"Unsupported file type: {mimetype}. Only PDF, JPEG, and PNG are accepted.",
+            message=f"Unsupported file type: {mimetype}.",
         )
         return
 
@@ -121,6 +138,34 @@ def process_document(
                 }
             update_document_status(doc_id, "pending_review", extra)
             print(f"[PIPELINE] OCR complete for '{file_name}' — awaiting user review.")
+            return
+
+        elif mimetype in AUDIO_MIME_TYPES:
+            # ── Audio path: transcription via configured provider ──────────
+            print(f"[PIPELINE] Transcribing '{file_name}' …")
+            suffix = AUDIO_SUFFIXES.get(mimetype, ".mp3")
+            with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
+                tmp.write(file_bytes)
+                tmp_path = tmp.name
+
+            try:
+                transcript = transcribe(tmp_path)
+            finally:
+                os.unlink(tmp_path)
+
+            if not transcript or not transcript.strip():
+                mark_document_error(
+                    doc_id,
+                    stage="extraction",
+                    message="No speech could be transcribed from the audio.",
+                )
+                return
+
+            # Same field/status OCR text uses — audio is "just text" from
+            # here on, so embedding/summarizer/quiz need zero changes.
+            store_ocr_text(doc_id, transcript)
+            update_document_status(doc_id, "pending_review")
+            print(f"[PIPELINE] Transcription complete for '{file_name}' — awaiting user review.")
             return
 
         else:
