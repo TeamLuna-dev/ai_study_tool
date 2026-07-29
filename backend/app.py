@@ -23,9 +23,13 @@ def create_app():
         "http://localhost:5174",
         "http://127.0.0.1:5174",
     ]
-    frontend_url = os.environ.get("FRONTEND_URL")
-    if frontend_url and frontend_url not in cors_origins:
-        cors_origins.append(frontend_url)
+    # Dead since prod moved to the same-origin /api rewrite:
+    # Hosting proxies /api/** so no Origin header is ever sent
+    # and CORS never engages. Kept for the cross-origin path —
+    # restore if a client calls Cloud Run direct (*.run.app).
+    # frontend_url = os.environ.get("FRONTEND_URL")
+    # if frontend_url and frontend_url not in cors_origins:
+    #     cors_origins.append(frontend_url)
 
     # SCRUM-103. Work was overscoped in separate SCRUM-99 task, investigate commit e4889c5 for 103's ticket work 
     CORS(
