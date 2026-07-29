@@ -1,6 +1,6 @@
 # Deployment Guide
 
-**Last updated:** April 20, 2026
+**Last updated:** July 27, 2026
 **Owner:** Christian Molina
 **Stack:** Firebase Hosting (frontend) + Google Cloud Run (backend)
 **GCP Project:** `aitutorproject-197c3`
@@ -11,8 +11,10 @@
 
 | Service | URL |
 |---|---|
-| Frontend | https://aitutorproject-197c3.web.app |
-| Backend | https://ai-tutor-backend-285361659733.us-central1.run.app |
+| Frontend | https://docent.study |
+| Frontend (Firebase default) | https://aitutorproject-197c3.web.app |
+| Backend (direct) | https://ai-tutor-backend-285361659733.us-central1.run.app |
+| Backend (via Hosting rewrite) | https://docent.study/api |
 | Firebase Console | https://console.firebase.google.com/project/aitutorproject-197c3 |
 | GCP Console | https://console.cloud.google.com/home/dashboard?project=aitutorproject-197c3 |
 
@@ -22,7 +24,7 @@
 
 1. **Never deploy from a dirty working tree.** Run `git status` first. What you deploy should match a committed hash in the repo so rollbacks work.
 2. **Deploy from `main`.** Feature branches are for testing locally, not for prod.
-3. **Backend URL is hardcoded into the frontend bundle.** If the backend URL ever changes, the frontend must be rebuilt and redeployed.
+3. **The frontend calls the backend same-origin at `/api`.** Firebase Hosting rewrites `/api/**` to Cloud Run (see `firebase.json`), so the backend URL is *not* baked into the bundle and no CORS is involved. Do not set `VITE_API_BASE_URL` in production — it overrides the rewrite with a cross-origin absolute URL.
 4. **Secrets never leave Secret Manager.** If you need to view or rotate one, use `gcloud secrets`. Do not paste them into `.env`, chat, or tickets.
 5. **Test in incognito before announcing a deploy.** Browser cache hides regressions.
 
@@ -101,13 +103,13 @@ npm run build
 firebase deploy --only hosting
 ```
 
-Output ends with `Hosting URL: https://aitutorproject-197c3.web.app`. Deploy takes ~1–2 minutes.
+Output ends with `Hosting URL: https://aitutorproject-197c3.web.app` (the CLI always prints the default site, not the custom domain). Deploy takes ~1–2 minutes and serves both hosts.
 
 **Test after deploy:**
 
-1. Open incognito → https://aitutorproject-197c3.web.app
+1. Open incognito → https://docent.study
 2. Sign in with Google
-3. Check DevTools Network tab — API calls should go to `ai-tutor-backend-285361659733.us-central1.run.app` and return 200s
+3. Check DevTools Network tab — API calls should be **relative** (`docent.study/api/...`) and return 200s. An absolute `*.run.app` URL here means `VITE_API_BASE_URL` leaked into the build.
 
 ---
 
@@ -152,7 +154,7 @@ All prefixed `VITE_` because Vite only exposes those to the client bundle. **Bak
 
 | Var | Purpose |
 |---|---|
-| `VITE_API_BASE_URL` | Backend base URL (in `.env.production.local` for prod) |
+| `VITE_API_BASE_URL` | **Leave unset in prod.** Local override only (e.g. pointing dev at deployed Cloud Run). Unset ⇒ `src/config/api.js` falls back to same-origin `/api`. |
 | `VITE_FIREBASE_API_KEY` | Firebase Web API key (public, safe to expose) |
 | `VITE_FIREBASE_AUTH_DOMAIN` | `aitutorproject-197c3.firebaseapp.com` |
 | `VITE_FIREBASE_PROJECT_ID` | `aitutorproject-197c3` |
@@ -171,7 +173,7 @@ Set via `--set-env-vars` on deploy, or `gcloud run services update ... --update-
 | `CHUNKING_STRATEGY` | `api` |
 | `FIREBASE_STORAGE_BUCKET` | `aitutorproject-197c3.appspot.com` |
 | `QDRANT_URL` | `https://92db3cd0-0a97-4304-8b44-e614f5e13fcc.us-east4-0.gcp.cloud.qdrant.io` |
-| `FRONTEND_URL` | `https://aitutorproject-197c3.web.app` |
+| `FRONTEND_URL` | `https://docent.study` |
 
 ### Backend secrets (Secret Manager)
 
@@ -293,19 +295,51 @@ Update the relevant table in this document when you add one.
 
 ---
 
-## Adding a custom domain
+## Custom domain
 
-### Frontend (Firebase Hosting)
+Production domain is **`docent.study`**, registered at **Namecheap** using Namecheap BasicDNS (`dns1/dns2.registrar-servers.com`).
 
-Firebase Console → Hosting → Add custom domain → follow prompts. Firebase will provision a free SSL cert.
+Because Hosting rewrites `/api/**` to Cloud Run, the custom domain fronts the API too. No separate DNS record or backend domain mapping is needed.
+
+### DNS records (Namecheap → Advanced DNS → HOST RECORDS)
+
+| Type | Host | Value |
+|---|---|---|
+| A Record | `@` | `199.36.158.100` |
+| TXT Record | `@` | `hosting-site=aitutorproject-197c3` |
+| TXT Record | `@` | `v=spf1 include:spf.efwd.registrar-servers.com ~all` (email forwarding — leave alone) |
+
+**Namecheap's default parking records must be removed or the ACME challenge fails:**
+- A **URL Redirect Record** on `@` — this is what publishes `162.255.119.126`. It does *not* appear as an A record in the panel, so it's easy to miss.
+- A **CNAME** `www → parkingpage.namecheap.com.`
+- Also check the separate **REDIRECT DOMAIN** section on the same page.
+
+Symptom if you skip this: Firebase shows `Hosting's HTTP GET request for the ACME challenge failed: 162.255.119.126: Request failed`. Let's Encrypt validates over HTTP, so it hits whatever the apex A record resolves to — the parking page has no `/.well-known/acme-challenge/` handler.
+
+Verify before clicking **Verify** in the Firebase console:
+
+```bash
+dig +short docent.study A @8.8.8.8    # want 199.36.158.100, nothing else
+dig +short docent.study TXT @8.8.8.8  # want the hosting-site= line
+```
+
+Cert issuance can take a few hours after verification succeeds. Firebase retries the ACME challenge on its own.
 
 ### Firebase Auth authorized domains
 
-**Critical — easy to forget.** Any custom domain must be added to Firebase Auth's authorized domains list, or Google Sign-In will reject it.
+**Critical — easy to forget.** Any custom domain must be added to Firebase Auth's authorized domains list, or Google Sign-In will reject it with `auth/unauthorized-domain`.
 
 Firebase Console → Authentication → Settings → Authorized domains → Add domain.
 
 The default `*.web.app` and `*.firebaseapp.com` domains are already there. Only custom domains need manual addition.
+
+### Checklist when adding another domain
+
+1. Firebase Console → Hosting → Add custom domain
+2. Add the A + TXT records at the registrar; remove any parking/redirect records
+3. Firebase Console → Authentication → Authorized domains → add it
+4. Update `FRONTEND_URL` on Cloud Run (belt-and-braces — same-origin traffic never triggers CORS, but keeps the allowlist honest)
+5. Update the Live URLs table above
 
 ---
 
@@ -333,9 +367,9 @@ Then hit `curl http://localhost:8080/api/health`.
 
 ### Frontend loads but API calls fail with CORS error
 
-Backend's `FRONTEND_URL` is out of sync, or `cors_origins` in `backend/app.py` doesn't include the domain.
+**In prod this should be impossible** — requests go same-origin through the Hosting rewrite. A CORS error means the bundle was built with `VITE_API_BASE_URL` set, turning calls cross-origin. Check the Network tab: if requests target `*.run.app` instead of `docent.study/api`, clear the var from `.env.production.local`, rebuild, redeploy.
 
-Fix:
+If you genuinely need the cross-origin path, the backend's `FRONTEND_URL` must match the calling origin exactly (`backend/app.py` allowlists one production origin plus localhost):
 ```bash
 gcloud run services update ai-tutor-backend \
   --region us-central1 \
@@ -375,12 +409,13 @@ Dockerfile `CMD` doesn't match the Flask entry point. Our backend's entry is `ba
 ```
 ┌─────────────────┐       ┌──────────────────────────┐
 │  User Browser   │◀─────▶│  Firebase Hosting (CDN)  │
-│                 │       │  aitutorproject-197c3    │
-│  React/Vite SPA │       │  .web.app                │
-└────────┬────────┘       └──────────────────────────┘
-         │
-         │  HTTPS + Bearer token (Firebase ID token)
-         ▼
+│                 │       │  docent.study            │
+│  React/Vite SPA │       │  (+ *.web.app default)   │
+└─────────────────┘       └────────────┬─────────────┘
+                                       │
+        all requests are same-origin;  │  /api/** rewrite
+        no CORS anywhere in prod       │  HTTPS + Bearer token
+                                       ▼
 ┌──────────────────────────────────────────────────┐
 │  Cloud Run: ai-tutor-backend                     │
 │  us-central1, Docker container, gunicorn         │
@@ -436,7 +471,7 @@ If the project somehow disappears and you need to recreate everything:
    gcloud run deploy ai-tutor-backend \
      --source backend --region us-central1 --allow-unauthenticated \
      --memory 1Gi --cpu 1 --min-instances 0 --max-instances 5 --timeout 300 \
-     --set-env-vars "DEV_MODE=false,CHUNKING_STRATEGY=api,FIREBASE_STORAGE_BUCKET=aitutorproject-197c3.appspot.com,QDRANT_URL=https://92db3cd0-0a97-4304-8b44-e614f5e13fcc.us-east4-0.gcp.cloud.qdrant.io,FRONTEND_URL=https://aitutorproject-197c3.web.app" \
+     --set-env-vars "DEV_MODE=false,CHUNKING_STRATEGY=api,FIREBASE_STORAGE_BUCKET=aitutorproject-197c3.appspot.com,QDRANT_URL=https://92db3cd0-0a97-4304-8b44-e614f5e13fcc.us-east4-0.gcp.cloud.qdrant.io,FRONTEND_URL=https://docent.study" \
      --set-secrets "OPENAI_API_KEY=openai-api-key:latest,UNSTRUCTURED_API_KEY=unstructured-api-key:latest,QDRANT_API_KEY=qdrant-api-key:latest"
    ```
 6. Frontend deploy:

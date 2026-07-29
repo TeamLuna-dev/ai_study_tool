@@ -1,6 +1,6 @@
 # Study-AI 
 > This repo contains the front and backend code of an AI-Study tool.
-> Live demo [_here_](https://aitutorproject-197c3.web.app/). 
+> Live demo [_here_](https://docent.study/). 
 
 ## Table of Contents
 * [General Info](#general-information)
