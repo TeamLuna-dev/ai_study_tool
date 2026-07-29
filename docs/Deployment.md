@@ -25,6 +25,12 @@
 1. **Never deploy from a dirty working tree.** Run `git status` first. What you deploy should match a committed hash in the repo so rollbacks work.
 2. **Deploy from `main`.** Feature branches are for testing locally, not for prod.
 3. **The frontend calls the backend same-origin at `/api`.** Firebase Hosting rewrites `/api/**` to Cloud Run (see `firebase.json`), so the backend URL is *not* baked into the bundle and no CORS is involved. Do not set `VITE_API_BASE_URL` in production — it overrides the rewrite with a cross-origin absolute URL.
+
+<!-- Superseded by the same-origin /api rewrite (docent.study).
+     Kept because it still describes the cross-origin build.
+3. **Backend URL is hardcoded into the frontend bundle.** If the backend URL ever changes, the frontend must be rebuilt and redeployed.
+-->
+
 4. **Secrets never leave Secret Manager.** If you need to view or rotate one, use `gcloud secrets`. Do not paste them into `.env`, chat, or tickets.
 5. **Test in incognito before announcing a deploy.** Browser cache hides regressions.
 
@@ -111,6 +117,14 @@ Output ends with `Hosting URL: https://aitutorproject-197c3.web.app` (the CLI al
 2. Sign in with Google
 3. Check DevTools Network tab — API calls should be **relative** (`docent.study/api/...`) and return 200s. An absolute `*.run.app` URL here means `VITE_API_BASE_URL` leaked into the build.
 
+<!-- Pre-domain smoke test. Still valid against *.web.app,
+     but expects the old cross-origin call pattern.
+1. Open incognito → https://aitutorproject-197c3.web.app
+2. Sign in with Google
+3. Check DevTools Network tab — API calls should go to `ai-tutor-backend-285361659733.us-central1.run.app` and return 200s
+-->
+
+
 ---
 
 ## Redeploying the backend
@@ -155,6 +169,11 @@ All prefixed `VITE_` because Vite only exposes those to the client bundle. **Bak
 | Var | Purpose |
 |---|---|
 | `VITE_API_BASE_URL` | **Leave unset in prod.** Local override only (e.g. pointing dev at deployed Cloud Run). Unset ⇒ `src/config/api.js` falls back to same-origin `/api`. |
+
+<!-- Pre-domain meaning of the row above, when prod set it:
+| `VITE_API_BASE_URL` | Backend base URL (in `.env.production.local` for prod) |
+-->
+
 | `VITE_FIREBASE_API_KEY` | Firebase Web API key (public, safe to expose) |
 | `VITE_FIREBASE_AUTH_DOMAIN` | `aitutorproject-197c3.firebaseapp.com` |
 | `VITE_FIREBASE_PROJECT_ID` | `aitutorproject-197c3` |
@@ -175,13 +194,19 @@ Set via `--set-env-vars` on deploy, or `gcloud run services update ... --update-
 | `QDRANT_URL` | `https://92db3cd0-0a97-4304-8b44-e614f5e13fcc.us-east4-0.gcp.cloud.qdrant.io` |
 | `FRONTEND_URL` | `https://docent.study` |
 
+<!-- Pre-domain value. Was the only prod CORS origin before
+     the same-origin rewrite made the allowlist moot.
+| `FRONTEND_URL` | `https://aitutorproject-197c3.web.app` |
+-->
+
+
 ### Backend secrets (Secret Manager)
 
 Referenced via `--set-secrets` as `ENV_VAR=secret-name:latest`. Mounted as environment variables at container startup.
 
 | Env var | Secret name |
 |---|---|
-| `OPENAI_API_KEY` | `openai-api-key` |
+| `OPEN_AI_EMBEDDINGS_KEY` | `openai-api-key` |
 | `UNSTRUCTURED_API_KEY` | `unstructured-api-key` |
 | `QDRANT_API_KEY` | `qdrant-api-key` |
 | `ANTHROPIC_LUNA_KEY` | `anthropic-luna-key` |
@@ -297,6 +322,15 @@ Update the relevant table in this document when you add one.
 
 ## Custom domain
 
+<!-- Superseded 2026-07-27. This was the whole section before
+     docent.study existed; kept as the generic short version.
+## Adding a custom domain
+
+### Frontend (Firebase Hosting)
+
+Firebase Console → Hosting → Add custom domain → follow prompts. Firebase will provision a free SSL cert.
+-->
+
 Production domain is **`docent.study`**, registered at **Namecheap** using Namecheap BasicDNS (`dns1/dns2.registrar-servers.com`).
 
 Because Hosting rewrites `/api/**` to Cloud Run, the custom domain fronts the API too. No separate DNS record or backend domain mapping is needed.
@@ -369,6 +403,11 @@ Then hit `curl http://localhost:8080/api/health`.
 
 **In prod this should be impossible** — requests go same-origin through the Hosting rewrite. A CORS error means the bundle was built with `VITE_API_BASE_URL` set, turning calls cross-origin. Check the Network tab: if requests target `*.run.app` instead of `docent.study/api`, clear the var from `.env.production.local`, rebuild, redeploy.
 
+<!-- Pre-domain diagnosis, when CORS was a normal prod failure:
+Backend's `FRONTEND_URL` is out of sync, or `cors_origins` in `backend/app.py` doesn't include the domain.
+-->
+
+
 If you genuinely need the cross-origin path, the backend's `FRONTEND_URL` must match the calling origin exactly (`backend/app.py` allowlists one production origin plus localhost):
 ```bash
 gcloud run services update ai-tutor-backend \
@@ -405,6 +444,18 @@ Dockerfile `CMD` doesn't match the Flask entry point. Our backend's entry is `ba
 ---
 
 ## Architecture diagram (text)
+
+<!-- Pre-domain topology: browser talked to Cloud Run direct,
+     so every API call was cross-origin and needed CORS.
+┌─────────────────┐       ┌──────────────────────────┐
+│  User Browser   │◀─────▶│  Firebase Hosting (CDN)  │
+│                 │       │  aitutorproject-197c3    │
+│  React/Vite SPA │       │  .web.app                │
+└────────┬────────┘       └──────────────────────────┘
+         │
+         │  HTTPS + Bearer token (Firebase ID token)
+         ▼
+-->
 
 ```
 ┌─────────────────┐       ┌──────────────────────────┐
@@ -472,8 +523,16 @@ If the project somehow disappears and you need to recreate everything:
      --source backend --region us-central1 --allow-unauthenticated \
      --memory 1Gi --cpu 1 --min-instances 0 --max-instances 5 --timeout 300 \
      --set-env-vars "DEV_MODE=false,CHUNKING_STRATEGY=api,FIREBASE_STORAGE_BUCKET=aitutorproject-197c3.appspot.com,QDRANT_URL=https://92db3cd0-0a97-4304-8b44-e614f5e13fcc.us-east4-0.gcp.cloud.qdrant.io,FRONTEND_URL=https://docent.study" \
-     --set-secrets "OPENAI_API_KEY=openai-api-key:latest,UNSTRUCTURED_API_KEY=unstructured-api-key:latest,QDRANT_API_KEY=qdrant-api-key:latest"
+     --set-secrets "OPEN_AI_EMBEDDINGS_KEY=openai-api-key:latest,UNSTRUCTURED_API_KEY=unstructured-api-key:latest,QDRANT_API_KEY=qdrant-api-key:latest,ANTHROPIC_LUNA_KEY=anthropic-luna-key:latest"
    ```
+
+   `--set-secrets` replaces the whole secret set — list all four or the
+   omitted ones are silently dropped.
+
+<!-- Pre-domain FRONTEND_URL for the command above:
+     ...,FRONTEND_URL=https://aitutorproject-197c3.web.app"
+-->
+
 6. Frontend deploy:
    ```bash
    npm run build && firebase deploy --only hosting
