@@ -70,5 +70,7 @@ AUDIO_SIZE_LIMIT_BRIEF.md
 AUDIO_UPLOAD_BRIEF.md
 GILT_EDGE_REVAMP.md
 UX_FIXES_BRIEF.md
+domain.initialization.md
+qdrant.production.repoint.md
 
 .claude
