@@ -196,7 +196,9 @@ export function QuizPage() {
       // backend expects ints 0..3; if any null remain, send -1 to force 400
       const normalized = finalizedAnswers.map((a) => (a === null ? -1 : a));
 
-      const scored = await scoreQuiz(quiz, normalized, topic, analyticsUserId);
+      // uid is derived server-side from this token, not sent in the body
+      const idToken = user ? await user.getIdToken() : null;
+      const scored = await scoreQuiz(quiz, normalized, topic, idToken);
       setResult(scored);
 
         try {
