@@ -23,7 +23,6 @@ qdrant-client==1.9.1
 
 # Utilities
 python-dotenv>=1.0.0
-flask-sqlalchemy==3.1.1
 
 # Enables async def Flask routes
 asgiref>=3.8.0
