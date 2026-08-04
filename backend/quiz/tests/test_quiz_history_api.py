@@ -17,6 +17,13 @@ class QuizAttemptsRouteTests(unittest.TestCase):
     def setUp(self):
         self.app = create_app()
         self.client = self.app.test_client()
+        # DE-2: uid now comes from the verified token, not the URL. Patching
+        # at the point of use keeps this deterministic regardless of
+        # DEV_MODE / import order (see TRAP B / TRAP A in de.phase3.md).
+        self.auth_patcher = patch("features.progress.routes.verify_firebase_token")
+        self.mock_auth = self.auth_patcher.start()
+        self.mock_auth.return_value = ("u1", None)
+        self.addCleanup(self.auth_patcher.stop)
 
     @patch("features.progress.services.db")
     def test_returns_paginated_results(self, mock_db):
@@ -33,7 +40,7 @@ class QuizAttemptsRouteTests(unittest.TestCase):
         ]
         mock_db.collection.return_value.where.return_value.stream.return_value = docs
 
-        resp = self.client.get("/api/progress/quiz-attempts/u1?page=1&per_page=2")
+        resp = self.client.get("/api/progress/quiz-attempts?page=1&per_page=2")
         self.assertEqual(resp.status_code, 200)
         data = resp.get_json()
         self.assertIn("attempts", data)
@@ -49,27 +56,27 @@ class QuizAttemptsRouteTests(unittest.TestCase):
         mock_query.where.return_value = mock_query
         mock_query.stream.return_value = []
 
-        resp = self.client.get("/api/progress/quiz-attempts/u1?topic=Math")
+        resp = self.client.get("/api/progress/quiz-attempts?topic=Math")
         self.assertEqual(resp.status_code, 200)
 
     def test_invalid_sort_by(self):
-        resp = self.client.get("/api/progress/quiz-attempts/u1?sort_by=invalid")
+        resp = self.client.get("/api/progress/quiz-attempts?sort_by=invalid")
         self.assertEqual(resp.status_code, 400)
 
     def test_invalid_order(self):
-        resp = self.client.get("/api/progress/quiz-attempts/u1?order=sideways")
+        resp = self.client.get("/api/progress/quiz-attempts?order=sideways")
         self.assertEqual(resp.status_code, 400)
 
     def test_invalid_page(self):
-        resp = self.client.get("/api/progress/quiz-attempts/u1?page=0")
+        resp = self.client.get("/api/progress/quiz-attempts?page=0")
         self.assertEqual(resp.status_code, 400)
 
     def test_invalid_per_page(self):
-        resp = self.client.get("/api/progress/quiz-attempts/u1?per_page=200")
+        resp = self.client.get("/api/progress/quiz-attempts?per_page=200")
         self.assertEqual(resp.status_code, 400)
 
     def test_invalid_date_format(self):
-        resp = self.client.get("/api/progress/quiz-attempts/u1?start_date=not-a-date")
+        resp = self.client.get("/api/progress/quiz-attempts?start_date=not-a-date")
         self.assertEqual(resp.status_code, 400)
 
 
@@ -77,6 +84,10 @@ class SingleAttemptRouteTests(unittest.TestCase):
     def setUp(self):
         self.app = create_app()
         self.client = self.app.test_client()
+        self.auth_patcher = patch("features.progress.routes.verify_firebase_token")
+        self.mock_auth = self.auth_patcher.start()
+        self.mock_auth.return_value = ("u1", None)
+        self.addCleanup(self.auth_patcher.stop)
 
     @patch("features.progress.services.db")
     def test_returns_attempt(self, mock_db):
@@ -90,7 +101,7 @@ class SingleAttemptRouteTests(unittest.TestCase):
         })
         mock_db.collection.return_value.document.return_value.get.return_value = doc
 
-        resp = self.client.get("/api/progress/quiz-attempts/u1/attempt1")
+        resp = self.client.get("/api/progress/quiz-attempts/attempt1")
         self.assertEqual(resp.status_code, 200)
         data = resp.get_json()
         self.assertEqual(data["id"], "attempt1")
@@ -102,11 +113,12 @@ class SingleAttemptRouteTests(unittest.TestCase):
         doc.exists = False
         mock_db.collection.return_value.document.return_value.get.return_value = doc
 
-        resp = self.client.get("/api/progress/quiz-attempts/u1/nonexistent")
+        resp = self.client.get("/api/progress/quiz-attempts/nonexistent")
         self.assertEqual(resp.status_code, 404)
 
     @patch("features.progress.services.db")
     def test_wrong_user_returns_404(self, mock_db):
+        # attempt belongs to someone else — the token uid ("u1") must not see it
         doc = _make_mock_doc("attempt1", {
             "user_id": "other_user",
             "topic": "Math",
@@ -117,7 +129,7 @@ class SingleAttemptRouteTests(unittest.TestCase):
         })
         mock_db.collection.return_value.document.return_value.get.return_value = doc
 
-        resp = self.client.get("/api/progress/quiz-attempts/u1/attempt1")
+        resp = self.client.get("/api/progress/quiz-attempts/attempt1")
         self.assertEqual(resp.status_code, 404)
 
 
