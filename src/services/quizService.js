@@ -42,11 +42,15 @@ export async function generateQuiz({ notes, docId, questionCount = 5 } = {}) {
   return data.quiz;
 }
 
-export async function scoreQuiz(quiz, answers, topic, user_id) {
+export async function scoreQuiz(quiz, answers, topic, idToken) {
   const res = await fetch(`${API_BASE_URL}/quiz/score`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ quiz, answers, topic, user_id }),
+    headers: {
+      "Content-Type": "application/json",
+      // uid comes from this token server-side, never from the body
+      ...(idToken ? { Authorization: `Bearer ${idToken}` } : {}),
+    },
+    body: JSON.stringify({ quiz, answers, topic }),
   });
 
   const data = await res.json().catch(() => ({}));
