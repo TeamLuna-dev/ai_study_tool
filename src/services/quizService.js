@@ -1,8 +1,11 @@
 // Same-origin base avoids CORS preflights entirely
 import API_BASE_URL from "../config/api";
 
-export async function getWeakTopics(userId) {
-  const res = await fetch(`${API_BASE_URL}/progress/weak-topics/${userId}`);
+export async function getWeakTopics(idToken) {
+  const res = await fetch(`${API_BASE_URL}/progress/weak-topics`, {
+    // uid comes from this token server-side, never from the URL
+    headers: { ...(idToken ? { Authorization: `Bearer ${idToken}` } : {}) },
+  });
   const data = await res.json().catch(() => ({}));
 
   if (!res.ok) {
@@ -13,8 +16,10 @@ export async function getWeakTopics(userId) {
 
 }
 
-export async function getSessionSummary(userId) {
-  const res = await fetch(`${API_BASE_URL}/progress/session-summary/${userId}`);
+export async function getSessionSummary(idToken) {
+  const res = await fetch(`${API_BASE_URL}/progress/session-summary`, {
+    headers: { ...(idToken ? { Authorization: `Bearer ${idToken}` } : {}) },
+  });
   const data = await res.json().catch(() => ({}));
 
   if (!res.ok) {
@@ -58,7 +63,7 @@ export async function scoreQuiz(quiz, answers, topic, idToken) {
   return data;
 }
 
-export async function getQuizHistory(userId, { topic, startDate, endDate, sortBy, order, page, perPage } = {}) {
+export async function getQuizHistory(idToken, { topic, startDate, endDate, sortBy, order, page, perPage } = {}) {
   const params = new URLSearchParams();
   if (topic) params.set("topic", topic);
   if (startDate) params.set("start_date", startDate);
@@ -69,7 +74,9 @@ export async function getQuizHistory(userId, { topic, startDate, endDate, sortBy
   if (perPage) params.set("per_page", perPage);
 
   const qs = params.toString();
-  const res = await fetch(`${API_BASE_URL}/progress/quiz-attempts/${userId}${qs ? `?${qs}` : ""}`);
+  const res = await fetch(`${API_BASE_URL}/progress/quiz-attempts${qs ? `?${qs}` : ""}`, {
+    headers: { ...(idToken ? { Authorization: `Bearer ${idToken}` } : {}) },
+  });
   const data = await res.json().catch(() => ({}));
 
   if (!res.ok) {
@@ -79,8 +86,10 @@ export async function getQuizHistory(userId, { topic, startDate, endDate, sortBy
   return data;
 }
 
-export async function getQuizAttemptById(userId, attemptId) {
-  const res = await fetch(`${API_BASE_URL}/progress/quiz-attempts/${userId}/${attemptId}`);
+export async function getQuizAttemptById(idToken, attemptId) {
+  const res = await fetch(`${API_BASE_URL}/progress/quiz-attempts/${attemptId}`, {
+    headers: { ...(idToken ? { Authorization: `Bearer ${idToken}` } : {}) },
+  });
   const data = await res.json().catch(() => ({}));
 
   if (!res.ok) {
