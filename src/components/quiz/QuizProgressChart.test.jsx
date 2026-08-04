@@ -8,7 +8,8 @@ vi.mock("../../services/quizService");
 // AuthContext isn't exported — mock the useAuth hook it feeds instead.
 // user must be a stable reference: a fresh object each call would change
 // the useEffect's [user] dependency every render and loop forever.
-const mockUser = { uid: "test-user-1" };
+// getIdToken is mocked too — the component now sends it, not the uid (DE-2)
+const mockUser = { uid: "test-user-1", getIdToken: vi.fn().mockResolvedValue("test-id-token") };
 vi.mock("../../hooks/useAuth", () => ({
   useAuth: () => ({ user: mockUser, loading: false, logout: vi.fn() }),
 }));

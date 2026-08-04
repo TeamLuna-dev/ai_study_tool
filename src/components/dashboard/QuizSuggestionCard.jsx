@@ -18,16 +18,24 @@ export function QuizSuggestionCard() {
   const [weakTopics, setWeakTopics] = useState([]);
 
   useEffect(() => {
-    if (!user?.uid) return;
-    getWeakTopics(user.uid)
-      .then((data) => {
+    if (!user) return;
+
+    async function loadWeakTopics() {
+      try {
+        // uid is derived server-side from this token, not sent in the URL
+        const idToken = await user.getIdToken();
+        const data = await getWeakTopics(idToken);
         const sorted = (Array.isArray(data) ? data : []).sort(
           (a, b) => a.average_score - b.average_score
         );
         setWeakTopics(sorted);
-      })
-      .catch(() => {});
-  }, [user?.uid]);
+      } catch {
+        // supplementary card — fail silently, same as before
+      }
+    }
+
+    loadWeakTopics();
+  }, [user]);
 
   const weakTopicNames = useMemo(
     () => weakTopics.filter((t) => t.average_score < 60).map((t) => t.topic),
