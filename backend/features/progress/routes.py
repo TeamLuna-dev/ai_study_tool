@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from firebase_admin import firestore
 from security.firebase_admin_config import db
+from features.upload.auth import verify_firebase_token
 from .services import (
     save_quiz_attempt,
     analyze_performance,
@@ -14,22 +15,26 @@ progress_bp = Blueprint("progress_bp", __name__)
 
 @progress_bp.post("/submit-quiz")
 def submit_quiz():
+    # uid comes from the verified token, never from the body (DE-2)
+    uid, auth_error = verify_firebase_token(request)
+    if auth_error:
+        return jsonify({"error": auth_error}), 401
+
     data = request.get_json(silent=True) or {}
 
-    user_id = data.get("user_id")
     topic = data.get("topic")
     score = data.get("score")
     total_questions = data.get("total_questions")
 
-    if not user_id or not topic:
-        return jsonify({"error": "user_id and topic are required"}), 400
+    if not topic:
+        return jsonify({"error": "topic is required"}), 400
 
     if score is None or total_questions is None:
         return jsonify({"error": "score and total_questions are required"}), 400
 
     try:
         saved_attempt = save_quiz_attempt(
-            user_id=user_id,
+            user_id=uid,
             topic=topic,
             score=score,
             total_questions=total_questions,
@@ -44,10 +49,15 @@ def submit_quiz():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
 
-@progress_bp.get("/quiz-attempts/<user_id>")
-def get_quiz_attempts_route(user_id):
+
+@progress_bp.get("/quiz-attempts")
+def get_quiz_attempts_route():
+    # uid comes from the verified token; callers only see their own data
+    uid, auth_error = verify_firebase_token(request)
+    if auth_error:
+        return jsonify({"error": auth_error}), 401
+
     topic = request.args.get("topic")
     start_date = request.args.get("start_date")
     end_date = request.args.get("end_date")
@@ -81,25 +91,35 @@ def get_quiz_attempts_route(user_id):
             return jsonify({"error": "Invalid end_date format, use ISO 8601"}), 400
 
     result = get_quiz_attempts(
-        user_id, topic=topic, start_date=parsed_start, end_date=parsed_end,
+        uid, topic=topic, start_date=parsed_start, end_date=parsed_end,
         sort_by=sort_by, order=order, page=page, per_page=per_page
     )
     return jsonify(result), 200
 
 
-@progress_bp.get("/quiz-attempts/<user_id>/<attempt_id>")
-def get_single_quiz_attempt(user_id, attempt_id):
+@progress_bp.get("/quiz-attempts/<attempt_id>")
+def get_single_quiz_attempt(attempt_id):
+    # uid comes from the verified token, compared against the attempt owner
+    uid, auth_error = verify_firebase_token(request)
+    if auth_error:
+        return jsonify({"error": auth_error}), 401
+
     attempt = get_quiz_attempt_by_id(attempt_id)
     if not attempt:
         return jsonify({"error": "Attempt not found"}), 404
-    if attempt.get("user_id") != user_id:
+    if attempt.get("user_id") != uid:
+        # 404, not 403 — don't confirm another user's attempt exists
         return jsonify({"error": "Attempt not found"}), 404
     return jsonify(attempt), 200
 
 
-@progress_bp.get("/weak-topics/<user_id>")
-def weak_topics(user_id):
-    attempts = db.collection("quiz_attempts").where("user_id", "==", user_id).stream()
+@progress_bp.get("/weak-topics")
+def weak_topics():
+    uid, auth_error = verify_firebase_token(request)
+    if auth_error:
+        return jsonify({"error": auth_error}), 401
+
+    attempts = db.collection("quiz_attempts").where("user_id", "==", uid).stream()
     attempts_list = [doc.to_dict() for doc in attempts]
     result = analyze_performance(attempts_list)
     return jsonify(result)
@@ -107,20 +127,24 @@ def weak_topics(user_id):
 
 @progress_bp.post("/log-session")
 def log_session():
+    # uid comes from the verified token, never from the body (DE-2)
+    uid, auth_error = verify_firebase_token(request)
+    if auth_error:
+        return jsonify({"error": auth_error}), 401
+
     data = request.get_json(silent=True) or {}
 
-    user_id = data.get("user_id")
     topic = data.get("topic")
     duration_minutes = data.get("duration_minutes")
 
-    if not user_id or not topic:
-        return jsonify({"error": "user_id and topic are required"}), 400
+    if not topic:
+        return jsonify({"error": "topic is required"}), 400
 
     if duration_minutes is None:
         return jsonify({"error": "duration_minutes is required"}), 400
 
     session = {
-        "user_id": user_id,
+        "user_id": uid,
         "topic": topic,
         "duration_minutes": duration_minutes,
         "timestamp": firestore.SERVER_TIMESTAMP
@@ -131,9 +155,13 @@ def log_session():
     return jsonify({"message": "Session logged successfully"}), 201
 
 
-@progress_bp.get("/sessions/<user_id>")
-def get_sessions(user_id):
-    sessions = db.collection("study_sessions").where("user_id", "==", user_id).stream()
+@progress_bp.get("/sessions")
+def get_sessions():
+    uid, auth_error = verify_firebase_token(request)
+    if auth_error:
+        return jsonify({"error": auth_error}), 401
+
+    sessions = db.collection("study_sessions").where("user_id", "==", uid).stream()
 
     result = [
         {
@@ -147,9 +175,13 @@ def get_sessions(user_id):
     return jsonify(result)
 
 
-@progress_bp.get("/session-summary/<user_id>")
-def session_summary(user_id):
-    sessions = db.collection("study_sessions").where("user_id", "==", user_id).stream()
+@progress_bp.get("/session-summary")
+def session_summary():
+    uid, auth_error = verify_firebase_token(request)
+    if auth_error:
+        return jsonify({"error": auth_error}), 401
+
+    sessions = db.collection("study_sessions").where("user_id", "==", uid).stream()
     sessions_list = [doc.to_dict() for doc in sessions]
 
     total_time = get_total_study_time(sessions_list)
@@ -161,6 +193,8 @@ def session_summary(user_id):
     })
 
 
+# Liveness probe carries no user data — matches /api/quiz/health and
+# /api/health in staying open (unlike the data routes above).
 @progress_bp.get("/health")
 def health():
     return jsonify({"progress": "ok"}), 200
