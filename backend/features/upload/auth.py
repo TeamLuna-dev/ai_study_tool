@@ -17,8 +17,10 @@ from firebase_admin import auth
 # Dev mode — reads from .env via python-dotenv (loaded in main.py)
 # DEV_MODE=true  → skips Firebase, returns a hardcoded test UID
 # DEV_MODE=false → verifies the real Firebase token
+# Default is false: an unset DEV_MODE in a deployed env must never
+# silently accept every request as DEV_UID. Local dev sets it in .env.
 # ---------------------------------------------------------------------------
-DEV_MODE = os.getenv("DEV_MODE", "true").lower() == "true"
+DEV_MODE = os.getenv("DEV_MODE", "false").lower() == "true"
 DEV_UID  = os.getenv("DEV_UID", "test-user-123")
 
 # Only initialise Firebase when not in dev mode.
