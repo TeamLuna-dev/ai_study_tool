@@ -56,7 +56,7 @@ def upload_file_to_storage(
         mimetype:          MIME type e.g. "application/pdf".
 
     Returns:
-        dict with doc_id, storage_url, storage_path.
+        dict with doc_id, storage_path.
 
     Raises:
         FirebaseStorageError: If the Storage upload or Firestore write fails.
@@ -67,11 +67,10 @@ def upload_file_to_storage(
     storage_path    = f"users/{uid}/documents/{unique_filename}"
 
     # ── Step 1: Upload to Firebase Storage ───────────────────────────────
+    # No make_public() — objects stay private; storage.rules is the ACL now.
     try:
         blob = bucket.blob(storage_path)
         blob.upload_from_string(file_bytes, content_type=mimetype)
-        blob.make_public()
-        storage_url = blob.public_url
 
     except Exception as exc:
         raise FirebaseStorageError(
@@ -85,7 +84,6 @@ def upload_file_to_storage(
             "fileName":    original_filename,
             "fileType":    mimetype.split("/")[-1],
             "fileSize":    len(file_bytes),
-            "storageUrl":  storage_url,
             "storagePath": storage_path,
             "uploadedAt":  SERVER_TIMESTAMP,
             "status":      "processing",
@@ -102,7 +100,6 @@ def upload_file_to_storage(
 
     return {
         "doc_id":       doc_ref.id,
-        "storage_url":  storage_url,
         "storage_path": storage_path,
     }
 
