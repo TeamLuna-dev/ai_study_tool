@@ -1,46 +1,26 @@
 # Defines the routes for the quiz-gen service.
+import json
 import os
 import sys
 
 from flask import Blueprint, jsonify, request
 from dotenv import load_dotenv
 from anthropic import AsyncAnthropic
+from pydantic import ValidationError
 from .integrity_logger import log_integrity_result
 from .integrity_service import run_integrity_checks, run_llm_verification
 from .validators import validate_quiz, validate_answers, validate_topic
-import requests
 from qdrant_client.models import Filter, FieldCondition, MatchValue, PayloadSchemaType
 from embeddings.qdrant_store import get_client, COLLECTION_NAME
 from .service import generate_adaptive_quiz
+from features.upload.auth import verify_firebase_token
+from features.progress.services import save_quiz_attempt
+from models.events import QuizAttemptEvent
 
 # Allow import from sibling embeddings folder
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "embeddings")))
 
 quiz_bp = Blueprint("quiz_bp", __name__)
-
-# Unified backend progress endpoint
-ANALYTICS_URL = "http://127.0.0.1:5000/api/progress/submit-quiz"
-DEV_USER_ID = "test-user-123"
-
-
-def persist_quiz_attempt(topic, score, total_questions, user_id=DEV_USER_ID,
-                         questions=None, answers=None, incorrect=None):
-    payload = {
-        "user_id": user_id,
-        "topic": topic,
-        "score": score,
-        "total_questions": total_questions,
-    }
-    if questions is not None:
-        payload["questions"] = questions
-    if answers is not None:
-        payload["answers"] = answers
-    if incorrect is not None:
-        payload["incorrect"] = incorrect
-
-    response = requests.post(ANALYTICS_URL, json=payload, timeout=5)
-    response.raise_for_status()
-    return response.json()
 
 
 @quiz_bp.get("/health")
@@ -157,10 +137,14 @@ async def generate_quiz():
 
 @quiz_bp.post("/score")
 def score_quiz():
+    # Identity comes from the verified token, never from the request body
+    uid, auth_error = verify_firebase_token(request)
+    if auth_error:
+        return jsonify({"error": auth_error}), 401
+
     data = request.get_json(silent=True) or {}
     quiz_obj = data.get("quiz")
     answers = data.get("answers")
-    user_id = data.get("user_id", DEV_USER_ID)
 
     try:
         topic = validate_topic(data.get("topic"))
@@ -186,23 +170,43 @@ def score_quiz():
                 })
 
         total = len(questions)
-        percentage = round((score / total) * 100, 2)
+
+        # Contract validated before any write — bad data never reaches Firestore
+        event = QuizAttemptEvent(
+            user_id=uid,
+            topic=topic,
+            score=score,
+            total_questions=total,
+            questions=[{"question": q["question"], "choices": q["choices"], "correct_index": q["correct_index"]} for q in questions],
+            answers=answers,
+            incorrect=incorrect,
+        )
+        percentage = event.percentage
 
         analytics_saved = False
 
         try:
-            persist_quiz_attempt(
-                topic=topic,
-                score=score,
-                total_questions=total,
-                user_id=user_id,
-                questions=[{"question": q["question"], "choices": q["choices"], "correct_index": q["correct_index"]} for q in questions],
-                answers=answers,
-                incorrect=incorrect,
+            # In-process call — same Flask process, no self-HTTP hop
+            save_quiz_attempt(
+                user_id=event.user_id,
+                topic=event.topic,
+                score=event.score,
+                total_questions=event.total_questions,
+                questions=event.questions,
+                answers=event.answers,
+                incorrect=event.incorrect,
+                schema_version=event.schema_version,
             )
             analytics_saved = True
         except Exception as exc:
-            print(f"[QUIZ-GEN] Failed to save analytics: {exc}")
+            # Loud, structured failure — Cloud Logging parses this as ERROR
+            print(json.dumps({
+                "severity": "ERROR",
+                "event_type": "quiz_attempt_persist_failed",
+                "user_id": uid,
+                "topic": topic,
+                "error": str(exc),
+            }))
             analytics_saved = False
 
         return jsonify({
@@ -214,6 +218,8 @@ def score_quiz():
             "analytics_saved": analytics_saved
         }), 200
 
+    except ValidationError as e:
+        return jsonify({"error": str(e)}), 400
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
     except Exception as e:
