@@ -88,7 +88,6 @@ class TestProductionMode:
         """Helper — sets up a successful Firebase mock response."""
         mock_upload.return_value = {
             "doc_id":       "firestore-doc-abc123",
-            "storage_url":  "https://storage.googleapis.com/test/notes.pdf",
             "storage_path": "users/test-user-123/documents/notes.pdf",
         }
 
@@ -106,7 +105,6 @@ class TestProductionMode:
         res  = client.post("/api/upload", data=data, content_type="multipart/form-data")
         body = res.json
         assert body["doc_id"]       == "firestore-doc-abc123"
-        assert body["storage_url"]  == "https://storage.googleapis.com/test/notes.pdf"
         assert body["storage_path"] == "users/test-user-123/documents/notes.pdf"
         assert body["user_uid"]     == "test-user-123"
 
