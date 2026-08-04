@@ -25,11 +25,13 @@ export function useQuizHistory() {
   const [endDate, setEndDate] = useState("");
 
   const fetchHistory = useCallback(async () => {
-    if (!user?.uid) return;
+    if (!user) return;
     setLoading(true);
     setError("");
     try {
-      const data = await getQuizHistory(user.uid, {
+      // uid is derived server-side from this token, not sent in the URL
+      const idToken = await user.getIdToken();
+      const data = await getQuizHistory(idToken, {
         topic: topicFilter || undefined,
         startDate: startDate || undefined,
         endDate: endDate || undefined,
@@ -46,7 +48,7 @@ export function useQuizHistory() {
     } finally {
       setLoading(false);
     }
-  }, [user?.uid, topicFilter, startDate, endDate, sortBy, order, page, perPage]);
+  }, [user, topicFilter, startDate, endDate, sortBy, order, page, perPage]);
 
   useEffect(() => {
     fetchHistory();
