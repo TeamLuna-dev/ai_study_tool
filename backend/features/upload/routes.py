@@ -40,8 +40,9 @@ ALLOWED_MIME_TYPES = {
     "audio/wav":        {"max_size_bytes": 100 * 1024 * 1024},
 }
 
-# Dev mode flag — same source as auth.py
-DEV_MODE = os.getenv("DEV_MODE", "true").lower() == "true"
+# Dev mode flag — same source as auth.py; default false so an unset
+# env var in a deployed environment never silently skips auth.
+DEV_MODE = os.getenv("DEV_MODE", "false").lower() == "true"
 
 # temp/ sits alongside this file in file-upload/
 TEMP_DIR = os.path.join(os.path.dirname(__file__), "temp")
@@ -170,7 +171,6 @@ def upload_file():
             "size_bytes": len(file_bytes),
             "user_uid": uid,
             "doc_id": result["doc_id"],
-            "storage_url": result["storage_url"],
             "storage_path": result["storage_path"],
             "embedding_started": embedding_started,
         }), 201
