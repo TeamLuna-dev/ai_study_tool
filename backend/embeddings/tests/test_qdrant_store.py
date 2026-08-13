@@ -134,3 +134,54 @@ def test_ensure_collection_skips_when_already_exists():
     mock_client = _mock_client_with_existing_collection()
     qdrant_store.ensure_collection(mock_client)
     mock_client.create_collection.assert_not_called()
+
+
+# ---------------------------------------------------------------------------
+# Idempotency (DE-3 / D2) — deterministic IDs + delete-before-upsert replay
+# ---------------------------------------------------------------------------
+
+def test_store_embeddings_same_doc_id_yields_identical_point_ids():
+    """Reprocessing the same doc must overwrite, not duplicate — same IDs."""
+    chunks = [_make_chunk(i, text=f"chunk {i}") for i in range(3)]
+
+    with patch("qdrant_store.QdrantClient", return_value=_mock_client_with_no_collections()):
+        first_ids = qdrant_store.store_embeddings(chunks, uid="u", file_name="f.pdf", doc_id="doc-A")
+    with patch("qdrant_store.QdrantClient", return_value=_mock_client_with_no_collections()):
+        second_ids = qdrant_store.store_embeddings(chunks, uid="u", file_name="f.pdf", doc_id="doc-A")
+
+    assert first_ids == second_ids
+
+
+def test_store_embeddings_different_doc_id_yields_disjoint_point_ids():
+    """Two different docs must never collide on point IDs."""
+    chunks = [_make_chunk(i, text=f"chunk {i}") for i in range(3)]
+
+    with patch("qdrant_store.QdrantClient", return_value=_mock_client_with_no_collections()):
+        ids_a = qdrant_store.store_embeddings(chunks, uid="u", file_name="f.pdf", doc_id="doc-A")
+    with patch("qdrant_store.QdrantClient", return_value=_mock_client_with_no_collections()):
+        ids_b = qdrant_store.store_embeddings(chunks, uid="u", file_name="f.pdf", doc_id="doc-B")
+
+    assert set(ids_a).isdisjoint(set(ids_b))
+
+
+def test_store_embeddings_deletes_by_doc_id_before_upsert():
+    """
+    Replay safety: delete this doc's existing points before upserting new
+    ones — a re-chunk yielding fewer chunks would otherwise strand tail
+    vectors under stable IDs (D2 in docs/de.phase2.md).
+    """
+    chunks = [_make_chunk(0)]
+
+    with patch("qdrant_store.QdrantClient", return_value=_mock_client_with_no_collections()) as MockClient:
+        qdrant_store.store_embeddings(chunks, uid="u", file_name="f.pdf", doc_id="doc-A")
+
+    mock_client = MockClient.return_value
+    call_names = [c[0] for c in mock_client.method_calls]
+    assert "delete" in call_names
+    assert "upsert" in call_names
+    assert call_names.index("delete") < call_names.index("upsert")
+
+    delete_kwargs = mock_client.delete.call_args.kwargs
+    condition = delete_kwargs["points_selector"].filter.must[0]
+    assert condition.key == "doc_id"
+    assert condition.match.value == "doc-A"
