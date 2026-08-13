@@ -85,6 +85,9 @@ def upload_file_to_storage(
             "fileType":    mimetype.split("/")[-1],
             "fileSize":    len(file_bytes),
             "storagePath": storage_path,
+            # Full MIME, so the task handler can replay without re-reading
+            # blob.content_type; additive, pre-DE-3 docs fall back to it.
+            "mimeType":    mimetype,
             "uploadedAt":  SERVER_TIMESTAMP,
             "status":      "processing",
             "vectorIds":   [],
@@ -135,27 +138,47 @@ def mark_document_ready(doc_id: str, vector_ids: list) -> None:
     print(f"[FIREBASE] Document {doc_id} marked ready with {len(vector_ids)} vectors.")
     
 
-def get_document_metadata(doc_id: str) -> dict:
+def get_document_for_processing(doc_id: str) -> dict | None:
     """
-    Returns the stored uid and file_name for a Firestore document.
-    Used by the OCR confirmation route to pass metadata to the embedding pipeline.
+    Fetches everything the task handler needs to (re)process a document.
+    None means the doc was deleted between enqueue and delivery — the
+    handler acks that instead of retrying.
 
-    Returns:
-        dict with "uid" and "file_name" keys, or empty strings if not found.
+    Exceptions propagate (unlike the other read helpers here): the task
+    handler's retry logic depends on Firestore failures surfacing as
+    real errors, not silently degrading to an empty result.
     """
-    try:
-        db, _ = _get_firebase()
-        snap = db.collection("documents").document(doc_id).get()
-        if not snap.exists:
-            return {"uid": "", "file_name": ""}
-        data = snap.to_dict()
-        return {
-            "uid":       data.get("ownerId",  ""),
-            "file_name": data.get("fileName", ""),
-        }
-    except Exception as exc:
-        print(f"[FIREBASE] Warning: could not fetch metadata for {doc_id}: {exc}")
-        return {"uid": "", "file_name": ""}
+    db, _ = _get_firebase()
+    snap = db.collection("documents").document(doc_id).get()
+    if not snap.exists:
+        return None
+    data = snap.to_dict()
+    return {
+        "owner_id":    data.get("ownerId"),
+        "file_name":   data.get("fileName"),
+        "storage_path": data.get("storagePath"),
+        "mime_type":   data.get("mimeType"),
+        "ocr_text":    data.get("ocr_text", ""),
+        "status":      data.get("status"),
+    }
+
+
+def download_document(storage_path: str) -> tuple[bytes, str | None]:
+    """
+    Re-downloads raw bytes from Storage for replay — this is what turns
+    "bytes retained" (the raw layer already existed) into "pipeline
+    replayable" (D2 in docs/de.phase2.md).
+
+    Returns (file_bytes, content_type). content_type is only populated
+    after blob.reload() — bucket.blob() alone builds a metadata-less stub.
+
+    Exceptions propagate (see get_document_for_processing) so the task
+    handler's retry logic can react to them.
+    """
+    db, bucket = _get_firebase()
+    blob = bucket.blob(storage_path)
+    blob.reload()
+    return blob.download_as_bytes(), blob.content_type
 
 
 def store_ocr_text(doc_id: str, text: str) -> None:
@@ -195,7 +218,9 @@ def mark_document_error(doc_id: str, stage: str, message: str) -> None:
 
     Arguments:
         doc_id:  Firestore document ID.
-        stage:   Which pipeline stage failed: "extraction", "embedding", or "storage".
+        stage:   Which pipeline stage failed: "extraction", "embedding",
+                 "storage", or "task" (queue/infra failure outside the
+                 pipeline itself, e.g. a Storage download or enqueue error).
         message: Human-readable description of what went wrong.
     """
     try:
