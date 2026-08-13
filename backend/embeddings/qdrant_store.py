@@ -5,6 +5,11 @@ Stores embedding vectors in Qdrant with per-chunk metadata.
 Single responsibility: take embedded chunks and write them to Qdrant.
 Does not call OpenAI, parse PDFs, or touch Firebase.
 
+Point IDs are deterministic — uuid5(doc_id:chunk_index) — so replaying
+a doc overwrites its own points instead of duplicating them (D2 in
+docs/de.phase2.md). This is what makes queue retries (at-least-once
+delivery) produce effectively-once vector storage.
+
 Metadata stored per point:
   - user_id      Firebase UID of the uploading user
   - file_name    Original filename as uploaded
@@ -21,7 +26,15 @@ from datetime import datetime, timezone
 from typing import List
 
 from qdrant_client import QdrantClient
-from qdrant_client.models import Distance, PointStruct, VectorParams
+from qdrant_client.models import (
+    Distance,
+    FieldCondition,
+    Filter,
+    FilterSelector,
+    MatchValue,
+    PointStruct,
+    VectorParams,
+)
 
 QDRANT_URL       = os.getenv("QDRANT_URL", "http://localhost:6333")
 QDRANT_API_KEY   = os.getenv("QDRANT_API_KEY")
@@ -66,7 +79,8 @@ def store_embeddings(
         doc_id:    Firestore document ID for this file.
 
     Returns:
-        List of Qdrant point ID strings (UUIDs), one per chunk.
+        List of Qdrant point ID strings (UUIDs), one per chunk. Stable
+        across reprocessing of the same doc_id — see module docstring.
 
     Raises:
         qdrant_client.http.exceptions.UnexpectedResponse: If the upsert fails.
@@ -74,12 +88,28 @@ def store_embeddings(
     client = get_client()
     ensure_collection(client)
 
+    # Replay safety: delete this doc's existing points before upserting.
+    # A re-chunk yielding FEWER chunks would otherwise strand tail
+    # vectors under stable IDs; delete+upsert of the same doc stays
+    # idempotent either way (D2 in docs/de.phase2.md).
+    client.delete(
+        collection_name=COLLECTION_NAME,
+        points_selector=FilterSelector(
+            filter=Filter(must=[FieldCondition(key="doc_id", match=MatchValue(value=doc_id))])
+        ),
+        wait=True,
+    )
+
     timestamp = datetime.now(timezone.utc).isoformat()
     points: List[PointStruct] = []
     point_ids: List[str] = []
 
     for chunk in chunks:
-        point_id = str(uuid.uuid4())
+        # Deterministic per (doc_id, chunk_index) — NOT uuid4() — so a
+        # replay overwrites the same point instead of duplicating it.
+        # Identity is chunk["index"], the chunker's stable position
+        # (never enumerate() position — a partial replay would renumber).
+        point_id = str(uuid.uuid5(uuid.NAMESPACE_URL, f"{doc_id}:{chunk['index']}"))
         point_ids.append(point_id)
 
         points.append(
