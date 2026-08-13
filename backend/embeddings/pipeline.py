@@ -14,7 +14,12 @@ Image and audio status progression:
     (user confirms OCR text / transcript)
   pending_review → embedding → storing → ready
 
-Designed to run in a background thread after the upload route returns.
+Runs inside a Cloud Tasks-delivered request (backend/features/upload/tasks.py),
+or a local in-process thread when no queue is configured. Both entry points
+return their terminal-or-transient outcome ("ready" | "pending_review" |
+"error") instead of None, so the task handler can decide whether to retry —
+see TRAP D in docs/de.phase3.md: this pipeline never raises on its own
+failures, so detection has to happen on the return value.
 """
 
 import os
@@ -29,7 +34,7 @@ def _add_to_path(directory: str) -> None:
         sys.path.insert(0, abs_dir)
 
 _base = os.path.dirname(__file__)
-for _rel in [".", "..", "../pdf-processing", "../file-upload"]:
+for _rel in [".", ".."]:
     _add_to_path(os.path.join(_base, _rel))
 
 # ── Module-level imports (patchable by tests) ─────────────────────────────────
@@ -77,7 +82,7 @@ def process_document(
     file_name: str,
     doc_id: str,
     mimetype: str = "application/pdf",
-) -> None:
+) -> str:
     """
     Full pipeline: raw file bytes → chunks → embeddings → Qdrant → Firestore.
 
@@ -92,6 +97,11 @@ def process_document(
         doc_id:     Firestore document ID to update throughout processing.
         mimetype:   "application/pdf", an IMAGE_MIME_TYPES entry, or an
                     AUDIO_MIME_TYPES entry; anything else is rejected.
+
+    Returns:
+        "ready" | "pending_review" | "error" — never raises on a pipeline
+        failure (each stage catches its own exceptions and records them
+        via mark_document_error); the return value is the only signal.
     """
     is_supported = (
         mimetype == "application/pdf"
@@ -104,7 +114,7 @@ def process_document(
             stage="extraction",
             message=f"Unsupported file type: {mimetype}.",
         )
-        return
+        return "error"
 
     # Stage 1: Extraction
     update_document_status(doc_id, "extracting")
@@ -120,7 +130,7 @@ def process_document(
                     stage="extraction",
                     message="No text could be extracted from the image.",
                 )
-                return
+                return "error"
 
             # Write combined text to Firestore and wait for user confirmation.
             # Embedding happens in process_confirmed_ocr_text() once confirmed.
@@ -138,7 +148,7 @@ def process_document(
                 }
             update_document_status(doc_id, "pending_review", extra)
             print(f"[PIPELINE] OCR complete for '{file_name}' — awaiting user review.")
-            return
+            return "pending_review"
 
         elif mimetype in AUDIO_MIME_TYPES:
             # ── Audio path: transcription via configured provider ──────────
@@ -159,14 +169,14 @@ def process_document(
                     stage="extraction",
                     message="No speech could be transcribed from the audio.",
                 )
-                return
+                return "error"
 
             # Same field/status OCR text uses — audio is "just text" from
             # here on, so embedding/summarizer/quiz need zero changes.
             store_ocr_text(doc_id, transcript)
             update_document_status(doc_id, "pending_review")
             print(f"[PIPELINE] Transcription complete for '{file_name}' — awaiting user review.")
-            return
+            return "pending_review"
 
         else:
             # ── PDF path: chunk via Unstructured API ──────────────────────
@@ -186,12 +196,12 @@ def process_document(
                     stage="extraction",
                     message="No text could be extracted. The PDF may be image-based or empty.",
                 )
-                return
+                return "error"
 
     except Exception as exc:
         print(f"[PIPELINE] Extraction failed for '{file_name}': {exc}")
         mark_document_error(doc_id, stage="extraction", message=str(exc))
-        return
+        return "error"
 
     # Stage 2: Embedding
     update_document_status(doc_id, "embedding")
@@ -202,7 +212,7 @@ def process_document(
     except Exception as exc:
         print(f"[PIPELINE] Embedding failed for '{file_name}': {exc}")
         mark_document_error(doc_id, stage="embedding", message=str(exc))
-        return
+        return "error"
 
     # Stage 3: Storage
     update_document_status(doc_id, "storing")
@@ -218,12 +228,13 @@ def process_document(
     except Exception as exc:
         print(f"[PIPELINE] Storage failed for '{file_name}': {exc}")
         mark_document_error(doc_id, stage="storage", message=str(exc))
-        return
+        return "error"
 
     # Done
     mark_document_ready(doc_id, vector_ids)
     print(f"[PIPELINE] Done — '{file_name}': {len(vector_ids)} vectors stored.")
 
+    # Best-effort — a classification failure must not undo a ready doc.
     try:
         from features.quizgen.topic_classifier import classify_document_topic
         topic = classify_document_topic(doc_id)
@@ -231,13 +242,15 @@ def process_document(
     except Exception as exc:
         print(f"[PIPELINE] Warning: topic classification failed for '{file_name}': {exc}")
 
+    return "ready"
+
 
 def process_confirmed_ocr_text(
     text: str,
     uid: str,
     file_name: str,
     doc_id: str,
-) -> None:
+) -> str:
     """
     Entry point for the embedding pipeline after a user confirms their OCR text.
 
@@ -250,6 +263,10 @@ def process_confirmed_ocr_text(
         uid:       Firebase UID of the document owner.
         file_name: Original image filename.
         doc_id:    Firestore document ID to update throughout.
+
+    Returns:
+        "ready" | "error" — see process_document's docstring; the same
+        never-raises contract applies here.
     """
     # ── Stage 2: Embedding ────────────────────────────────────────────────
     update_document_status(doc_id, "embedding")
@@ -261,7 +278,7 @@ def process_confirmed_ocr_text(
                 stage="embedding",
                 message="No text to embed. The confirmed text may be empty.",
             )
-            return
+            return "error"
 
         print(f"[PIPELINE] Embedding {len(chunks)} confirmed OCR chunks for '{file_name}' …")
         chunks = embed_chunks(chunks)
@@ -269,7 +286,7 @@ def process_confirmed_ocr_text(
     except Exception as exc:
         print(f"[PIPELINE] Embedding failed for '{file_name}': {exc}")
         mark_document_error(doc_id, stage="embedding", message=str(exc))
-        return
+        return "error"
 
     # ── Stage 3: Qdrant Storage ───────────────────────────────────────────
     update_document_status(doc_id, "storing")
@@ -285,7 +302,7 @@ def process_confirmed_ocr_text(
     except Exception as exc:
         print(f"[PIPELINE] Storage failed for '{file_name}': {exc}")
         mark_document_error(doc_id, stage="storage", message=str(exc))
-        return
+        return "error"
 
     mark_document_ready(doc_id, vector_ids)
     print(f"[PIPELINE] Done — '{file_name}': {len(vector_ids)} confirmed OCR vectors stored.")
@@ -296,3 +313,5 @@ def process_confirmed_ocr_text(
         store_document_topic(doc_id, topic)
     except Exception as exc:
         print(f"[PIPELINE] Warning: topic classification failed for '{file_name}': {exc}")
+
+    return "ready"
