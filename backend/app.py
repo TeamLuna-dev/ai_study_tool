@@ -88,6 +88,16 @@ def create_app():
     except Exception as e:
         print("Study Brief feature failed to load:", e)
 
+    try:
+        # /internal (not /api) — firebase.json rewrites only /api/**, so
+        # this stays off the Hosting surface; OIDC verification in the
+        # handler is the gate on the public run.app URL.
+        from features.upload.tasks import tasks_bp
+        app.register_blueprint(tasks_bp, url_prefix="/internal/tasks")
+        print("Tasks feature loaded")
+    except Exception as e:
+        print("Tasks feature failed to load:", e)
+
     return app
 
     
