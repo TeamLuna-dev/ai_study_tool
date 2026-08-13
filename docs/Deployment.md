@@ -160,6 +160,40 @@ curl -i https://ai-tutor-backend-285361659733.us-central1.run.app/api/health
 
 ---
 
+## Cloud Tasks queue (document processing)
+
+Upload and OCR-confirm no longer process documents on the request thread —
+they enqueue `{doc_id, trigger}` to a Cloud Tasks queue, which delivers an
+OIDC-signed POST to `/internal/tasks/process-document`. Because that
+delivery *is* an HTTP request, Cloud Run allocates real CPU for the whole
+run, and failed deliveries retry with backoff instead of silently dying
+when the container scales down mid-run (see docs/de.phase2.md D1).
+
+Run once (idempotent — safe to re-run):
+
+```bash
+bash infra/setup_queue.sh
+```
+
+Then point the backend at it:
+
+```bash
+gcloud run services update ai-tutor-backend --region us-central1 \
+  --update-env-vars "TASKS_QUEUE=process-document"
+```
+
+`TASKS_QUEUE` unset ⇒ the backend falls back to an in-process thread
+(today's behavior) — so deploy ordering across the script, the env var,
+and a backend redeploy is forgiving; there's no outage window to sequence.
+
+**`/internal/tasks/*` is NOT proxied by docent.study** — `firebase.json`
+rewrites only `/api/**`, so the task endpoint is unreachable through the
+public domain by design. It IS public on the `*.run.app` URL (the service
+deploys `--allow-unauthenticated`); the in-app OIDC check against the
+queue's service account is what gates it, not network placement.
+
+---
+
 ## Environment variables
 
 ### Frontend (`.env` or `.env.production.local`)
@@ -193,6 +227,7 @@ Set via `--set-env-vars` on deploy, or `gcloud run services update ... --update-
 | `FIREBASE_STORAGE_BUCKET` | `aitutorproject-197c3.appspot.com` |
 | `QDRANT_URL` | `https://92db3cd0-0a97-4304-8b44-e614f5e13fcc.us-east4-0.gcp.cloud.qdrant.io` |
 | `FRONTEND_URL` | `https://docent.study` |
+| `TASKS_QUEUE` | `process-document` — unset falls back to an in-process thread |
 
 <!-- Pre-domain value. Was the only prod CORS origin before
      the same-origin rewrite made the allowlist moot.
@@ -517,12 +552,16 @@ If the project somehow disappears and you need to recreate everything:
    gcloud projects add-iam-policy-binding aitutorproject-197c3 \
      --member="serviceAccount:$SA" --role="roles/storage.objectAdmin"
    ```
-5. Initial backend deploy (full env vars):
+5. Cloud Tasks queue (run once, before the backend deploy references it):
+   ```bash
+   bash infra/setup_queue.sh
+   ```
+6. Initial backend deploy (full env vars):
    ```bash
    gcloud run deploy ai-tutor-backend \
      --source backend --region us-central1 --allow-unauthenticated \
      --memory 1Gi --cpu 1 --min-instances 0 --max-instances 5 --timeout 300 \
-     --set-env-vars "DEV_MODE=false,CHUNKING_STRATEGY=api,FIREBASE_STORAGE_BUCKET=aitutorproject-197c3.appspot.com,QDRANT_URL=https://92db3cd0-0a97-4304-8b44-e614f5e13fcc.us-east4-0.gcp.cloud.qdrant.io,FRONTEND_URL=https://docent.study" \
+     --set-env-vars "DEV_MODE=false,CHUNKING_STRATEGY=api,FIREBASE_STORAGE_BUCKET=aitutorproject-197c3.appspot.com,QDRANT_URL=https://92db3cd0-0a97-4304-8b44-e614f5e13fcc.us-east4-0.gcp.cloud.qdrant.io,FRONTEND_URL=https://docent.study,TASKS_QUEUE=process-document" \
      --set-secrets "OPEN_AI_EMBEDDINGS_KEY=openai-api-key:latest,UNSTRUCTURED_API_KEY=unstructured-api-key:latest,QDRANT_API_KEY=qdrant-api-key:latest,ANTHROPIC_LUNA_KEY=anthropic-luna-key:latest"
    ```
 
@@ -533,7 +572,7 @@ If the project somehow disappears and you need to recreate everything:
      ...,FRONTEND_URL=https://aitutorproject-197c3.web.app"
 -->
 
-6. Frontend deploy:
+7. Frontend deploy:
    ```bash
    npm run build && firebase deploy --only hosting
    ```
@@ -545,3 +584,4 @@ If the project somehow disappears and you need to recreate everything:
 | Date | Change | Author |
 |---|---|---|
 | 2026-04-20 | Initial migration from DigitalOcean App Platform to Firebase Hosting + Cloud Run | Christian |
+| 2026-08-04 | DE-3: document ingestion moved from in-process threads to a Cloud Tasks queue (`TASKS_QUEUE`, `infra/setup_queue.sh`) | Christian |
