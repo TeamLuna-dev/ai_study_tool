@@ -194,6 +194,54 @@ queue's service account is what gates it, not network placement.
 
 ---
 
+## BigQuery export (quiz events)
+
+Every write to Firestore `quiz_attempts` streams into BigQuery via the
+official **Stream Firestore to BigQuery** extension — Firestore stays the
+single source of truth, and the warehouse is a derived, async copy (no
+dual-write consistency problem; see docs/de.phase2.md D3). Config lives in
+`firebase.json` (`extensions` block) and
+`extensions/firestore-bigquery-export.env`, both checked in.
+
+Deploy the extension (once; safe to re-run to apply config changes):
+
+```bash
+firebase deploy --only extensions --project aitutorproject-197c3
+```
+
+Before importing any existing docs, confirm partitioning came out right —
+it can never be changed after table creation:
+
+```bash
+bq show --format=prettyjson firestore_export.quiz_attempts_raw_changelog
+```
+
+Then backfill pre-existing docs (must run *after* the extension is active):
+
+```bash
+npx @firebaseextensions/fs-bq-import-collection
+```
+
+The import strips the table's clustering (upstream bug — see
+`backend/warehouse/README.md`); restore it before creating views:
+
+```bash
+bq update --clustering_fields=document_id \
+  aitutorproject-197c3:firestore_export.quiz_attempts_raw_changelog
+```
+
+...and create the authored staging view:
+
+```bash
+bq query --use_legacy_sql=false < backend/warehouse/staging_quiz_attempts.sql
+```
+
+Full runbook, dataset layout, reconciliation query, and design rationale
+(clustering choice, nullable `schema_version`, dataset location) live in
+`backend/warehouse/README.md`.
+
+---
+
 ## Environment variables
 
 ### Frontend (`.env` or `.env.production.local`)
@@ -585,3 +633,4 @@ If the project somehow disappears and you need to recreate everything:
 |---|---|---|
 | 2026-04-20 | Initial migration from DigitalOcean App Platform to Firebase Hosting + Cloud Run | Christian |
 | 2026-08-04 | DE-3: document ingestion moved from in-process threads to a Cloud Tasks queue (`TASKS_QUEUE`, `infra/setup_queue.sh`) | Christian |
+| 2026-08-13 | DE-5: quiz_attempts CDC → BigQuery via extension (`firebase.json` extensions block, `backend/warehouse/`) | Christian |
