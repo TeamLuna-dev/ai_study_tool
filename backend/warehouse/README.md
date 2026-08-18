@@ -112,6 +112,57 @@ print(db.collection('quiz_attempts').count().get()[0][0].value)"
 The two counts should match, or any diff should be explained (e.g. an
 import still catching up) before treating the staging layer as trustworthy.
 
+## Acceptance evidence (2026-08-18)
+
+Run against prod (`aitutorproject-197c3`, extension v0.3.3). Recorded here
+rather than only in the ticket so the proof travels with the code.
+
+**Table properties** — `bq show` on the changelog:
+
+    timePartitioning  {"field": "timestamp", "type": "DAY"}
+    clustering        {"fields": ["document_id"]}   (after the post-import restore)
+    location          US
+
+**Backfill** — 152 rows, every one `operation=IMPORT`, all stamped
+`2026-08-14 12:39:09 UTC` (the import moment, not attempt time — which is
+why `attempted_at` comes from the payload).
+
+**Typed extraction** — across all 152 rows, zero NULLs in `user_id`,
+`score`, `percentage`, or `attempted_at`. Every `SAFE_CAST` and the
+timestamp `COALESCE` resolved on real data.
+
+**Row parity #1** — staging view `152` == Firestore `count()` `152`.
+
+**CDC update semantics** — `sample-attempt-001`, `score` 8 -> 9 via the
+Firestore console at `23:23:50 UTC`:
+
+    changelog   2 rows   IMPORT(score=8), UPDATE(score=9)
+    staging     1 row    score=9, last_operation=UPDATE
+
+Queryable ~29s after the write, against the ~1 min freshness target.
+An update yields exactly one row, carrying the new value.
+
+**CDC delete semantics** — same document deleted at `23:25:22 UTC`:
+
+    changelog   3 rows   IMPORT, UPDATE, DELETE(score=NULL)
+    staging     0 rows
+
+The `DELETE` row carries no field values — the last known state lives in
+the preceding `UPDATE`. This is why the view ranks across *all* operations
+and filters deletes afterward: filtering first would let the stale `UPDATE`
+row win and resurrect a document that no longer exists.
+
+**Row parity #2** — staging `151` == Firestore `151`. Both sides dropped by
+exactly one.
+
+**Deferred** — "scoring a quiz on prod lands a changelog row within ~1 min"
+is only half-verified. The Firestore->BigQuery leg is measured above at
+~29s. The app->Firestore leg cannot be tested yet: prod Cloud Run still
+runs the `2026-07-31` backend image, which predates DE-1 and still contains
+the `ANALYTICS_URL = http://127.0.0.1:5000/...` self-call bug, so scored
+quizzes never reach Firestore at all. Re-run this check after the backend
+deploy; nothing in DE-5 changes.
+
 ## Design notes
 
 - **Clustering is `document_id`, not `user_id`.** `docs/de.phase2.md` §D5
@@ -153,6 +204,12 @@ import still catching up) before treating the staging layer as trustworthy.
   (`backend/features/progress/services.py`) stays the single writer of
   that value. The view mirrors it; DE-6's DQ assertions verify it's in
   `[0, 100]`.
+- **Firestore timestamps arrive as `{_seconds,_nanoseconds}`, not ISO-8601.**
+  Verified against the first backfill: `JSON_VALUE(data, '$.timestamp')` is
+  empty for all 152 rows while `$.timestamp._seconds` is populated, so the
+  second `COALESCE` branch in the staging view is the one doing the work.
+  Both branches stay — the extension has shipped both forms across versions,
+  so a version bump could flip it back without warning.
 
 ## Follow-up (not in this ticket)
 
