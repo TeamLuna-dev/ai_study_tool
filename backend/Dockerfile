@@ -17,4 +17,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Cloud Run sets $PORT; bind 0.0.0.0
-CMD exec gunicorn --bind :$PORT --workers 2 --threads 4 --timeout 120 app:app
+# Timeout matches the Cloud Run deploy --timeout 300 (Deployment.md) —
+# task-handler requests now run for minutes, so the platform timeout
+# must be the binding constraint, not gunicorn's.
+CMD exec gunicorn --bind :$PORT --workers 2 --threads 4 --timeout 300 app:app

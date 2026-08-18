@@ -1,5 +1,13 @@
 {
   "projects": {
     "default": "aitutorproject-197c3"
+  },
+  "targets": {},
+  "etags": {
+    "aitutorproject-197c3": {
+      "extensionInstances": {
+        "firestore-bigquery-export": "c9d6d92d51990e45c5668775f329b0ae4baac8f98614c4a09c83bd5c7fce24d8"
+      }
+    }
   }
 }

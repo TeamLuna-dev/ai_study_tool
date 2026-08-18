@@ -42,7 +42,9 @@ export default function QuizProgressChart() {
       setLoading(true);
       setError("");
       try {
-        const data = await getQuizHistory(user?.uid, { perPage: 100 });
+        // uid is derived server-side from this token, not sent in the URL
+        const idToken = await user.getIdToken();
+        const data = await getQuizHistory(idToken, { perPage: 100 });
         setHistory(data.attempts || []);
       } catch (e) {
         setError(e.message);
@@ -50,7 +52,7 @@ export default function QuizProgressChart() {
         setLoading(false);
       }
     }
-    if (user?.uid) fetchHistory();
+    if (user) fetchHistory();
   }, [user]);
 
   if (loading) return <div className="text-gray-500 dark:text-gray-400 text-center py-8">Loading progress chart...</div>;

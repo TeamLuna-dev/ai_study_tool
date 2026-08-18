@@ -23,9 +23,7 @@ export function QuizPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { user } = useAuth(); // get current user for personalized analysis
- 
-  
-  const analyticsUserId = user?.uid || "test-user-123"; // for  a temporary measure to connect to the backend
+
   const [notes, setNotes] = useState("");
   const [quiz, setQuiz] = useState(null);
   const [topic, setTopic] = useState(""); // for topic-based quiz generation, needed for two user storie
@@ -58,9 +56,19 @@ export function QuizPage() {
 
   useEffect(() => {
     if (!user) return;
-    getWeakTopics(user.uid)
-      .then(setPreQuizWeakTopics)
-      .catch(() => {});
+
+    async function loadPreQuizWeakTopics() {
+      try {
+        // uid is derived server-side from this token, not sent in the URL
+        const idToken = await user.getIdToken();
+        const topics = await getWeakTopics(idToken);
+        setPreQuizWeakTopics(topics);
+      } catch {
+        // non-fatal — supplementary pre-quiz context
+      }
+    }
+
+    loadPreQuizWeakTopics();
   }, [user]);
 
   useEffect(() => { // fetch user's uploaded documents on component mount, if user is logged in
@@ -196,11 +204,14 @@ export function QuizPage() {
       // backend expects ints 0..3; if any null remain, send -1 to force 400
       const normalized = finalizedAnswers.map((a) => (a === null ? -1 : a));
 
-      const scored = await scoreQuiz(quiz, normalized, topic, analyticsUserId);
+      // uid is derived server-side from this token, not sent in the body
+      const idToken = user ? await user.getIdToken() : null;
+      const scored = await scoreQuiz(quiz, normalized, topic, idToken);
       setResult(scored);
 
         try {
-        const weak = await getWeakTopics(analyticsUserId);
+        // reuse the token already fetched above for scoreQuiz
+        const weak = await getWeakTopics(idToken);
         console.log("Weak topics fetched:", weak);
         setWeakTopics(weak);
           } catch (e) {

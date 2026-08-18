@@ -3,8 +3,12 @@ flask>=3.0.0
 flask-cors>=4.0.0
 gunicorn>=21.2.0
 
-# Firebase
+# Firebase / Google Cloud
 firebase-admin==6.5.0
+google-cloud-tasks>=2.16.0
+# Direct: tasks.py imports it for OIDC verification (was transitive,
+# via firebase-admin) — same precedent as promoting pydantic in DE-1.
+google-auth>=2.0
 
 # Anthropic
 anthropic>=0.40.0
@@ -23,7 +27,7 @@ qdrant-client==1.9.1
 
 # Utilities
 python-dotenv>=1.0.0
-flask-sqlalchemy==3.1.1
+pydantic>=2.0
 
 # Enables async def Flask routes
 asgiref>=3.8.0

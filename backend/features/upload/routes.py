@@ -12,7 +12,6 @@ All Firebase operations are delegated to firebase_storage.py
 import os
 import sys
 import uuid
-from concurrent.futures import ThreadPoolExecutor
 from flask import Blueprint, jsonify, request
 from .auth import verify_firebase_token
 
@@ -23,8 +22,6 @@ if _embeddings_dir not in sys.path:
 """
 upload_bp = Blueprint("upload", __name__)
 ocr_bp    = Blueprint("ocr",    __name__)
-
-_executor = ThreadPoolExecutor(max_workers=4)
 
 # ---------------------------------------------------------------------------
 # Validation registry — mirrors src/util/fileValidation.js on the frontend.
@@ -40,8 +37,9 @@ ALLOWED_MIME_TYPES = {
     "audio/wav":        {"max_size_bytes": 100 * 1024 * 1024},
 }
 
-# Dev mode flag — same source as auth.py
-DEV_MODE = os.getenv("DEV_MODE", "true").lower() == "true"
+# Dev mode flag — same source as auth.py; default false so an unset
+# env var in a deployed environment never silently skips auth.
+DEV_MODE = os.getenv("DEV_MODE", "false").lower() == "true"
 
 # temp/ sits alongside this file in file-upload/
 TEMP_DIR = os.path.join(os.path.dirname(__file__), "temp")
@@ -134,45 +132,35 @@ def upload_file():
         except FirebaseStorageError as exc:
             return jsonify({"error": str(exc)}), 500
 
-        # Kick off embedding pipeline in a background thread so the upload
-        # response returns immediately. The pipeline updates the Firestore
-        # doc status to "ready" (or "error") when it finishes.
-        # Guard import+submit: the file is already in Storage +
-        # Firestore, so a missing pipeline dep must not 500 the upload.
-        embedding_started = True
+        # Enqueue processing instead of running it on borrowed post-response
+        # CPU (F2). Bytes + Firestore doc are already durable, so an
+        # enqueue failure must NOT fail the upload — it becomes an "error"
+        # status that DE-7's backfill CLI can redrive.
+        processing_enqueued = True
         try:
-            from embeddings.pipeline import process_document
-            _executor.submit(
-                process_document,
-                file_bytes=file_bytes,
-                uid=uid,
-                file_name=file.filename,
-                doc_id=result["doc_id"],
-                mimetype=file.mimetype,
-            )
+            from .tasks import enqueue_process_document
+            enqueue_process_document(result["doc_id"], "upload")
         except Exception as exc:
-            # Upload succeeded; only embedding failed to start.
-            embedding_started = False
+            processing_enqueued = False
             mark_document_error(
-                result["doc_id"], "embedding",
-                f"Pipeline failed to start: {exc}",
+                result["doc_id"], "task",
+                f"Enqueue failed: {exc}",
             )
-            print(f"[UPLOAD] Embedding pipeline unavailable: {exc}")
+            print(f"[UPLOAD] Enqueue failed: {exc}")
 
         return jsonify({
             "message": (
-                "File uploaded. Processing embeddings in the background."
-                if embedding_started
-                else "File uploaded, but embedding could not start."
+                "File uploaded. Processing queued."
+                if processing_enqueued
+                else "File uploaded, but processing could not be queued."
             ),
             "filename": file.filename,
             "mimetype": file.mimetype,
             "size_bytes": len(file_bytes),
             "user_uid": uid,
             "doc_id": result["doc_id"],
-            "storage_url": result["storage_url"],
             "storage_path": result["storage_path"],
-            "embedding_started": embedding_started,
+            "processing_enqueued": processing_enqueued,
         }), 201
 
 
@@ -199,19 +187,21 @@ def save_ocr_text(doc_id):
     if not body or "text" not in body:
         return jsonify({"error": "Request body must include a 'text' field."}), 400
 
-    from .firebase_storage import store_ocr_text, get_document_metadata
+    from .firebase_storage import store_ocr_text, mark_document_error
+    # Write BEFORE enqueue — the task handler reads ocr_text back from
+    # Firestore, so a redelivered task always sees this exact confirmation.
     store_ocr_text(doc_id, body["text"])
 
-    # Kick off embedding in a background thread — same pattern as upload_file.
-    # Fetches uid/file_name from Firestore so the caller doesn't need to send them.
-    from embeddings.pipeline import process_confirmed_ocr_text
-    meta = get_document_metadata(doc_id)
-    _executor.submit(
-        process_confirmed_ocr_text,
-        text=body["text"],
-        uid=meta["uid"],
-        file_name=meta["file_name"],
-        doc_id=doc_id,
-    )
+    from .tasks import enqueue_process_document
+    try:
+        enqueue_process_document(doc_id, "ocr_confirm")
+    except Exception as exc:
+        # Unlike upload, this should surface: the user is waiting on this
+        # click. Their edit IS saved — re-clicking confirm safely
+        # re-saves + re-enqueues, since processing is now idempotent.
+        mark_document_error(doc_id, "task", f"Enqueue failed: {exc}")
+        return jsonify({
+            "error": "OCR text saved, but processing could not be queued."
+        }), 502
 
-    return jsonify({"message": "OCR text saved. Embedding in progress."}), 200
+    return jsonify({"message": "OCR text saved. Processing queued."}), 200
